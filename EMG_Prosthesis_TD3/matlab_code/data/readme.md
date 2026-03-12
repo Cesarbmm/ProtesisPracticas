@@ -1,0 +1,1 @@
+Temp files, agents and data are stored in this folder.
