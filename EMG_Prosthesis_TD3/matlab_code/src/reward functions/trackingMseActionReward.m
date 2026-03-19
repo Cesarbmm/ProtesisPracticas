@@ -1,0 +1,23 @@
+function [reward, rewardVector, rewardInfo] = trackingMseActionReward(this, action, ~)
+%trackingMseActionReward computes a dense reward for normalized tracking.
+%The reward penalizes tracking error and excessive action magnitude.
+
+lambdaAction = configurables("rewardActionWeight");
+
+action = double(action(:)');
+target = this.flexConverted(end, :);
+pred = this.adjustEnc(end, :);
+
+err = pred - target;
+rewardVector = -(err.^2 + lambdaAction * (action.^2));
+reward = mean(rewardVector);
+
+rewardInfo = struct(...
+    "trackingMse", mean(err.^2), ...
+    "trackingMae", mean(abs(err)), ...
+    "actionL2", mean(action.^2), ...
+    "progressTerm", 0, ...
+    "smoothnessPenalty", 0, ...
+    "deltaActionL2", 0, ...
+    "saturationFraction", mean(abs(action) >= 0.95));
+end

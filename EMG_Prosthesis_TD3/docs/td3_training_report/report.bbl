@@ -1,0 +1,70 @@
+\begin{thebibliography}{8}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Chen et~al.(2023)Chen, Min, Wang, Xia, Sun, and Fang]{chen2023review}
+Ziming Chen, Huasong Min, Dong Wang, Ziwei Xia, Fuchun Sun, and Bin Fang.
+\newblock A review of myoelectric control for prosthetic hand manipulation.
+\newblock \emph{Biomimetics}, 8\penalty0 (3):\penalty0 328, 2023.
+\newblock \doi{10.3390/biomimetics8030328}.
+\newblock URL \url{https://doi.org/10.3390/biomimetics8030328}.
+
+\bibitem[Deng et~al.(2025)Deng, Dong, and Liu]{deng2025reward}
+Zelin Deng, Yunlong Dong, and Xing Liu.
+\newblock Reward shaping in reinforcement learning for robotic hand
+  manipulation.
+\newblock \emph{Neurocomputing}, 638:\penalty0 130204, 2025.
+\newblock \doi{10.1016/j.neucom.2025.130204}.
+\newblock URL \url{https://doi.org/10.1016/j.neucom.2025.130204}.
+
+\bibitem[Fujimoto et~al.(2018)Fujimoto, van Hoof, and Meger]{fujimoto2018td3}
+Scott Fujimoto, Herke van Hoof, and David Meger.
+\newblock Addressing function approximation error in actor-critic methods.
+\newblock \url{https://arxiv.org/abs/1802.09477}, 2018.
+\newblock TD3 original paper.
+
+\bibitem[Kumra et~al.(2022)Kumra, Joshi, and Sahin]{kumra2022pacromannet}
+Sulabh Kumra, Shirin Joshi, and Ferat Sahin.
+\newblock Learning multi-step robotic manipulation policies from visual
+  observation of scene and q-value predictions of previous action.
+\newblock In \emph{Proceedings of the IEEE International Conference on Robotics
+  and Automation (ICRA)}, 2022.
+\newblock URL \url{https://arxiv.org/abs/2202.11280}.
+\newblock arXiv:2202.11280.
+
+\bibitem[Lee et~al.(2024)Lee, Cao, Dao, Chen, and Wu]{lee2024smoothness}
+I~Lee, Hoang-Giang Cao, Cong-Tinh Dao, Yu-Cheng Chen, and I-Chen Wu.
+\newblock Gradient-based regularization for action smoothness in robotic
+  control with reinforcement learning.
+\newblock In \emph{Proceedings of the IEEE/RSJ International Conference on
+  Intelligent Robots and Systems (IROS)}, pages 603--610, 2024.
+\newblock URL \url{https://arxiv.org/abs/2407.04315}.
+
+\bibitem[Li et~al.(2021)Li, Tang, Zheng, Hao, Li, Wang, Meng, and
+  Wang]{li2021hyar}
+B.~Li, H.~Tang, Y.~Zheng, J.~Hao, P.~Li, Z.~Wang, Z.~Meng, and L.~Wang.
+\newblock Hyar: Addressing discrete-continuous action reinforcement learning
+  via hybrid action representation.
+\newblock \url{https://arxiv.org/abs/2109.05490}, 2021.
+\newblock arXiv:2109.05490.
+
+\bibitem[{MathWorks}(2026{\natexlab{a}})]{mathworks_td3_agent}
+{MathWorks}.
+\newblock rltd3agent.
+\newblock
+  \url{https://www.mathworks.com/help/reinforcement-learning/ref/rl.agent.rltd3agent.html},
+  2026{\natexlab{a}}.
+\newblock Accessed: 2026-03-12.
+
+\bibitem[{MathWorks}(2026{\natexlab{b}})]{mathworks_td3_options}
+{MathWorks}.
+\newblock rltd3agentoptions.
+\newblock
+  \url{https://www.mathworks.com/help/reinforcement-learning/ref/rl.option.rltd3agentoptions.html},
+  2026{\natexlab{b}}.
+\newblock Accessed: 2026-03-12.
+
+\end{thebibliography}

@@ -3,6 +3,8 @@ function InitialObservation = reset(this)
 %initial observation. It uses the prosthesis built in method to go to home
 %position.
 %
+% No plotting from reset during training. Test episode plots are triggered
+% at end-of-episode from step(...) only when plotEpisodeOnTest is enabled.
 %if false
     % if this.episodeCounter > 1
     %f = figure(2);
@@ -13,18 +15,34 @@ function InitialObservation = reset(this)
     %plot(ax, cat(1, this.encoderAdjustedLog{:}))
     %uiwait(f)
 %end
-%plot_episode(this)%for testing and save
-%plot_episode2(this)%for training with MYO and glove
+if this.verbose && this.episodeCounter > 0
+    plot(this)
+end
+%plot_episode2(this)% optional legacy training visualization
 this.episodeTimestamp(1) = this.episodeTic.toc(this.c);
 this.episodeCounter = this.episodeCounter + 1;
 this.encoderLog = cell(this.maxNumberStepsInEpisodes, 1);
 this.encoderAdjustedLog = cell(this.maxNumberStepsInEpisodes, 1);
 this.actionLog = nan(this.maxNumberStepsInEpisodes, 4);
 this.actionSatLog = nan(this.maxNumberStepsInEpisodes, 4);
+this.actionPwmLog = nan(this.maxNumberStepsInEpisodes, 4);
 this.rewardLog = nan(this.maxNumberStepsInEpisodes, 1);
-this.rewardIndividualLog = cell(this.maxNumberStepsInEpisodes, 4);
+this.rewardVectorLog = nan(this.maxNumberStepsInEpisodes, 4);
+this.trackingMseLog = nan(this.maxNumberStepsInEpisodes, 1);
+this.trackingMaeLog = nan(this.maxNumberStepsInEpisodes, 1);
+this.actionL2Log = nan(this.maxNumberStepsInEpisodes, 1);
+this.progressTermLog = nan(this.maxNumberStepsInEpisodes, 1);
+this.smoothnessPenaltyLog = nan(this.maxNumberStepsInEpisodes, 1);
+this.deltaActionL2Log = nan(this.maxNumberStepsInEpisodes, 1);
+this.saturationFractionLog = nan(this.maxNumberStepsInEpisodes, 1);
+this.rewardIndividualLog = cell(this.maxNumberStepsInEpisodes, 1);
 this.emgLog = cell(this.maxNumberStepsInEpisodes, 1);
 this.flexConvertedLog = cell(this.maxNumberStepsInEpisodes, 1);
+this.prevAction = zeros(4, 1);
+this.prevTrackingMse = NaN;
+this.hasPrevRewardState = false;
+this.prevEncoderNorm = zeros(4, 1);
+this.prevEffectiveActionForState = zeros(4, 1);
 
 if this.returnHomeAtEndEpisode
     drawnow
@@ -159,7 +177,11 @@ this.log(sprintf(...
 
 assert(~isempty(emg), "EMG empty in reset")
 
-this.State = this.calculateState(emg, motorData);
+initialEncoderNorm = this.encoderNormCalculator(motorData(end, :)');
+this.prevEncoderNorm = initialEncoderNorm;
+this.prevEffectiveActionForState = zeros(size(this.prevEffectiveActionForState));
+[this.State, currentEncoderNorm] = this.calculateState(emg, motorData);
+this.prevEncoderNorm = currentEncoderNorm;
 InitialObservation = this.State;
 
 % (optional) use notifyEnvUpdated to signal that the

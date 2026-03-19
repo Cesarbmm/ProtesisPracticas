@@ -41,19 +41,43 @@ farMaxEncoderValue = params.encodersLimits(2);
 
 EMGFeaturesMin = params.EMGFeaturesLimits(1);
 EMGFeaturesMax = params.EMGFeaturesLimits(2);
+encoderLower = params.encoder2state_scale(farMinEncoderValue * ones(numMotors, 1));
+encoderUpper = params.encoder2state_scale(farMaxEncoderValue * ones(numMotors, 1));
 
 %% creating observation space
 obsInfo = rlNumericSpec([stateLength 1]); % col-wise
 
 
 %% limits
-obsInfo.LowerLimit = [EMGFeaturesMin*ones(numEMGFeatures, 1);
-    repmat(farMinEncoderValue, numMotors, 1)];
+if stateLength == numEMGFeatures + numMotors
+    obsInfo.LowerLimit = [EMGFeaturesMin*ones(numEMGFeatures, 1);
+        repmat(farMinEncoderValue, numMotors, 1)];
+    obsInfo.UpperLimit = [EMGFeaturesMax*ones(numEMGFeatures, 1);
+        repmat(farMaxEncoderValue, numMotors, 1)];
+    obsInfo.Description = sprintf(...
+        'State defined with %d EMG features and %d encoder positions',...
+        numEMGFeatures, numMotors);
+elseif stateLength == numEMGFeatures + 3*numMotors
+    deltaLower = -ones(numMotors, 1);
+    deltaUpper = ones(numMotors, 1);
+    prevActionLower = -ones(numMotors, 1);
+    prevActionUpper = ones(numMotors, 1);
 
-obsInfo.UpperLimit = [EMGFeaturesMax*ones(numEMGFeatures, 1);
-    repmat(farMaxEncoderValue, numMotors, 1)];
+    obsInfo.LowerLimit = [EMGFeaturesMin*ones(numEMGFeatures, 1);
+        encoderLower;
+        deltaLower;
+        prevActionLower];
+    obsInfo.UpperLimit = [EMGFeaturesMax*ones(numEMGFeatures, 1);
+        encoderUpper;
+        deltaUpper;
+        prevActionUpper];
+    obsInfo.Description = sprintf(...
+        ['State defined with %d EMG features, %d encoder positions, ' ...
+        '%d encoder deltas and %d previous effective actions'],...
+        numEMGFeatures, numMotors, numMotors, numMotors);
+else
+    error('Unsupported stateLength=%d for %d motors', stateLength, numMotors);
+end
 
 obsInfo.Name = 'prosthesis_state';
-obsInfo.Description = sprintf(...
-    'State defined with %d EMG features and %d encoder positions',...
-    numEMGFeatures, numMotors);
+end

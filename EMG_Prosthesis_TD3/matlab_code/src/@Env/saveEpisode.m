@@ -27,8 +27,17 @@ end
 %%
 %saving episode
 rewardLog = this.rewardLog(1:this.c);
+rewardVectorLog = this.rewardVectorLog(1:this.c,:);
+trackingMseLog = this.trackingMseLog(1:this.c);
+trackingMaeLog = this.trackingMaeLog(1:this.c);
+actionL2Log = this.actionL2Log(1:this.c);
+progressTermLog = this.progressTermLog(1:this.c);
+smoothnessPenaltyLog = this.smoothnessPenaltyLog(1:this.c);
+deltaActionL2Log = this.deltaActionL2Log(1:this.c);
+saturationFractionLog = this.saturationFractionLog(1:this.c);
 actionLog = this.actionLog(1:this.c,:);
 actionSatLog = this.actionSatLog(1:this.c,:);
+actionPwmLog = this.actionPwmLog(1:this.c,:);
 encoderLog = this.encoderLog(1:this.c);
 encoderAdjustedLog = this.encoderAdjustedLog(1:this.c);
 emgLog = this.emgLog(1:this.c);
@@ -37,6 +46,10 @@ flexConvertedLog = this.flexConvertedLog(1:this.c);
 episodeTimestamp = this.episodeTimestamp;
 
 save(sprintf('%s\\episode%05d.mat',this.episode_folder,this.episodeCounter) ...
-    ,"rewardLog","actionLog", "actionSatLog", "encoderLog", ...
+    ,"rewardLog","rewardVectorLog","trackingMseLog","trackingMaeLog", ...
+    "actionL2Log","progressTermLog","smoothnessPenaltyLog", ...
+    "deltaActionL2Log","saturationFractionLog", ...
+    "actionLog", "actionSatLog", "actionPwmLog", ...
+    "encoderLog", ...
     "flexConvertedLog", "repetitionId", "episodeTimestamp", ...
     'encoderAdjustedLog', 'emgLog');

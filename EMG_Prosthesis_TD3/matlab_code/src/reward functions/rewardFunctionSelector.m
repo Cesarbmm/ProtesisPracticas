@@ -1,4 +1,4 @@
-function [reward, rewardVector, action] = rewardFunctionSelector(this, rewardType, ...
+function [reward, rewardVector, rewardInfo] = rewardFunctionSelector(this, rewardType, ...
     action, user_data)
 %rewardFunctionSelector() is a switch function that calculates the reward
 %on each step of the episode. The reward function does not modify the
@@ -34,9 +34,24 @@ Matlab 9.11.0.1837725 (R2021b) Update 2.
 
 %%
 switch rewardType
+    case 'trackingMseActionRateReward'
+        [reward, rewardVector, rewardInfo] = ...
+            trackingMseActionRateReward(this, action, user_data);
+        return;
+
+    case 'trackingMseProgressSmoothReward'
+        [reward, rewardVector, rewardInfo] = ...
+            trackingMseProgressSmoothReward(this, action, user_data);
+        return;
+
+    case 'trackingMseActionReward'
+        [reward, rewardVector, rewardInfo] = ...
+            trackingMseActionReward(this, action, user_data);
+        return;
+
     case 'legacy_distanceRewarding'
-        % discarding action clipping.
-        [reward, rewardVector, action] = legacy_distanceRewarding(this, action);
+        [reward, rewardVector] = legacy_distanceRewarding(this, action);
+        rewardInfo = buildRewardInfo(this, action);
         return;
 
         % case 'pureDistanceRewarding'
@@ -50,4 +65,28 @@ switch rewardType
 
     otherwise
         error('Reward type %s unrecognized', rewardType)
+end
+end
+
+function rewardInfo = buildRewardInfo(this, action)
+action = double(action(:)');
+rewardInfo = struct(...
+    "trackingMse", NaN, ...
+    "trackingMae", NaN, ...
+    "actionL2", mean(action.^2), ...
+    "progressTerm", 0, ...
+    "smoothnessPenalty", 0, ...
+    "deltaActionL2", 0, ...
+    "saturationFraction", mean(abs(action) >= 0.95));
+
+if isempty(this.flexConverted) || isempty(this.adjustEnc)
+    return;
+end
+
+target = this.flexConverted(end, :);
+pred = this.adjustEnc(end, :);
+err = pred - target;
+
+rewardInfo.trackingMse = mean(err.^2);
+rewardInfo.trackingMae = mean(abs(err));
 end

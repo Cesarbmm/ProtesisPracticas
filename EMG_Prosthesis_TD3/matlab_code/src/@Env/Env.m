@@ -47,6 +47,7 @@ classdef Env < rl.env.MATLABEnvironment
         % saves episode data
         flagSaveTraining = configurables("flagSaveTraining");
         episode_save_freq = configurables("episode_save_freq"); % every ith
+        plotEpisodeOnTest = configurables("plotEpisodeOnTest");
 
         % NOTE: used only to initialize buffers
         maxNumberStepsInEpisodes=configurables("maxNumberStepsInEpisodes");
@@ -66,6 +67,11 @@ classdef Env < rl.env.MATLABEnvironment
 
         % running simulator
         simMotors = configurables("simMotors");
+        quantizeCommandsForSimulation = ...
+            configurables("quantizeCommandsForSimulation");
+        actionCommandActivationThreshold = ...
+            configurables("actionCommandActivationThreshold");
+        actionCommandLevels = configurables("actionCommandLevels");
 
         % clip actions
         rf_modify_actions = configurables("rf_modify_actions");
@@ -124,9 +130,23 @@ classdef Env < rl.env.MATLABEnvironment
         encoderAdjustedLog = {};
         actionLog = [];%history of the actions per epidodes
         actionSatLog = [];%history of the actions per epidodes
+        actionPwmLog = [];% applied pwm commands per episode
         rewardLog = [];
+        rewardVectorLog = [];
+        trackingMseLog = [];
+        trackingMaeLog = [];
+        actionL2Log = [];
+        progressTermLog = [];
+        smoothnessPenaltyLog = [];
+        deltaActionL2Log = [];
+        saturationFractionLog = [];
         rewardIndividualLog = {};
         flexConvertedLog = {};
+        prevAction = zeros(4,1); % previous effective action for reward
+        prevTrackingMse = NaN;
+        hasPrevRewardState = false;
+        prevEncoderNorm = zeros(4,1); % previous normalized encoder for state
+        prevEffectiveActionForState = zeros(4,1); % visible in observation
 
         wait_in_step = false; % bool to wait period
     end
@@ -255,7 +275,8 @@ classdef Env < rl.env.MATLABEnvironment
     methods
         InitialObservation = reset(this)
         [Observation,Reward,IsDone,LoggedSignals] = step(this, action)
-        state = calculateState(this, emg, motorData)
+        [state, enc] = calculateState(this, emg, motorData)
+        [effectiveAction, appliedPwm] = remapActionForActuator(this, action)
 
         isDone = checkEndEpisode(this)
 

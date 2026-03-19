@@ -1,0 +1,2 @@
+checkpointLabel,checkpointPath,numEpisodes,episodeRewardMean,episodeRewardStd,trackingMseMean,trackingMseStd,trackingMaeMean,trackingMaeStd,actionL2Mean,actionL2Std,absPwmMean,absPwmStd,saturationFractionMean,saturationFractionStd,deltaActionL2Mean,deltaActionL2Std,stepsPerEpisodeMean,stepsPerEpisodeStd
+x260318214114__Agent250mat,C:\Users\pc\Desktop\PROTESIS_PRACTICAS\Agentes\trainedAgentsProtesisTest\td3\_\26-03-18 21 41 14\Agent250.mat,1,-3.24982569561182,0,0.146228678380454,0,0.314210654936461,0,0.149067142008318,0,88.3636363636364,0,0,0,0.121482946119624,0,22,0

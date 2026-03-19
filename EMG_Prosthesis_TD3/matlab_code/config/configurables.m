@@ -31,6 +31,14 @@ jonathan.a.zea@ieee.org
 
 %% avoiding duplicated initialization
 persistent params
+persistent overrideKey
+
+override = localGetOverride();
+currentOverrideKey = localMakeOverrideKey(override);
+
+if ~isempty(params) && ~strcmp(currentOverrideKey, overrideKey)
+    params = [];
+end
 
 if ~isempty(params)
     if nargin == 1
@@ -49,6 +57,11 @@ end
 
 %% Episode
 
+params.trainingMaxEpisodes = 2000;
+params.trainingSaveAgentEvery = 50;
+params.trainingPlots = "none";
+params.plotEpisodeOnTest = false;
+
 % --- NOTE: removed
 % when true, calls goHomePostion(...) at the end of every episode
  params.returnHomeAtEndEpisode = true; % important with sims
@@ -62,7 +75,7 @@ params.episodeDuration = 5; % Denis dataset has up to 5 seconds of data
 
 params.period = 0.2; % reading time
 
-params.verbose = true;  % print every statement verbose
+params.verbose = false;  % quieter long-run training
 
 
 %% Simulate or train
@@ -70,26 +83,25 @@ params.verbose = true;  % print every statement verbose
 % when false, only uses the agent (simulation aka evaluation). Some configs
 % are defined depending on the value of ``run_training``.
 params.run_training = true;
-% params.run_training = false;
 
 
 % --- sim options
 if ~params.run_training
 
     params.simOpts = rlSimulationOptions('MaxSteps', 500,... %500 default
-        'NumSimulations', 50, ... %default 1
+        'NumSimulations', 50, ... % visual test default
         'StopOnError', 'on', ...%default on
         'UseParallel', false ...%default false
         );
 else
     params.RLtrainingOptions = rlTrainingOptions(...
-        'MaxEpisodes',50,... % when too many episodes it makes slower creating episode =20000000
+        'MaxEpisodes',params.trainingMaxEpisodes,... % when too many episodes it makes slower creating episode =20000000
         'MaxStepsPerEpisode', params.maxNumberStepsInEpisodes,...
-        'StopTrainingCriteria',"AverageReward",...
-        'StopTrainingValue', 600,... % new rewards
+        'StopTrainingCriteria',"EpisodeCount",...
+        'StopTrainingValue', params.trainingMaxEpisodes,...
         'SaveAgentCriteria','EpisodeFrequency', ...
-        'SaveAgentValue', 10 ...
-        ..., Plots="none" ... % debugging
+        'SaveAgentValue', params.trainingSaveAgentEvery ...
+        ..., Plots=params.trainingPlots ...
         );
 end
 
@@ -109,8 +121,8 @@ end
 if ~params.newTraining
 
     params.agentFile = ...
-        "C:\Users\pc\Desktop\PROTESIS_PRACTICAS\EMG_Prosthesis_TD3\matlab_code\trainedAgents\td3\_\Agent341200.mat";
-    params.agent_id = 'best'; % or name
+        "C:\Users\pc\Desktop\PROTESIS_PRACTICAS\Agentes\trainedAgentsProtesisTest\td3\_\26-03-18 23 59 27\Agent3000.mat";
+    params.agent_id = 'td3'; % or name
     % params.agentFile = ...
     %     ".\trainedAgents\Agent3.mat";
     % params.agent_id = 'random'; % or name
@@ -165,9 +177,16 @@ end
 
 %% rewarding
 % parameters of the corresponding reward functions are defined inside it.
-params.rewardType = 'legacy_distanceRewarding';% the choosen one
+params.rewardType = 'trackingMseActionRateReward';% markovian pilot
+% params.rewardType = 'trackingMseProgressSmoothReward';% stage 2 pilot
+% params.rewardType = 'trackingMseActionReward';% stage 1 baseline
+% params.rewardType = 'legacy_distanceRewarding';% baseline reference
 % rewardType = 'discreteDirectionalRewarding'; % not good
 % rewardType = 'pureDistanceRewarding'; % not good
+params.rewardActionWeight = 0.01;
+params.rewardProgressWeight = 0.30;
+params.rewardSmoothnessWeight = 0.05;
+params.rewardDeltaActionWeight = 0.05;
 
 params.reward_function = @(env, action, observation) ...
     rewardFunctionSelector(env, params.rewardType, action, observation);
@@ -180,12 +199,15 @@ params.unifyActions = false;
 
 % params.speeds = [170, 170, 255, 170]; % little, idx, thumb, mid
 params.speeds = 255* [1, 1, 1, 1]; % little, idx, thumb, mid
+params.quantizeCommandsForSimulation = true;
+params.actionCommandActivationThreshold = 0.05;
+params.actionCommandLevels = [0 64 96 128 160 192 224 255];
 
 % clipping
 % when true, the reward function can limit, modify or clip the action.
 % to achieve this, the reward function is calculated BEFORE applying the action.
 % when false, the reward function is calculated AFTER applying the action.
-params.rf_modify_actions = true;
+params.rf_modify_actions = false;
 
 %% Saving
 
@@ -231,10 +253,30 @@ params.maxAction = ones(4,1);      % Vector columna de 1s para cada motor
 
 
 
+%% TD3 hyperparameters
+params.td3.numHiddenUnits = 64;
+params.td3.actorLearnRate = 1e-4;
+params.td3.criticLearnRate = 1e-3;
+params.td3.actorL2Regularization = 1e-4;
+params.td3.criticL2Regularization = 1e-4;
+params.td3.gradientThreshold = 1;
+params.td3.targetSmoothFactor = 5e-3;
+params.td3.discountFactor = 0.95;
+params.td3.miniBatchSize = 128;
+params.td3.experienceBufferLength = 1e5;
+params.td3.sampleTime = params.period;
+params.td3.policyUpdateFrequency = 2;
+params.td3.targetUpdateFrequency = 2;
+params.td3.explorationStd = 0.2;
+params.td3.explorationStdDecayRate = 1e-4;
+params.td3.explorationStdMin = 0.02;
+params.td3.targetPolicyStd = 0.2;
+params.td3.targetPolicyNoiseClip = 0.5;
+
 %% Environment
 % Parameters that affect getObservationInfo()
 params.numEMGFeatures = 40;
-params.stateLength = 44; % num state features: EMG features + motors
+params.stateLength = 52; % EMG features + encoders + delta encoders + prev action
 
 % -- Cinematic info: Encoder
 % max unreachable limits, uses the limit of the ring|little
@@ -243,6 +285,11 @@ params.encodersLimits = [-2000 30000];
 
 % -- EMG info
 params.EMGFeaturesLimits = [-inf inf];
+
+params = localApplyOverride(params, override);
+params.reward_function = @(env, action, observation) ...
+    rewardFunctionSelector(env, params.rewardType, action, observation);
+overrideKey = currentOverrideKey;
 
 
 %% Getting specific field
@@ -255,6 +302,45 @@ if nargin == 1
     end
 elseif nargin == 0
     paramsV = params;
+end
+
+end
+
+function override = localGetOverride()
+if isappdata(0, 'configurables_override')
+    override = getappdata(0, 'configurables_override');
+else
+    override = struct();
+end
+end
+
+function key = localMakeOverrideKey(override)
+if isempty(fieldnames(override))
+    key = "__no_override__";
+    return;
+end
+
+fields = sort(fieldnames(override));
+parts = strings(numel(fields), 1);
+for i = 1:numel(fields)
+    value = override.(fields{i});
+    if isstring(value) || ischar(value)
+        valueString = string(value);
+    elseif isnumeric(value) || islogical(value)
+        valueString = mat2str(value);
+    else
+        valueString = class(value);
+    end
+    parts(i) = string(fields{i}) + "=" + valueString;
+end
+key = strjoin(parts, "|");
+end
+
+function params = localApplyOverride(params, override)
+fields = fieldnames(override);
+for i = 1:numel(fields)
+    params.(fields{i}) = override.(fields{i});
+end
 end
 
 
