@@ -35,6 +35,7 @@ numEMGFeatures = params.numEMGFeatures;
 numMotors = hardware.numMotors;
 
 stateLength = params.stateLength;
+emgHistoryLength = params.emgHistoryLength;
 
 farMinEncoderValue = params.encodersLimits(1);
 farMaxEncoderValue = params.encodersLimits(2);
@@ -75,6 +76,27 @@ elseif stateLength == numEMGFeatures + 3*numMotors
         ['State defined with %d EMG features, %d encoder positions, ' ...
         '%d encoder deltas and %d previous effective actions'],...
         numEMGFeatures, numMotors, numMotors, numMotors);
+elseif stateLength == numEMGFeatures*emgHistoryLength + 3*numMotors
+    deltaLower = -ones(numMotors, 1);
+    deltaUpper = ones(numMotors, 1);
+    prevActionLower = -ones(numMotors, 1);
+    prevActionUpper = ones(numMotors, 1);
+    emgLower = EMGFeaturesMin*ones(numEMGFeatures*emgHistoryLength, 1);
+    emgUpper = EMGFeaturesMax*ones(numEMGFeatures*emgHistoryLength, 1);
+
+    obsInfo.LowerLimit = [emgLower;
+        encoderLower;
+        deltaLower;
+        prevActionLower];
+    obsInfo.UpperLimit = [emgUpper;
+        encoderUpper;
+        deltaUpper;
+        prevActionUpper];
+    obsInfo.Description = sprintf(...
+        ['State defined with %d stacked EMG feature frames (%d each), ' ...
+        '%d encoder positions, %d encoder deltas and %d previous ' ...
+        'effective actions'],...
+        emgHistoryLength, numEMGFeatures, numMotors, numMotors, numMotors);
 else
     error('Unsupported stateLength=%d for %d motors', stateLength, numMotors);
 end

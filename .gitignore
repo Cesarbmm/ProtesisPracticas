@@ -1,0 +1,17 @@
+/Agentes/
+/Imagenes/
+/codex_*.m
+/*.log
+/baseline_article.txt
+
+EMG_Prosthesis_TD3/matlab_code/trainedAgents/
+EMG_Prosthesis_TD3/docs/td3_training_report/report*
+EMG_Prosthesis_TD3/docs/td3_training_report/report_valid_baseline_*
+EMG_Prosthesis_TD3/docs/td3_training_report/*.aux
+EMG_Prosthesis_TD3/docs/td3_training_report/*.bbl
+EMG_Prosthesis_TD3/docs/td3_training_report/*.blg
+EMG_Prosthesis_TD3/docs/td3_training_report/*.log
+EMG_Prosthesis_TD3/docs/td3_training_report/*.out
+EMG_Prosthesis_TD3/docs/td3_training_report/*.toc
+EMG_Prosthesis_TD3/docs/td3_training_report/$job.*
+EMG_Prosthesis_TD3/docs/td3_training_report/build/

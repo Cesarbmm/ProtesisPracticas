@@ -64,12 +64,21 @@ if configs.newTraining
         agent_id, param_name, param_value);
 else
     %- loading agent
-    try
+    if strlength(string(configs.agentFile)) == 0
+        error("configs.agentFile is empty. Set params.agentFile in config/configurables.m before evaluation or resume training.");
+    end
+    if ~isfile(configs.agentFile)
+        error("Checkpoint file not found: %s", string(configs.agentFile));
+    end
+    vars = who('-file', configs.agentFile);
+    if any(strcmp(vars, "agent"))
         aux = load(configs.agentFile, "agent");
         agent = aux.agent;
-    catch
+    elseif any(strcmp(vars, "saved_agent"))
         aux = load(configs.agentFile, "saved_agent");
         agent = aux.saved_agent;
+    else
+        error("Checkpoint %s does not contain 'agent' or 'saved_agent'", configs.agentFile)
     end
 
     agent_id = configs.agent_id;

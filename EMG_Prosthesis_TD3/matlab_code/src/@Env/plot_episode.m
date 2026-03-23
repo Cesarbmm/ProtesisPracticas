@@ -7,7 +7,12 @@ if this.episodeCounter < 1 || this.c < 1
     return
 end
 
-saveDir = 'C:\Users\pc\Desktop\PROTESIS_PRACTICAS\Imagenes';
+envDir = fileparts(mfilename("fullpath"));
+srcDir = fileparts(envDir);
+matlabRoot = fileparts(srcDir);
+projectRoot = fileparts(matlabRoot);
+repoRoot = fileparts(projectRoot);
+saveDir = fullfile(repoRoot, 'Imagenes');
 if ~exist(saveDir, 'dir')
     mkdir(saveDir);
 end

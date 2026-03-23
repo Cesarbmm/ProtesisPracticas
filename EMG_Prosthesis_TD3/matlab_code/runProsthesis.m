@@ -31,21 +31,17 @@ addpath(genpath('.\agents\'))
 cc
 
 %% Configs
-%--- from sim, not working
-% agentFile  = ".\trainedAgents\22-02-22 13 54 cDQN_slower_1132.mat";
+% Legacy hardware-oriented script.
+% Set a checkpoint manually before using this script.
+agentFile  = "";
+name = 'runProsthesis';
 
-% %--WTF?
-% agentFile  = ...
-%     ".\trainedAgents\22-02-22 21 59 cDQN_slower_RT_distanceRewarding_19.mat";
-% 
-% name = 'cDQN_slower_RT_distanceRewarding';
-%--WTF?
-
-agentFile  = "C:\Users\joseg\Documents\Tesis\Agent341200.mat";
-name = 'FINAL';
+if strlength(agentFile) == 0
+    error("Set 'agentFile' in runProsthesis.m before executing this script.");
+end
 
 %% Define the base directory and the episode directory
-baseDir = "C:\Users\david\Documents\GitHub\prosthesis_v2\prosthesis_code\lib\prosthesis_v2\matlab_code\episodes";
+baseDir = fullfile('..', '..', 'Agentes', 'runProsthesis');
 episodeDir = fullfile(baseDir, name);
 
 % Create the base directory if it doesn't exist

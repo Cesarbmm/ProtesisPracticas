@@ -31,8 +31,12 @@ usePrerecorded = false;
 % newTraning = true;
 newTraning = false;
 
-agentFile  = ".\trainedAgents\22-03-27 18 46 final_eps0.3_alf5e-5_161.mat";
+agentFile  = "";
 name = 'final_eps0.3_alf1e-5';
+
+if ~newTraning && strlength(agentFile) == 0
+    error("Set 'agentFile' in src/fineTuning.m before executing this script.");
+end
 
 %% Agent
 if newTraning

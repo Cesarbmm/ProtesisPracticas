@@ -1,40 +1,49 @@
-# TD3 Training Report
+# TD3 Prosthesis Documentation
 
-This folder contains a LaTeX report for the recent training-only intervention on the MATLAB TD3 prosthesis project.
+Esta carpeta contiene la documentacion tecnica canónica del proyecto.
 
-## Files
+## Documentos principales
 
-- `report.tex`: main manuscript
-- `references.bib`: bibliography
-- `figures/training_progress_300eps.png`: optional screenshot of the MATLAB training-progress window
+- `guia_didactica_td3_protesis_20260323.tex`
+- `guia_didactica_td3_protesis_20260323.pdf`
+- `td3_protesis_evolucion_y_baseline_20260322.tex`
+- `td3_protesis_evolucion_y_baseline_20260322.pdf`
+- `references.bib`
 
-## Recommended figure path
+## Figuras canónicas
 
-If you want the training plot to appear automatically in the PDF, save the screenshot as:
+- `figures/training_progress_8000eps_valid_baseline.png`
+- `figures/test_episode_49_valid_baseline_8000.png`
+
+## Compilacion
+
+Desde esta carpeta, compila cada documento por separado.
+
+### Guia didactica
 
 ```text
-EMG_Prosthesis_TD3/docs/td3_training_report/figures/training_progress_300eps.png
+pdflatex guia_didactica_td3_protesis_20260323.tex
+bibtex guia_didactica_td3_protesis_20260323
+pdflatex guia_didactica_td3_protesis_20260323.tex
+pdflatex guia_didactica_td3_protesis_20260323.tex
 ```
 
-If the file does not exist, the report will still compile and show a placeholder box.
-
-## Compile
-
-From this directory:
+### Reporte longitudinal / baseline
 
 ```text
-pdflatex report.tex
-bibtex report
-pdflatex report.tex
-pdflatex report.tex
+pdflatex td3_protesis_evolucion_y_baseline_20260322.tex
+bibtex td3_protesis_evolucion_y_baseline_20260322
+pdflatex td3_protesis_evolucion_y_baseline_20260322.tex
+pdflatex td3_protesis_evolucion_y_baseline_20260322.tex
 ```
 
-## Scope
+## Politica de versionado
 
-This report documents:
+En Git se conservan solo:
 
-- the reward redesign
-- the environment and logging changes
-- the TD3 hyperparameter cleanup
-- the 300-episode training run from 2026-03-12
-- the next experimental steps before any hardware integration
+- los `.tex` canónicos;
+- sus PDFs finales;
+- `references.bib`;
+- las figuras realmente usadas.
+
+Los auxiliares de LaTeX y builds intermedios se ignoran.

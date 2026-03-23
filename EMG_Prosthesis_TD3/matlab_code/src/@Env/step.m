@@ -43,6 +43,10 @@ if this.wait_in_step
 end
 
 %% reading hardware
+% Advance episode time before reading the prosthesis so the commanded
+% action affects the current transition instead of the next one.
+this.episodeTic.toc(this.c);
+
 if this.usePrerecorded
     t_elapsed = this.periodTic.elapsed_time;
     assert(t_elapsed > 0.9*this.period && t_elapsed < 1.1*this.period, ...
@@ -87,11 +91,12 @@ end
 
 this.log(sprintf(...
     '%d. T=%.3f[s]. EmgSize %d. encodersSize %d. glovesize %d',...
-    this.c, this.episodeTic.toc(this.c),...
+    this.c, this.episodeTic.elapsed_time,...
     size(emg, 1), size(motorData, 1), size(flexData, 1)))
 
 %% Update prosthesis states
 this.prevEffectiveActionForState = effectiveAction(:);
+[~] = this.updateEmgFeatureHistory(emg, false);
 [this.State, currentEncoderNorm] = this.calculateState(emg, motorData);
 observation = this.State;
 

@@ -2,6 +2,16 @@
 */OldVersions
 *lockfile.lck
 auxs/
+docs/td3_training_report/*.aux
+docs/td3_training_report/*.bbl
+docs/td3_training_report/*.blg
+docs/td3_training_report/*.log
+docs/td3_training_report/*.out
+docs/td3_training_report/*.toc
+docs/td3_training_report/report*
+docs/td3_training_report/report_valid_baseline_*
+docs/td3_training_report/$job.*
+docs/td3_training_report/build/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

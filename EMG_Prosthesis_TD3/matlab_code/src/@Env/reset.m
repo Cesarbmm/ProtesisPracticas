@@ -43,6 +43,7 @@ this.prevTrackingMse = NaN;
 this.hasPrevRewardState = false;
 this.prevEncoderNorm = zeros(4, 1);
 this.prevEffectiveActionForState = zeros(4, 1);
+this.emgFeatureHistory = [];
 
 if this.returnHomeAtEndEpisode
     drawnow
@@ -180,6 +181,7 @@ assert(~isempty(emg), "EMG empty in reset")
 initialEncoderNorm = this.encoderNormCalculator(motorData(end, :)');
 this.prevEncoderNorm = initialEncoderNorm;
 this.prevEffectiveActionForState = zeros(size(this.prevEffectiveActionForState));
+[~] = this.updateEmgFeatureHistory(emg, true);
 [this.State, currentEncoderNorm] = this.calculateState(emg, motorData);
 this.prevEncoderNorm = currentEncoderNorm;
 InitialObservation = this.State;
@@ -193,6 +195,7 @@ drawnow
 this.episodeTimestamp(2) = this.episodeTic.toc();
 this.periodTic.tic();
 this.episodeTic.tic();
+this.prosthesis.resetBuffer(motorData(end, :));
 
 % this.prosthesis.resetBuffer();
 if this.wait_in_step % CHECK why tic twice??

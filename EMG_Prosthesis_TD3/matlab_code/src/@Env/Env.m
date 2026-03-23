@@ -147,6 +147,7 @@ classdef Env < rl.env.MATLABEnvironment
         hasPrevRewardState = false;
         prevEncoderNorm = zeros(4,1); % previous normalized encoder for state
         prevEffectiveActionForState = zeros(4,1); % visible in observation
+        emgFeatureHistory = []; % columns ordered as [phi_t phi_t-1 ...]
 
         wait_in_step = false; % bool to wait period
     end

@@ -160,7 +160,8 @@ classdef SimController < handle
 
                 return;
             elseif duration < 0
-                warning("Duration lower than 0.")
+                % Timing can be reset between episodes; resync silently.
+                obj.c0 = obj.timing.c;
                 return;
             elseif isempty(duration)
                 error("Duration can not be empty for simulator.")

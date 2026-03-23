@@ -1,5 +1,6 @@
 # development/**/*.mat
 pather.m
+trainedAgents/
 
 # Windows default autosave extension
 *.asv

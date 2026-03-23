@@ -23,10 +23,13 @@ clc
 
 
 %% Agent
+% Legacy evaluation script. Prefer trainInterface('td3','','') for current workflow.
+agentFile  = "";
+name = 'evalTrainedAgent';
 
-agentFile  = ".\trainedAgents\22-03-27 18 46 final_eps0.3_alf5e-5_161.mat";
-
-name = 'final_eps0.3_alf1e-5';
+if strlength(agentFile) == 0
+    error("Set 'agentFile' in src/evalTrainedAgent.m before executing this script.");
+end
 
 
 

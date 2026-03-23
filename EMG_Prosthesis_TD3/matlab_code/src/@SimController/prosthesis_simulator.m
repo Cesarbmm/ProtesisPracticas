@@ -97,15 +97,19 @@ max_l  = sim_params.(sp_txt).(dir).(m_txt).max_lim;
 ws_len = numel(ws);
 
 % --- si ws está vacío, el motor no puede moverse: mantener posición
-if ws_len == 0
-    t_i = repmat(pos, n_points, 1);
-    return;
-end
-
 y_sat = sat(pos, min_l, max_l);
 
 % find init time in curve
 curve = PATTERN_CURVE.(sp_txt).(dir).(m_txt).avg;
+curve_len = numel(curve);
+
+useCurveFallback = ws_len == 0;
+if useCurveFallback
+    % ``fit_C2.mat`` currently stores empty ``ws`` trajectories. Reuse the
+    % average pattern curve so the simulator still produces motion.
+    ws = curve;
+    ws_len = curve_len;
+end
 
 t = numel(curve);
 for t_search = 1:numel(curve)
@@ -123,7 +127,10 @@ for t_search = 1:numel(curve)
 end
 
 % --- clamp x_0
-x_0 = tail_length + t;
+x_0 = t;
+if ~useCurveFallback
+    x_0 = tail_length + t;
+end
 x_0 = max(1, min(x_0, ws_len));
 
 %---

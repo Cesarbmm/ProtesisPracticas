@@ -57,9 +57,9 @@ end
 
 %% Episode
 
-params.trainingMaxEpisodes = 2000;
-params.trainingSaveAgentEvery = 50;
-params.trainingPlots = "none";
+params.trainingMaxEpisodes = 8000;
+params.trainingSaveAgentEvery = 250;
+params.trainingPlots = "training-progress";
 params.plotEpisodeOnTest = false;
 
 % --- NOTE: removed
@@ -85,27 +85,6 @@ params.verbose = false;  % quieter long-run training
 params.run_training = true;
 
 
-% --- sim options
-if ~params.run_training
-
-    params.simOpts = rlSimulationOptions('MaxSteps', 500,... %500 default
-        'NumSimulations', 50, ... % visual test default
-        'StopOnError', 'on', ...%default on
-        'UseParallel', false ...%default false
-        );
-else
-    params.RLtrainingOptions = rlTrainingOptions(...
-        'MaxEpisodes',params.trainingMaxEpisodes,... % when too many episodes it makes slower creating episode =20000000
-        'MaxStepsPerEpisode', params.maxNumberStepsInEpisodes,...
-        'StopTrainingCriteria',"EpisodeCount",...
-        'StopTrainingValue', params.trainingMaxEpisodes,...
-        'SaveAgentCriteria','EpisodeFrequency', ...
-        'SaveAgentValue', params.trainingSaveAgentEvery ...
-        ..., Plots=params.trainingPlots ...
-        );
-end
-
-
 %% RESUME TRAINING
 if params.run_training
 
@@ -120,12 +99,10 @@ end
 % --- resuming training or evaluation
 if ~params.newTraining
 
-    params.agentFile = ...
-        "C:\Users\pc\Desktop\PROTESIS_PRACTICAS\Agentes\trainedAgentsProtesisTest\td3\_\26-03-18 23 59 27\Agent3000.mat";
+    params.agentFile = "";
     params.agent_id = 'td3'; % or name
-    % params.agentFile = ...
-    %     ".\trainedAgents\Agent3.mat";
-    % params.agent_id = 'random'; % or name
+    % Example:
+    % params.agentFile = ".\..\..\Agentes\trainedAgentsProtesisTest\td3\_\yy-mm-dd HH M S\Agent2000.mat";
 end
 
 
@@ -177,7 +154,7 @@ end
 
 %% rewarding
 % parameters of the corresponding reward functions are defined inside it.
-params.rewardType = 'trackingMseActionRateReward';% markovian pilot
+params.rewardType = 'trackingMseActionRateReward';% valid baseline after simulator fix
 % params.rewardType = 'trackingMseProgressSmoothReward';% stage 2 pilot
 % params.rewardType = 'trackingMseActionReward';% stage 1 baseline
 % params.rewardType = 'legacy_distanceRewarding';% baseline reference
@@ -216,7 +193,7 @@ params.flagSaveTraining = true;
 % params.flagSaveTraining = false;
 
 % saving agent progress locally as backup, not in onedrive for overhead.
-params.agents_directory = @(agent_id, variant)(fullfile('C:\Users\pc\Desktop\PROTESIS_PRACTICAS\Agentes', ...
+params.agents_directory = @(agent_id, variant)(fullfile('..', '..', 'Agentes', ...
     "trainedAgentsProtesisTest", agent_id, variant, ...
     string(datetime("now","Format", "yy-MM-dd HH m s"))));
 
@@ -255,6 +232,10 @@ params.maxAction = ones(4,1);      % Vector columna de 1s para cada motor
 
 %% TD3 hyperparameters
 params.td3.numHiddenUnits = 64;
+params.td3.useRecurrent = false; % clean MLP baseline before revisiting recurrent TD3
+params.td3.recurrentUnits = 16;
+params.td3.sequenceLength = 16;
+params.td3.numStepsToLookAhead = 1;
 params.td3.actorLearnRate = 1e-4;
 params.td3.criticLearnRate = 1e-3;
 params.td3.actorL2Regularization = 1e-4;
@@ -262,7 +243,7 @@ params.td3.criticL2Regularization = 1e-4;
 params.td3.gradientThreshold = 1;
 params.td3.targetSmoothFactor = 5e-3;
 params.td3.discountFactor = 0.95;
-params.td3.miniBatchSize = 128;
+params.td3.miniBatchSize = 64;
 params.td3.experienceBufferLength = 1e5;
 params.td3.sampleTime = params.period;
 params.td3.policyUpdateFrequency = 2;
@@ -276,7 +257,9 @@ params.td3.targetPolicyNoiseClip = 0.5;
 %% Environment
 % Parameters that affect getObservationInfo()
 params.numEMGFeatures = 40;
-params.stateLength = 52; % EMG features + encoders + delta encoders + prev action
+params.observationVariant = "markov52";
+params.emgHistoryLength = 3; % explicit stacked EMG context frames
+params.stateLength = params.numEMGFeatures + 3 * numel(params.minAction);
 
 % -- Cinematic info: Encoder
 % max unreachable limits, uses the limit of the ring|little
@@ -287,6 +270,10 @@ params.encodersLimits = [-2000 30000];
 params.EMGFeaturesLimits = [-inf inf];
 
 params = localApplyOverride(params, override);
+params = localFinalizeStateSettings(params, override);
+params = localFinalizeModeSettings(params, override);
+params = localFinalizeResumeSettings(params);
+params = localFinalizeRuntimeSettings(params);
 params.reward_function = @(env, action, observation) ...
     rewardFunctionSelector(env, params.rewardType, action, observation);
 overrideKey = currentOverrideKey;
@@ -340,6 +327,69 @@ function params = localApplyOverride(params, override)
 fields = fieldnames(override);
 for i = 1:numel(fields)
     params.(fields{i}) = override.(fields{i});
+end
+end
+
+function params = localFinalizeStateSettings(params, override)
+if ~isfield(params, "emgHistoryLength") || isempty(params.emgHistoryLength)
+    params.emgHistoryLength = 1;
+end
+
+if ~isfield(override, "stateLength")
+    if ~isfield(params, "observationVariant") || isempty(params.observationVariant)
+        params.observationVariant = "markov52";
+    end
+
+    switch string(params.observationVariant)
+        case "legacy44"
+            params.stateLength = params.numEMGFeatures + numel(params.minAction);
+        case "markov52"
+            params.stateLength = params.numEMGFeatures + 3 * numel(params.minAction);
+        case "stackedEmg132"
+            params.stateLength = params.numEMGFeatures * params.emgHistoryLength + ...
+                3 * numel(params.minAction);
+        otherwise
+            error("Unsupported observationVariant '%s'", string(params.observationVariant));
+    end
+end
+end
+
+function params = localFinalizeModeSettings(params, override)
+if ~isfield(override, "newTraining")
+    params.newTraining = params.run_training;
+end
+end
+
+function params = localFinalizeResumeSettings(params)
+if ~isfield(params, "newTraining") || params.newTraining
+    return;
+end
+
+if ~isfield(params, "agent_id") || isempty(params.agent_id)
+    params.agent_id = "td3";
+end
+
+if ~isfield(params, "agentFile") || isempty(params.agentFile)
+    params.agentFile = "";
+end
+end
+
+function params = localFinalizeRuntimeSettings(params)
+if params.run_training
+    params.RLtrainingOptions = rlTrainingOptions(...
+        'MaxEpisodes', params.trainingMaxEpisodes, ...
+        'MaxStepsPerEpisode', params.maxNumberStepsInEpisodes, ...
+        'StopTrainingCriteria', "EpisodeCount", ...
+        'StopTrainingValue', params.trainingMaxEpisodes, ...
+        'SaveAgentCriteria', 'EpisodeFrequency', ...
+        'SaveAgentValue', params.trainingSaveAgentEvery, ...
+        'Plots', params.trainingPlots);
+else
+    params.simOpts = rlSimulationOptions( ...
+        'MaxSteps', 500, ...
+        'NumSimulations', 50, ...
+        'StopOnError', 'on', ...
+        'UseParallel', false);
 end
 end
 

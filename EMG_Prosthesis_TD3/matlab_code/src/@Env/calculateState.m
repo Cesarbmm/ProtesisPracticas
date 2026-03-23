@@ -12,18 +12,29 @@ function [state, enc] = calculateState(this, emg, motorData)
 
 % # ---- emg feature extraction. Applies the bag of functions to the emg
 % raw signal.
-emg = this.featureCalculator(emg); % E-by-8 -> F-by-1
+emgFeatures = this.featureCalculator(emg); % E-by-8 -> F-by-1
 
 enc = this.encoderNormCalculator(motorData(end, :)');
 stateLength = configurables("stateLength");
+emgHistoryLength = configurables("emgHistoryLength");
 
-if stateLength == numel(emg) + numel(enc)
-    state = [emg; enc];
-elseif stateLength == numel(emg) + 3*numel(enc)
+if stateLength == numel(emgFeatures) + numel(enc)
+    state = [emgFeatures; enc];
+elseif stateLength == numel(emgFeatures) + 3*numel(enc)
     deltaEnc = enc - this.prevEncoderNorm(:);
     deltaEnc = max(-1, min(1, deltaEnc));
     prevEffectiveAction = max(-1, min(1, this.prevEffectiveActionForState(:)));
-    state = [emg; enc; deltaEnc; prevEffectiveAction];
+    state = [emgFeatures; enc; deltaEnc; prevEffectiveAction];
+elseif stateLength == numel(emgFeatures) * emgHistoryLength + 3*numel(enc)
+    if isempty(this.emgFeatureHistory) || ...
+            size(this.emgFeatureHistory, 1) ~= numel(emgFeatures) || ...
+            size(this.emgFeatureHistory, 2) ~= emgHistoryLength
+        this.emgFeatureHistory = repmat(emgFeatures(:), 1, emgHistoryLength);
+    end
+    deltaEnc = enc - this.prevEncoderNorm(:);
+    deltaEnc = max(-1, min(1, deltaEnc));
+    prevEffectiveAction = max(-1, min(1, this.prevEffectiveActionForState(:)));
+    state = [reshape(this.emgFeatureHistory, [], 1); enc; deltaEnc; prevEffectiveAction];
 else
     error('Unsupported stateLength=%d for calculateState', stateLength);
 end
