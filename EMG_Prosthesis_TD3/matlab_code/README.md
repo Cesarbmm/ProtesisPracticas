@@ -10,6 +10,8 @@ El flujo principal ya no es entrenar `td3` plano desde cero. El flujo publicado 
 2. entrenar una nueva corrida residual con rama residual inicializada en cero,
 3. comparar contra `Agent7250` y contra el residual final canonico `Agent1850`.
 
+Ademas, el codigo ya soporta una variante generica de esa misma idea con nombre operativo `Residual Lift`, para usar cualquier checkpoint TD3 compatible como base congelada.
+
 ## Antes de ejecutar
 
 Trabaja desde esta carpeta:
@@ -36,6 +38,49 @@ Eso hace lo siguiente:
 - congela la politica base;
 - inicializa la rama residual en cero;
 - entrena una nueva correccion residual por estado.
+
+## Rehacer toda la linea desde cero
+
+Si quieres repetir la estrategia completa sobre una base nueva tuya, el orden recomendado ahora es:
+
+1. entrenar un TD3 base nuevo,
+2. auditar esa corrida y elegir un checkpoint,
+3. abrir una nueva rama `Residual Lift` sobre ese checkpoint.
+
+### Paso 1: entrenar una base nueva
+
+```matlab
+trainInterface('td3','','')
+```
+
+### Paso 2: auditar la corrida y elegir checkpoint
+
+```matlab
+results = runCheckpointAudit(20, 50, 2, struct( ...
+    'experimentDir', 'C:/ruta/a/una/corrida', ...
+    'samplingPolicy', struct('mode','tail_every_k_last_n','k',50,'n',12)));
+```
+
+### Paso 3: abrir una residual nueva sobre esa base
+
+```matlab
+results = run_residual_lift_pilot(struct( ...
+    'baseCheckpointPath', "C:/ruta/a/tu/AgentXXXX.mat"));
+```
+
+## Entrenamiento residual generico sobre una base nueva
+
+```matlab
+results = run_residual_lift_pilot(struct( ...
+    'baseCheckpointPath', "C:/ruta/a/tu/AgentXXXX.mat"));
+```
+
+Eso hace lo siguiente:
+
+- usa el checkpoint indicado como politica base congelada;
+- deja la rama residual en cero al inicio;
+- entrena una nueva correccion residual sobre esa base;
+- mantiene la misma observacion, reward y entorno del flujo residual publicado.
 
 ## Test del residual final canonico
 
@@ -99,3 +144,5 @@ Usa siempre:
 - `getResidualFinalCheckpointPath()`
 
 en vez de hardcodear rutas locales.
+
+Si vas a abrir una nueva linea residual sobre un agente tuyo, entonces si debes pasar explicitamente `baseCheckpointPath` al launcher `run_residual_lift_pilot(...)`.

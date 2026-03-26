@@ -9,6 +9,7 @@ La linea final publicada del proyecto es:
 - benchmark canonico: `Agent7250`
 - candidato final canonico: `Agent1850`
 - workflow oficial: entrenamiento residual sobre `Agent7250`
+- nombre generico de la ruta residual: `Residual Lift`
 
 El entrenamiento TD3 base se conserva como referencia historica, pero ya no es el entrypoint principal del repositorio.
 
@@ -48,6 +49,30 @@ Interpretacion:
 - la rama residual arranca en cero;
 - la politica base congelada es `Agent7250`;
 - esta es la forma correcta de "entrenar desde cero" en la linea residual.
+
+### Entrenamiento residual generico sobre cualquier base
+
+```matlab
+results = run_residual_lift_pilot(struct( ...
+    'baseCheckpointPath', "C:/ruta/a/tu/AgentXXXX.mat"));
+```
+
+Interpretacion:
+
+- la rama residual sigue arrancando en cero;
+- la politica base congelada ahora puede ser cualquier checkpoint TD3 compatible;
+- el benchmark oficial del proyecto sigue siendo `Agent7250`, pero ya no estas nominalmente atado a el para generar una nueva rama residual.
+
+### Rehacer la linea completa desde cero
+
+```matlab
+trainInterface('td3','','')
+results = runCheckpointAudit(20, 50, 2, struct( ...
+    'experimentDir', 'C:/ruta/a/una/corrida', ...
+    'samplingPolicy', struct('mode','tail_every_k_last_n','k',50,'n',12)));
+results = run_residual_lift_pilot(struct( ...
+    'baseCheckpointPath', "C:/ruta/a/tu/AgentXXXX.mat"));
+```
 
 ### Test del residual final canonico
 

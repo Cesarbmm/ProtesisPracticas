@@ -51,6 +51,9 @@ switch agent_id
     case "td3_residual7250"
         agent = agentTd3Residual7250(observationInfo, actionInfo);
 
+    case "td3_residual_lift"
+        agent = agentTd3ResidualLift(observationInfo, actionInfo);
+
     case "sac"
         % test the sac agent. it not tests parameters.
         agent = rlSac(observationInfo,actionInfo)

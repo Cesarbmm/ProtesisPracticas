@@ -7,6 +7,7 @@ La publicacion actual deja como resultado operativo final la linea residual sobr
 - benchmark canonico: `Agent7250`
 - candidato final canonico: `Agent1850`
 - workflow recomendado: entrenar una rama residual desde cero sobre la politica base congelada
+- nombre operativo nuevo para esa ruta: `Residual Lift`
 
 ## Contenido publicado
 
@@ -35,6 +36,26 @@ Entrenar una nueva corrida residual sobre el benchmark canonico:
 
 ```matlab
 results = run_agent7250_residual_policy_pilot();
+```
+
+### Workflow generico recomendado para cualquier base nueva
+
+Entrenar una nueva rama `Residual Lift` sobre cualquier checkpoint base:
+
+```matlab
+results = run_residual_lift_pilot(struct( ...
+    'baseCheckpointPath', "C:/ruta/a/tu/AgentXXXX.mat"));
+```
+
+### Rehacer toda la linea desde cero
+
+```matlab
+trainInterface('td3','','')
+results = runCheckpointAudit(20, 50, 2, struct( ...
+    'experimentDir', 'C:/ruta/a/una/corrida', ...
+    'samplingPolicy', struct('mode','tail_every_k_last_n','k',50,'n',12)));
+results = run_residual_lift_pilot(struct( ...
+    'baseCheckpointPath', "C:/ruta/a/tu/AgentXXXX.mat"));
 ```
 
 ### Test del candidato final canonico

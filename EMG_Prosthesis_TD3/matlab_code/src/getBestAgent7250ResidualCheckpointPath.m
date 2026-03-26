@@ -13,7 +13,9 @@ if ~isfolder(resultsRoot)
     return;
 end
 
-summaryFiles = dir(fullfile(resultsRoot, "*", "agent7250_residual_policy_pilot_summary.csv"));
+summaryFiles = [ ...
+    dir(fullfile(resultsRoot, "*", "agent7250_residual_policy_pilot_summary.csv")); ...
+    dir(fullfile(resultsRoot, "*", "residual_lift_pilot_summary.csv"))];
 if isempty(summaryFiles)
     checkpointPath = string(fallbackPath);
     return;

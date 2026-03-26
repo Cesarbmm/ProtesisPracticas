@@ -84,6 +84,34 @@ params.verbose = false;  % quieter long-run training
 % are defined depending on the value of ``run_training``.
 params.run_training = true;
 
+% -------------------------------------------------------------------------
+% Operator quick guide for the current repo state
+%
+% Current default below is intentionally left in "train a new base from
+% scratch" mode:
+%   params.run_training = true
+%   params.newTraining = true
+%   Launch with:
+%       trainInterface('td3','','')
+%
+% To continue an old plain TD3 agent:
+%   params.newTraining = false
+%   params.agent_id = "td3"
+%   params.agentFile = "C:/ruta/a/AgentXXXX.mat"
+%
+% To continue an old residual agent directly:
+%   params.newTraining = false
+%   params.agent_id = "td3_residual_lift"
+%   params.agentFile = "C:/ruta/a/ResidualAgentXXXX.mat"
+%
+% To open a NEW residual line over any base checkpoint, do not edit this
+% file every time. Prefer the launcher:
+%   run_residual_lift_pilot(struct('baseCheckpointPath',"C:/ruta/a/AgentXXXX.mat"))
+%
+% Historical published wrapper over Agent7250:
+%   run_agent7250_residual_policy_pilot()
+% -------------------------------------------------------------------------
+
 
 %% RESUME TRAINING
 if params.run_training
@@ -262,13 +290,19 @@ params.td3.resetExperienceBufferBeforeTraining = false;
 params.td3.targetPolicyStd = 0.2;
 params.td3.targetPolicyNoiseClip = 0.5;
 
-%% Residual TD3 over Agent7250
+%% Residual TD3 over a frozen base checkpoint
 params.td3Residual = struct();
 if exist("getAgent7250CheckpointPath", "file") == 2
     params.td3Residual.baseCheckpointPath = getAgent7250CheckpointPath();
 else
     params.td3Residual.baseCheckpointPath = "";
 end
+% These fields are consumed by the residual launchers. The published
+% default still points to Agent7250, but if you want to create a new
+% residual line over another base checkpoint, prefer:
+%   run_residual_lift_pilot(struct('baseCheckpointPath',"C:/ruta/a/AgentXXXX.mat"))
+% instead of editing this file permanently.
+params.td3Residual.baseLabel = "Agent7250";
 params.td3Residual.residualScale = 0.20;
 params.td3Residual.hiddenUnits = 32;
 params.td3Residual.enabled = false;
