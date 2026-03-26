@@ -26,7 +26,7 @@
     linkcolor=blue!50!black,
     citecolor=blue!50!black,
     urlcolor=blue!50!black,
-    pdftitle={Evolucion del control TD3 para protesis mioelectrica hasta el baseline valido de 8000 episodios},
+    pdftitle={Evolucion del control TD3 para protesis mioelectrica hasta el baseline valido de 8000 episodios y su extension final a 12000},
     pdfauthor={Proyecto EMG Prosthesis TD3}
 }
 
@@ -35,16 +35,16 @@
 \newcolumntype{Y}{>{\raggedright\arraybackslash}X}
 
 \title{\textbf{Evoluci\'on del Control TD3 para una Pr\'otesis Mioel\'ectrica}\\
-\large Desde la reward heredada inicial hasta el baseline v\'alido refinado de 8000 episodios}
+\large Desde la reward heredada inicial hasta el baseline v\'alido de 8000 episodios y la extensi\'on final a 12000}
 \author{Proyecto \texttt{EMG\_Prosthesis\_TD3}}
-\date{22 de marzo de 2026}
+\date{23 de marzo de 2026}
 
 \begin{document}
 
 \maketitle
 
 \begin{abstract}
-Este informe reordena la historia experimental completa del proyecto de control mioel\'ectrico con TD3, desde su formulaci\'on base hasta el baseline v\'alido actual. El objetivo no es solo reportar el \'ultimo resultado, sino explicar c\'omo se lleg\'o a \'el y qu\'e partes del proceso siguen siendo t\'ecnicamente valiosas. La narrativa parte del art\'iculo base del proyecto, que plante\'o una observaci\'on de 44 dimensiones, un espacio de acci\'on continuo de cuatro motores y una reward multicomponente orientada a seguimiento proporcional \citep{fuertes2026continuous}. A partir de la auditor\'ia del repositorio se identificaron problemas en la reward heredada, en la coherencia temporal del entorno y, posteriormente, un bug cr\'itico del simulador que inmovilizaba la pr\'otesis. Ese hallazgo obliga a reinterpretar varias corridas intermedias como etapas de depuraci\'on y no como benchmark principal. Tras corregir el simulador y reentrenar el sistema con una formulaci\'on coherente basada en tracking MSE, regularizaci\'on de acci\'on y acci\'on efectiva cuantizada, se obtuvo primero un baseline v\'alido de 2000 episodios y, despu\'es, un baseline refinado a 8000 episodios. El mejor checkpoint auditado de esta corrida larga fue \texttt{Agent7250}, cuyo test de 50 simulaciones alcanz\'o \texttt{trackingMSE = 0.043045}, \texttt{trackingMAE = 0.160336}, \texttt{actionL2 = 0.596444}, \texttt{saturationFraction = 0.392086} y \(\Delta a\) L2 medio de \(0.321385\). El documento concluye que el proyecto ya dispone de un baseline s\'olido y defendible en simulaci\'on, y que la siguiente fase debe concentrarse en conservar ese tracking mientras se sigue reduciendo saturaci\'on y esfuerzo de control.
+Este informe reordena la historia experimental completa del proyecto de control mioel\'ectrico con TD3, desde su formulaci\'on base hasta el baseline v\'alido actual. El objetivo no es solo reportar el \'ultimo resultado, sino explicar c\'omo se lleg\'o a \'el y qu\'e partes del proceso siguen siendo t\'ecnicamente valiosas. La narrativa parte del art\'iculo base del proyecto, que plante\'o una observaci\'on de 44 dimensiones, un espacio de acci\'on continuo de cuatro motores y una reward multicomponente orientada a seguimiento proporcional \citep{fuertes2026continuous}. A partir de la auditor\'ia del repositorio se identificaron problemas en la reward heredada, en la coherencia temporal del entorno y, posteriormente, un bug cr\'itico del simulador que inmovilizaba la pr\'otesis. Ese hallazgo obliga a reinterpretar varias corridas intermedias como etapas de depuraci\'on y no como benchmark principal. Tras corregir el simulador y reentrenar el sistema con una formulaci\'on coherente basada en tracking MSE, regularizaci\'on de acci\'on y acci\'on efectiva cuantizada, se obtuvo primero un baseline v\'alido de 2000 episodios y, despu\'es, un baseline refinado a 8000 episodios. El mejor checkpoint auditado de esa corrida larga fue \texttt{Agent7250}, cuyo test de 50 simulaciones alcanz\'o \texttt{trackingMSE = 0.043045}, \texttt{trackingMAE = 0.160336}, \texttt{actionL2 = 0.596444}, \texttt{saturationFraction = 0.392086} y \(\Delta a\) L2 medio de \(0.321385\). Finalmente, se ejecut\'o una extensi\'on a 12000 episodios para verificar si un mayor presupuesto segu\'ia mejorando el benchmark; el mejor checkpoint de esa extensi\'on, \texttt{Agent11900}, obtuvo \texttt{trackingMSE = 0.045189}, \texttt{trackingMAE = 0.164639}, \texttt{actionL2 = 0.649868}, \texttt{saturationFraction = 0.511786} y \(\Delta a\) L2 medio de \(0.305285\), sin superar al baseline de 8000. El documento concluye que el proyecto ya dispone de un baseline s\'olido y defendible en simulaci\'on, y que el resultado de 12000 episodios sugiere una meseta de rendimiento bajo la formulaci\'on actual.
 \end{abstract}
 
 \section{Objetivo y alcance}
@@ -425,6 +425,129 @@ PWM absoluto medio & 195.913207 & \textbf{178.288566} & Menor uso del extremo al
 
 Esta es la comparaci\'on que hoy s\'i debe usarse para defender el estado del proyecto. Muestra que aumentar el presupuesto a 8000 episodios, manteniendo la formulaci\'on actual, no solo mejor\'o tracking sino tambi\'en el compromiso tracking--agresividad. Esa es una conclusi\'on mucho m\'as fuerte que la que se ten\'ia en el baseline inicial.
 
+\section{Extensi\'on final del presupuesto: corrida de 12000 episodios}
+
+\subsection{Motivaci\'on y resumen de entrenamiento}
+
+Despu\'es del baseline refinado de 8000 episodios se ejecut\'o una corrida adicional de 12000 episodios con la misma formulaci\'on v\'alida: observaci\'on Markoviana de 52 dimensiones, reward de tracking MSE con regularizaci\'on de acci\'on y \(\Delta a\), y remapeo de acci\'on efectiva. El objetivo de esta extensi\'on no fue cambiar la formulaci\'on, sino comprobar si un presupuesto mayor segu\'ia generando mejoras defendibles.
+
+La corrida se ejecut\'o en la carpeta \texttt{26-03-23 15 24 51}. La Figura~\ref{fig:train12000} resume \texttt{EpisodeReward}, \texttt{AverageReward} y \texttt{EpisodeQ0}.
+
+\IfFileExists{figures/training_progress_12000eps_valid_baseline.png}{
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figures/training_progress_12000eps_valid_baseline.png}
+\caption{Extensi\'on final de 12000 episodios. El promedio m\'ovil sigue mejorando hasta la zona tard\'ia del entrenamiento, con mejor promedio en el episodio 11691.}
+\label{fig:train12000}
+\end{figure}
+}{}
+
+\begin{table}[H]
+\centering
+\caption{Resumen cuantitativo de la extensi\'on a 12000 episodios}
+\label{tab:train12000-summary}
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\textwidth}{L{5.8cm}C{2.6cm}Y}
+\toprule
+\textbf{M\'etrica} & \textbf{Valor} & \textbf{Lectura} \\
+\midrule
+EpisodeReward medio & \(-0.909355\) & Mejor media global de reward que la corrida de 8000, consistente con mayor actividad de control \\
+AverageReward final & \(-0.712655\) & El final sigue siendo competitivo, aunque no garantiza mejor test \\
+Best AverageReward & \(-0.284368\) en ep. 11691 & El mejor tramo aparece muy cerca del final de la extensi\'on \\
+TrackingMSE medio & \(0.055620\) & Entrenamiento con error bajo, pero no necesariamente mejor generalizaci\'on \\
+TrackingMAE medio & \(0.182434\) & Consistente con la mejora de reward observada en entrenamiento \\
+ActionL2 medio & \(0.480794\) & El entrenamiento usa esfuerzo moderado, todav\'ia superior al de varias fases tempranas \\
+Saturation fraction & \(0.247207\) & La saturaci\'on media durante entrenamiento sigue contenida \\
+\(\Delta a\) L2 medio & \(0.203150\) & El control entre pasos se mantiene relativamente suave \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+La lectura importante es metodol\'ogica: una mejora tard\'ia en \texttt{AverageReward} no implica autom\'aticamente una mejora del mejor checkpoint en test. Por eso la extensi\'on se audit\'o de nuevo por checkpoints.
+
+\subsection{Auditor\'ia tard\'ia de checkpoints}
+
+Se auditaron los checkpoints \texttt{Agent11400} a \texttt{Agent12000}. Primero se hizo una selecci\'on r\'apida y luego un desempate de 50 simulaciones para los candidatos finales. Los resultados agregados del desempate completo se resumen en la Tabla~\ref{tab:tail12000}.
+
+\begin{table}[H]
+\centering
+\caption{Auditor\'ia de la cola de la corrida de 12000 episodios}
+\label{tab:tail12000}
+\small
+\renewcommand{\arraystretch}{1.12}
+\begin{tabularx}{\textwidth}{L{2.4cm}C{1.8cm}C{1.8cm}C{1.8cm}C{1.8cm}C{1.8cm}Y}
+\toprule
+\textbf{Checkpoint} & \textbf{MSE} & \textbf{MAE} & \textbf{ActionL2} & \textbf{Sat.} & \textbf{\(\Delta a\)} & \textbf{Lectura} \\
+\midrule
+Agent11700 & 0.045719 & 0.166364 & \textbf{0.506650} & \textbf{0.344956} & 0.330661 & M\'as conservador entre los finalistas, pero no el mejor tracking \\
+Agent11800 & 0.045339 & \textbf{0.164531} & 0.627977 & 0.461101 & 0.308674 & Muy competitivo, pero ya m\'as agresivo \\
+Agent11900 & \textbf{0.045189} & 0.164639 & 0.649868 & 0.511786 & \textbf{0.305285} & Mejor MSE de la extensi\'on, a costa de mayor saturaci\'on y esfuerzo \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Con el criterio primario del proyecto, \texttt{trackingMSE}, el mejor checkpoint de la extensi\'on fue \texttt{Agent11900}. Por eso se ejecut\'o el test visual final con ese agente.
+
+\subsection{Test final de 50 simulaciones con \texttt{Agent11900}}
+
+El test final de la extensi\'on se ejecut\'o con \texttt{Agent11900}. La Figura~\ref{fig:test11900} muestra el episodio 49.
+
+\IfFileExists{figures/test_episode_49_extension_12000.png}{
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figures/test_episode_49_extension_12000.png}
+\caption{Episodio 49 del test final con \texttt{Agent11900}. El tracking sigue siendo bueno, pero el control aparece m\'as agresivo que en el baseline refinado de 8000 episodios.}
+\label{fig:test11900}
+\end{figure}
+}{}
+
+\begin{table}[H]
+\centering
+\caption{Resumen del test final de 50 simulaciones con \texttt{Agent11900}}
+\label{tab:test11900}
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\textwidth}{L{5.3cm}C{2.5cm}Y}
+\toprule
+\textbf{M\'etrica} & \textbf{Valor} & \textbf{Interpretaci\'on} \\
+\midrule
+TrackingMSE medio & \(0.045189\) & Buen tracking, pero peor que el baseline refinado de 8000 episodios \\
+TrackingMAE medio & \(0.164639\) & Ligeramente peor que el baseline refinado \\
+ActionL2 medio & \(0.649868\) & Mayor esfuerzo total que el mejor agente de 8000 episodios \\
+PWM absoluto medio & \(189.988960\) & Mayor uso del actuador que el baseline refinado \\
+Fracci\'on de saturaci\'on & \(0.511786\) & Aumento marcado de saturaci\'on respecto al baseline vigente \\
+\(\Delta a\) L2 medio & \(0.305285\) & Leve mejora en suavidad de cambio entre acciones \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Comparaci\'on v\'alida: 8000 episodios vs 12000 episodios}
+
+La Tabla~\ref{tab:8000-vs-12000} muestra la comparaci\'on correcta entre el mejor checkpoint del baseline refinado de 8000 episodios y el mejor checkpoint obtenido en la extensi\'on a 12000 episodios.
+
+\begin{table}[H]
+\centering
+\caption{Comparaci\'on entre el baseline refinado de 8000 episodios y la extensi\'on final de 12000 episodios}
+\label{tab:8000-vs-12000}
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\textwidth}{L{3.8cm}C{2.2cm}C{2.2cm}Y}
+\toprule
+\textbf{M\'etrica} & \textbf{Agent7250} & \textbf{Agent11900} & \textbf{Lectura} \\
+\midrule
+TrackingMSE & \textbf{0.043045} & 0.045189 & La extensi\'on pierde tracking frente al baseline vigente \\
+TrackingMAE & \textbf{0.160336} & 0.164639 & El error absoluto tambi\'en empeora ligeramente \\
+ActionL2 & \textbf{0.596444} & 0.649868 & Mayor esfuerzo total en la extensi\'on \\
+Saturation fraction & \textbf{0.392086} & 0.511786 & La extensi\'on satura bastante m\'as \\
+\(\Delta a\) L2 & 0.321385 & \textbf{0.305285} & La extensi\'on mejora un poco la suavidad local \\
+PWM absoluto medio & \textbf{178.288566} & 189.988960 & Mayor uso del actuador en la extensi\'on \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+La conclusi\'on de esta comparaci\'on es clara: la extensi\'on a 12000 episodios fue un experimento final \'util, pero no produjo un nuevo mejor baseline. El \texttt{Agent11900} demuestra que el sistema sigue encontrando pol\'iticas competitivas, pero no supera el compromiso tracking--agresividad ya alcanzado por \texttt{Agent7250}. Por tanto, el baseline operativo del proyecto sigue siendo el de 8000 episodios.
+
 \section{Qu\'e sigue siendo \'util de las etapas previas}
 
 Aunque las ramas pre-fix no deban usarse como benchmark num\'erico principal, s\'i dejaron aprendizaje t\'ecnico acumulado que sigue vigente:
@@ -445,10 +568,11 @@ El estado actual del proyecto puede resumirse en cinco afirmaciones:
     \item la reward heredada del repositorio deb\'ia ser reemplazada, y la transici\'on a MSE fue una decisi\'on correcta;
     \item las comparativas intermedias anteriores al fix del simulador deben interpretarse como evoluci\'on t\'ecnica, no como benchmark definitivo;
     \item tras corregir el simulador, el baseline de 52 dimensiones demostr\'o que el proyecto s\'i pod\'ia aprender tracking real;
-    \item la corrida de 8000 episodios refin\'o ese baseline y fij\'o a \texttt{Agent7250} como mejor agente operativo actual.
+    \item la corrida de 8000 episodios refin\'o ese baseline y fij\'o a \texttt{Agent7250} como mejor agente operativo actual;
+    \item la extensi\'on final a 12000 episodios no super\'o ese benchmark, por lo que hoy existe evidencia de una meseta bajo la formulaci\'on actual.
 \end{enumerate}
 
-Por tanto, el proyecto ya no est\'a en una fase de ``exploraci\'on incierta'' sino en una fase de optimizaci\'on fina sobre una base v\'alida.
+Por tanto, el proyecto ya no est\'a en una fase de ``exploraci\'on incierta'' sino en una fase de optimizaci\'on fina sobre una base v\'alida y ya bastante madura.
 
 \section{L\'inea futura recomendada}
 
@@ -457,7 +581,7 @@ La siguiente etapa no deber\'ia volver a cambiar observaci\'on, reward y arquite
     \item conservar la observaci\'on Markoviana de 52 dimensiones;
     \item mantener TD3 y el remapeo de acci\'on efectiva;
     \item estudiar ajustes finos de \(\lambda_a\) y \(\lambda_{\Delta a}\) para reducir saturaci\'on sin perder el tracking logrado;
-    \item auditar checkpoints de nuevas corridas largas para no asumir que el \'ultimo episodio es el mejor;
+    \item evitar, por ahora, seguir aumentando solo el presupuesto de episodios, porque la extensi\'on a 12000 ya no mejor\'o el benchmark;
     \item dejar arquitecturas m\'as complejas o estrategias h\'ibridas para una etapa posterior y ya sobre un benchmark estable.
 \end{enumerate}
 
@@ -467,9 +591,9 @@ Esta l\'inea es coherente con la literatura. TD3 sigue siendo adecuado para cont
 
 La conclusi\'on correcta del proyecto ya no es que ``TD3 podr\'ia servir'' ni que ``el reward parece razonable''. La conclusi\'on correcta es mucho m\'as fuerte: el proyecto ha recorrido una secuencia completa de depuraci\'on, redise\~no de reward, alineaci\'on de acci\'on efectiva, detecci\'on y correcci\'on de un bug cr\'itico de simulaci\'on, y refinamiento experimental hasta llegar a un baseline v\'alido y cuantitativamente mejorado.
 
-En esa historia, el baseline conceptual del art\'iculo inicial \citep{fuertes2026continuous} fue importante porque fij\'o la direcci\'on del problema. La auditor\'ia del repositorio fue importante porque mostr\'o que el reward original y el entorno ten\'ian incoherencias. Las ramas intermedias fueron importantes porque ense\~naron qu\'e hip\'otesis no bastaban por s\'i solas. Pero el punto verdaderamente decisivo fue la correcci\'on del simulador. A partir de ah\'i, el baseline de 2000 episodios demostr\'o que el sistema s\'i aprend\'ia. Y la corrida de 8000 episodios demostr\'o que ese aprendizaje pod\'ia refinarse hasta mejorar simult\'aneamente tracking, esfuerzo, saturaci\'on y suavidad.
+En esa historia, el baseline conceptual del art\'iculo inicial \citep{fuertes2026continuous} fue importante porque fij\'o la direcci\'on del problema. La auditor\'ia del repositorio fue importante porque mostr\'o que el reward original y el entorno ten\'ian incoherencias. Las ramas intermedias fueron importantes porque ense\~naron qu\'e hip\'otesis no bastaban por s\'i solas. Pero el punto verdaderamente decisivo fue la correcci\'on del simulador. A partir de ah\'i, el baseline de 2000 episodios demostr\'o que el sistema s\'i aprend\'ia. La corrida de 8000 episodios demostr\'o que ese aprendizaje pod\'ia refinarse hasta mejorar simult\'aneamente tracking, esfuerzo, saturaci\'on y suavidad. La extensi\'on final a 12000 episodios, por su parte, fue valiosa porque confirm\'o un l\'imite pr\'actico: m\'as presupuesto por s\'i solo ya no est\'a mejorando el mejor agente.
 
-Ese es el estado actual del proyecto: no un prototipo especulativo, sino un baseline serio en simulaci\'on sobre el cual ya tiene sentido seguir mejorando.
+Ese es el estado actual del proyecto: no un prototipo especulativo, sino un baseline serio en simulaci\'on, con un mejor agente bien identificado (\texttt{Agent7250}) y con evidencia experimental suficiente para enfocar la siguiente fase en mejorar la agresividad del control, no en seguir aumentando episodios sin cambiar la formulaci\'on.
 
 \bibliographystyle{plainnat}
 \bibliography{references}

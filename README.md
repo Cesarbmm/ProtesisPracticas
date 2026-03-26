@@ -2,80 +2,80 @@
 
 Repositorio principal del proyecto de control de una protesis mioelectrica con aprendizaje por refuerzo.
 
-El contenido activo de esta publicacion esta centrado en:
+La publicacion actual deja como resultado operativo final la linea residual sobre `Agent7250`:
 
-- entrenamiento y evaluacion en simulacion;
-- codigo MATLAB del proyecto `EMG_Prosthesis_TD3`;
-- documentacion tecnica y guia didactica del baseline actual.
+- benchmark canonico: `Agent7250`
+- candidato final canonico: `Agent1850`
+- workflow recomendado: entrenar una rama residual desde cero sobre la politica base congelada
 
-## Estructura
+## Contenido publicado
 
 - `EMG_Prosthesis_TD3/`: proyecto principal de MATLAB.
-- `EMG_Prosthesis_TD3/matlab_code/`: codigo operativo para train, test y auditoria.
-- `EMG_Prosthesis_TD3/docs/td3_training_report/`: reportes tecnicos y guia didactica.
+- `EMG_Prosthesis_TD3/matlab_code/`: codigo operativo para entrenamiento, test y auditoria.
+- `EMG_Prosthesis_TD3/matlab_code/checkpoints/canonical/`: checkpoints canonicamente publicados.
+- `EMG_Prosthesis_TD3/docs/td3_training_report/`: documentacion final curada.
 
-Las salidas locales de entrenamiento y test no se versionan:
+Las salidas locales no se versionan:
 
 - `Agentes/`
 - `Imagenes/`
 
 ## Quick Start
 
-1. Abre MATLAB.
-2. Entra a `EMG_Prosthesis_TD3/matlab_code`.
-3. Revisa los paths configurables en `config/configurables.m`.
-4. Ejecuta uno de estos flujos:
-
-### Entrenamiento en simulacion
+Abre MATLAB y trabaja desde:
 
 ```matlab
 cd('C:/ruta/al/repo/EMG_Prosthesis_TD3/matlab_code')
-if isappdata(0,'configurables_override'), rmappdata(0,'configurables_override'); end
-clear configurables
-trainInterface('td3','','')
+clearConfigurablesOverride()
 ```
 
-### Test o evaluacion en simulacion
+### Workflow publicado recomendado
 
-Antes de ejecutar:
-
-- pon `params.run_training = false`;
-- define `params.agentFile` con el checkpoint que quieres evaluar.
-
-Luego ejecuta:
+Entrenar una nueva corrida residual sobre el benchmark canonico:
 
 ```matlab
-cd('C:/ruta/al/repo/EMG_Prosthesis_TD3/matlab_code')
-if isappdata(0,'configurables_override'), rmappdata(0,'configurables_override'); end
-clear configurables
+results = run_agent7250_residual_policy_pilot();
+```
+
+### Test del candidato final canonico
+
+```matlab
+runCheckpointTest(getResidualFinalCheckpointPath(), 50, true);
+```
+
+### Test del benchmark canonico
+
+```matlab
+runCheckpointTest(getAgent7250CheckpointPath(), 50, true);
+```
+
+### Entrenamiento base de referencia
+
+```matlab
 trainInterface('td3','','')
 ```
 
 ### Auditoria de checkpoints
 
 ```matlab
-cd('C:/ruta/al/repo/EMG_Prosthesis_TD3/matlab_code')
-if isappdata(0,'configurables_override'), rmappdata(0,'configurables_override'); end
-clear configurables
-results = runCheckpointAudit(50, 200, 3);
+results = runCheckpointAudit(20, 50, 2, struct( ...
+    'experimentDir', 'C:/ruta/a/una/corrida', ...
+    'samplingPolicy', struct('mode','tail_every_k_last_n','k',50,'n',12)));
 ```
 
-## Paths que debes revisar
+## Paths a revisar
 
 En `EMG_Prosthesis_TD3/matlab_code/config/configurables.m`:
 
 - `params.dataset_folder`
 - `params.agents_directory`
-- `params.agentFile`
 - `params.comUNO`
 - `params.comGlove`
 
-`comUNO` y `comGlove` solo importan si vas a usar hardware. El flujo principal publicado en este repo es simulacion.
+`agentFile` ya no es necesario para el flujo publicado si usas los helpers canonicos.
 
 ## Documentacion
 
-Consulta:
-
-- `EMG_Prosthesis_TD3/README.md` para la guia del proyecto.
-- `EMG_Prosthesis_TD3/matlab_code/README.md` para la guia operativa.
-- `EMG_Prosthesis_TD3/docs/td3_training_report/README.md` para los documentos tecnicos canónicos.
+- `EMG_Prosthesis_TD3/README.md`: estado del proyecto y workflow final.
+- `EMG_Prosthesis_TD3/matlab_code/README.md`: guia operativa exacta.
+- `EMG_Prosthesis_TD3/docs/td3_training_report/README.md`: documentos y figuras canonicas.

@@ -19,8 +19,27 @@ if numel(action) ~= expectedActionSize
     error('The action size does not match the actionLog size');
 end
 
-this.actionLog(this.c, :) = action.';
-[effectiveAction, appliedPwm] = this.remapActionForActuator(action);
+if ~isempty(this.State)
+    this.stateLog(this.c, :) = reshape(double(this.State), 1, []);
+end
+
+rawAction = action;
+actionInterfaceVariant = string(configurables("actionInterfaceVariant"));
+switch actionInterfaceVariant
+    case "baselineQuantized"
+        warpedAction = rawAction;
+    case "alignedContinuousWarp"
+        warpedAction = warpActionToAlignedContinuousMagnitude( ...
+            rawAction, ...
+            configurables("actionWarpDeadzone"), ...
+            configurables("actionWarpOutputLevels"));
+    otherwise
+        error("Unsupported actionInterfaceVariant '%s'.", actionInterfaceVariant);
+end
+
+this.actionLog(this.c, :) = rawAction.';
+this.actionWarpLog(this.c, :) = warpedAction.';
+[effectiveAction, appliedPwm] = this.remapActionForActuator(warpedAction);
 this.actionSatLog(this.c, :) = effectiveAction.';
 this.actionPwmLog(this.c, :) = appliedPwm.';
 
@@ -117,6 +136,11 @@ this.progressTermLog(this.c) = rewardInfo.progressTerm;
 this.smoothnessPenaltyLog(this.c) = rewardInfo.smoothnessPenalty;
 this.deltaActionL2Log(this.c) = rewardInfo.deltaActionL2;
 this.saturationFractionLog(this.c) = rewardInfo.saturationFraction;
+if isfield(rewardInfo, "saturationPenalty")
+    this.saturationPenaltyLog(this.c) = rewardInfo.saturationPenalty;
+else
+    this.saturationPenaltyLog(this.c) = 0;
+end
 this.rewardIndividualLog{this.c} = rewardVector(:).';
 this.flexConvertedLog{this.c} = this.flexConverted;
 this.prevAction = effectiveAction(:);

@@ -34,7 +34,7 @@ persistent params
 persistent overrideKey
 
 override = localGetOverride();
-currentOverrideKey = localMakeOverrideKey(override);
+currentOverrideKey = localGetOverrideKey(override);
 
 if ~isempty(params) && ~strcmp(currentOverrideKey, overrideKey)
     params = [];
@@ -57,8 +57,8 @@ end
 
 %% Episode
 
-params.trainingMaxEpisodes = 8000;
-params.trainingSaveAgentEvery = 250;
+params.trainingMaxEpisodes = 12000;
+params.trainingSaveAgentEvery = 100;
 params.trainingPlots = "training-progress";
 params.plotEpisodeOnTest = false;
 
@@ -164,6 +164,8 @@ params.rewardActionWeight = 0.01;
 params.rewardProgressWeight = 0.30;
 params.rewardSmoothnessWeight = 0.05;
 params.rewardDeltaActionWeight = 0.05;
+params.rewardSaturationThreshold = 0.90;
+params.rewardSaturationWeight = 0.02;
 
 params.reward_function = @(env, action, observation) ...
     rewardFunctionSelector(env, params.rewardType, action, observation);
@@ -179,6 +181,9 @@ params.speeds = 255* [1, 1, 1, 1]; % little, idx, thumb, mid
 params.quantizeCommandsForSimulation = true;
 params.actionCommandActivationThreshold = 0.05;
 params.actionCommandLevels = [0 64 96 128 160 192 224 255];
+params.actionInterfaceVariant = "baselineQuantized";
+params.actionWarpDeadzone = 0.05;
+params.actionWarpOutputLevels = [64 96 128 160 192 224 255] / 255;
 
 % clipping
 % when true, the reward function can limit, modify or clip the action.
@@ -198,6 +203,8 @@ params.agents_directory = @(agent_id, variant)(fullfile('..', '..', 'Agentes', .
     string(datetime("now","Format", "yy-MM-dd HH m s"))));
 
 params.episode_save_freq = 1; % 1 saves every episode.
+params.enableDetailedActionDiagnostics = false;
+params.savePerMotorMetrics = true;
 
 
 %% feature extraction
@@ -251,8 +258,21 @@ params.td3.targetUpdateFrequency = 2;
 params.td3.explorationStd = 0.2;
 params.td3.explorationStdDecayRate = 1e-4;
 params.td3.explorationStdMin = 0.02;
+params.td3.resetExperienceBufferBeforeTraining = false;
 params.td3.targetPolicyStd = 0.2;
 params.td3.targetPolicyNoiseClip = 0.5;
+
+%% Residual TD3 over Agent7250
+params.td3Residual = struct();
+if exist("getAgent7250CheckpointPath", "file") == 2
+    params.td3Residual.baseCheckpointPath = getAgent7250CheckpointPath();
+else
+    params.td3Residual.baseCheckpointPath = "";
+end
+params.td3Residual.residualScale = 0.20;
+params.td3Residual.hiddenUnits = 32;
+params.td3Residual.enabled = false;
+params.td3Residual.logDiagnostics = true;
 
 %% Environment
 % Parameters that affect getObservationInfo()
@@ -301,26 +321,21 @@ else
 end
 end
 
-function key = localMakeOverrideKey(override)
-if isempty(fieldnames(override))
+function key = localGetOverrideKey(override)
+if isempty(override) || isempty(fieldnames(override))
     key = "__no_override__";
+    if isappdata(0, 'configurables_override_key')
+        rmappdata(0, 'configurables_override_key');
+    end
     return;
 end
 
-fields = sort(fieldnames(override));
-parts = strings(numel(fields), 1);
-for i = 1:numel(fields)
-    value = override.(fields{i});
-    if isstring(value) || ischar(value)
-        valueString = string(value);
-    elseif isnumeric(value) || islogical(value)
-        valueString = mat2str(value);
-    else
-        valueString = class(value);
-    end
-    parts(i) = string(fields{i}) + "=" + valueString;
+if isappdata(0, 'configurables_override_key')
+    key = string(getappdata(0, 'configurables_override_key'));
+else
+    key = makeConfigurablesOverrideKey(override);
+    setappdata(0, 'configurables_override_key', key);
 end
-key = strjoin(parts, "|");
 end
 
 function params = localApplyOverride(params, override)

@@ -82,6 +82,9 @@ else
     end
 
     agent_id = configs.agent_id;
+    if configs.run_training
+        [agent, loadedAgentOverrides] = applyLoadedAgentTrainingOverrides(agent, configs); %#ok<NASGU>
+    end
 end
 
 

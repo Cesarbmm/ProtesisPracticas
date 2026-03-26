@@ -1,16 +1,14 @@
 # MATLAB Code Guide
 
-Guia operativa del proyecto `EMG_Prosthesis_TD3`.
+Guia operativa del codigo MATLAB de `EMG_Prosthesis_TD3`.
 
-## Flujo soportado en esta publicacion
+## Flujo publicado
 
-El flujo principal soportado y documentado es:
+El flujo principal ya no es entrenar `td3` plano desde cero. El flujo publicado y recomendado es:
 
-- entrenamiento en simulacion;
-- test en simulacion;
-- auditoria de checkpoints.
-
-Los scripts orientados a hardware en tiempo real se consideran secundarios y requieren configuracion manual adicional.
+1. usar el benchmark canonico `Agent7250`,
+2. entrenar una nueva corrida residual con rama residual inicializada en cero,
+3. comparar contra `Agent7250` y contra el residual final canonico `Agent1850`.
 
 ## Antes de ejecutar
 
@@ -20,53 +18,43 @@ Trabaja desde esta carpeta:
 cd('C:/ruta/al/repo/EMG_Prosthesis_TD3/matlab_code')
 ```
 
-Y resetea la configuracion persistente antes de cada corrida:
+Limpia la configuracion persistente antes de cada corrida:
 
 ```matlab
-if isappdata(0,'configurables_override'), rmappdata(0,'configurables_override'); end
-clear configurables
+clearConfigurablesOverride()
 ```
 
-## Entrenamiento en simulacion
-
-Revisa en `config/configurables.m`:
-
-- `params.run_training = true`
-- `params.newTraining = true`
-- `params.usePrerecorded = true`
-- `params.simMotors = true`
-- `params.connect_glove = false`
-
-Luego ejecuta:
+## Entrenamiento residual recomendado
 
 ```matlab
-trainInterface('td3','','')
+results = run_agent7250_residual_policy_pilot();
 ```
 
-## Test o evaluacion en simulacion
+Eso hace lo siguiente:
 
-Revisa en `config/configurables.m`:
+- carga el benchmark canonico `Agent7250`;
+- congela la politica base;
+- inicializa la rama residual en cero;
+- entrena una nueva correccion residual por estado.
 
-- `params.run_training = false`
-- `params.newTraining = false`
-- `params.agentFile = "ruta/al/checkpoint.mat"`
-
-Luego ejecuta:
+## Test del residual final canonico
 
 ```matlab
-trainInterface('td3','','')
+runCheckpointTest(getResidualFinalCheckpointPath(), 50, true);
 ```
 
-Si quieres guardar plots por episodio durante el test:
+## Test del benchmark canonico
 
-- activa `params.plotEpisodeOnTest = true`
+```matlab
+runCheckpointTest(getAgent7250CheckpointPath(), 50, true);
+```
 
 ## Auditoria de checkpoints
 
-Para comparar checkpoints bajo el mismo protocolo:
-
 ```matlab
-results = runCheckpointAudit(50, 200, 3);
+results = runCheckpointAudit(20, 50, 2, struct( ...
+    'experimentDir', 'C:/ruta/a/una/corrida', ...
+    'samplingPolicy', struct('mode','tail_every_k_last_n','k',50,'n',12)));
 ```
 
 El ranking prioriza:
@@ -76,29 +64,38 @@ El ranking prioriza:
 3. menor `deltaActionL2Mean`
 4. menor `actionL2Mean`
 
-## Parametros locales que debes cambiar
+## Entrenamiento base de referencia
+
+Usa esto solo como referencia historica o para abrir nuevas lineas fuera del workflow residual:
+
+```matlab
+trainInterface('td3','','')
+```
+
+## Parametros locales a cambiar
 
 En `config/configurables.m`:
 
 - `params.dataset_folder`
 - `params.agents_directory`
-- `params.agentFile`
 - `params.comUNO`
 - `params.comGlove`
 
 Notas:
 
 - `dataset_folder` debe apuntar a la carpeta local del dataset.
-- `agents_directory` define donde se guardan corridas de entrenamiento y test.
-- `agentFile` solo se usa para test o para reanudar una corrida.
+- `agents_directory` define donde se guardan corridas locales.
+- `agentFile` no hace falta si usas los helpers canonicos.
 - `comUNO` y `comGlove` solo importan en hardware.
 
-## Scripts legacy
+## Checkpoints canonicos publicados
 
-Estos scripts se conservan por referencia historica y pueden requerir revision manual antes de usarse:
+- benchmark: `checkpoints/canonical/Agent7250_valid_baseline/Agent7250_valid_baseline.mat`
+- residual final: `checkpoints/canonical/Agent1850_residual_alpha020/Agent1850_residual_alpha020.mat`
 
-- `runProsthesis.m`
-- `src/evalTrainedAgent.m`
-- `src/fineTuning.m`
+Usa siempre:
 
-El flujo recomendado hoy es `trainInterface('td3','','')`.
+- `getAgent7250CheckpointPath()`
+- `getResidualFinalCheckpointPath()`
+
+en vez de hardcodear rutas locales.

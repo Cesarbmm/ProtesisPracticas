@@ -21,9 +21,13 @@ end
 %plot_episode2(this)% optional legacy training visualization
 this.episodeTimestamp(1) = this.episodeTic.toc(this.c);
 this.episodeCounter = this.episodeCounter + 1;
+obsInfo = this.getObservationInfo();
+stateDim = prod(obsInfo.Dimension);
 this.encoderLog = cell(this.maxNumberStepsInEpisodes, 1);
 this.encoderAdjustedLog = cell(this.maxNumberStepsInEpisodes, 1);
+this.stateLog = nan(this.maxNumberStepsInEpisodes, stateDim);
 this.actionLog = nan(this.maxNumberStepsInEpisodes, 4);
+this.actionWarpLog = nan(this.maxNumberStepsInEpisodes, 4);
 this.actionSatLog = nan(this.maxNumberStepsInEpisodes, 4);
 this.actionPwmLog = nan(this.maxNumberStepsInEpisodes, 4);
 this.rewardLog = nan(this.maxNumberStepsInEpisodes, 1);
@@ -35,6 +39,7 @@ this.progressTermLog = nan(this.maxNumberStepsInEpisodes, 1);
 this.smoothnessPenaltyLog = nan(this.maxNumberStepsInEpisodes, 1);
 this.deltaActionL2Log = nan(this.maxNumberStepsInEpisodes, 1);
 this.saturationFractionLog = nan(this.maxNumberStepsInEpisodes, 1);
+this.saturationPenaltyLog = nan(this.maxNumberStepsInEpisodes, 1);
 this.rewardIndividualLog = cell(this.maxNumberStepsInEpisodes, 1);
 this.emgLog = cell(this.maxNumberStepsInEpisodes, 1);
 this.flexConvertedLog = cell(this.maxNumberStepsInEpisodes, 1);

@@ -72,6 +72,9 @@ classdef Env < rl.env.MATLABEnvironment
         actionCommandActivationThreshold = ...
             configurables("actionCommandActivationThreshold");
         actionCommandLevels = configurables("actionCommandLevels");
+        enableDetailedActionDiagnostics = ...
+            configurables("enableDetailedActionDiagnostics");
+        savePerMotorMetrics = configurables("savePerMotorMetrics");
 
         % clip actions
         rf_modify_actions = configurables("rf_modify_actions");
@@ -128,7 +131,9 @@ classdef Env < rl.env.MATLABEnvironment
         encoderLog = {};
         emgLog = {};
         encoderAdjustedLog = {};
+        stateLog = [];
         actionLog = [];%history of the actions per epidodes
+        actionWarpLog = [];% aligned action before actuator remap
         actionSatLog = [];%history of the actions per epidodes
         actionPwmLog = [];% applied pwm commands per episode
         rewardLog = [];
@@ -140,6 +145,7 @@ classdef Env < rl.env.MATLABEnvironment
         smoothnessPenaltyLog = [];
         deltaActionL2Log = [];
         saturationFractionLog = [];
+        saturationPenaltyLog = [];
         rewardIndividualLog = {};
         flexConvertedLog = {};
         prevAction = zeros(4,1); % previous effective action for reward

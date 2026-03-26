@@ -11,7 +11,14 @@ EMG_Prosthesis_TD3/docs/td3_training_report/*.aux
 EMG_Prosthesis_TD3/docs/td3_training_report/*.bbl
 EMG_Prosthesis_TD3/docs/td3_training_report/*.blg
 EMG_Prosthesis_TD3/docs/td3_training_report/*.log
+EMG_Prosthesis_TD3/docs/td3_training_report/*.nav
 EMG_Prosthesis_TD3/docs/td3_training_report/*.out
+EMG_Prosthesis_TD3/docs/td3_training_report/*.snm
 EMG_Prosthesis_TD3/docs/td3_training_report/*.toc
+EMG_Prosthesis_TD3/docs/td3_training_report/*.fdb_latexmk
+EMG_Prosthesis_TD3/docs/td3_training_report/*.fls
+EMG_Prosthesis_TD3/docs/td3_training_report/*.synctex.gz
 EMG_Prosthesis_TD3/docs/td3_training_report/$job.*
 EMG_Prosthesis_TD3/docs/td3_training_report/build/
+EMG_Prosthesis_TD3/docs/td3_training_report/presentacion_final*_recompilada*
+EMG_Prosthesis_TD3/docs/td3_training_reportbuild/
