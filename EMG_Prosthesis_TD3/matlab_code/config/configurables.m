@@ -91,6 +91,8 @@ params.run_training = true;
 % scratch" mode:
 %   params.run_training = true
 %   params.newTraining = true
+% For a short smoke test, prefer setConfigurablesOverride(...) from the
+% launcher or command window instead of editing this file repeatedly.
 %   Launch with:
 %       trainInterface('td3','','')
 %

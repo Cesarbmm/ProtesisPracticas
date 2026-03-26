@@ -58,6 +58,10 @@ results = run_residual_lift_pilot(struct( ...
     'baseCheckpointPath', "C:/ruta/a/tu/AgentXXXX.mat"));
 ```
 
+La version explicada paso a paso, incluida una prueba corta con pocas epocas y el path real del repo, quedo en:
+
+- `EMG_Prosthesis_TD3/matlab_code/README.md`
+
 ### Test del candidato final canonico
 
 ```matlab

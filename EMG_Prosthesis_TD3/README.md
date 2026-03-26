@@ -74,6 +74,17 @@ results = run_residual_lift_pilot(struct( ...
     'baseCheckpointPath', "C:/ruta/a/tu/AgentXXXX.mat"));
 ```
 
+Para una prueba corta, usa la guia paso a paso ya preparada en:
+
+- `matlab_code/README.md`
+
+Esa guia incluye:
+
+- una base TD3 corta;
+- auditoria corta para escoger checkpoint;
+- una residual corta sobre esa base;
+- y un test rapido final.
+
 ### Test del residual final canonico
 
 ```matlab

@@ -47,6 +47,62 @@ Si quieres repetir la estrategia completa sobre una base nueva tuya, el orden re
 2. auditar esa corrida y elegir un checkpoint,
 3. abrir una nueva rama `Residual Lift` sobre ese checkpoint.
 
+No hace falta editar `config/configurables.m` para esta prueba corta. El repo ya queda por defecto en modo "base nueva desde cero":
+
+- `params.run_training = true`
+- `params.newTraining = true`
+
+Solo usa `setConfigurablesOverride(...)` para acortar episodios y no ensuciar la configuracion fija.
+
+### Prueba corta end-to-end
+
+Bloque sugerido para copiar y pegar en MATLAB:
+
+```matlab
+cd('C:/Users/pc/Desktop/PROTESIS_PRACTICAS/EMG_Prosthesis_TD3/matlab_code')
+addpath(genpath(pwd))
+clearConfigurablesOverride()
+
+% 1) Base TD3 nueva y corta
+setConfigurablesOverride(struct( ...
+    'run_training', true, ...
+    'newTraining', true, ...
+    'trainingMaxEpisodes', 30, ...
+    'trainingSaveAgentEvery', 10, ...
+    'trainingPlots', "none"));
+trainInterface('td3','','')
+clearConfigurablesOverride()
+
+% 2) Encontrar la corrida base mas reciente
+root = fullfile('..','..','Agentes','trainedAgentsProtesisTest','td3','_');
+runs = dir(root);
+runs = runs([runs.isdir]);
+runs = runs(~ismember({runs.name},{'.','..'}));
+[~,idx] = max([runs.datenum]);
+latestRun = fullfile(runs(idx).folder, runs(idx).name)
+
+% 3) Auditar y escoger un checkpoint base
+audit = runCheckpointAudit(2, 2, 1, struct( ...
+    'experimentDir', latestRun, ...
+    'samplingPolicy', struct('mode','tail_every_k_last_n','k',10,'n',3)));
+baseCheckpoint = string(audit.phaseBTable.checkpointPath(1))
+
+% 4) Abrir una residual nueva sobre ese checkpoint
+residualResults = run_residual_lift_pilot(struct( ...
+    'baseCheckpointPath', baseCheckpoint, ...
+    'trainingEpisodes', 30, ...
+    'trainingSaveEvery', 10, ...
+    'trainingPlots', "none", ...
+    'auditFastSimulations', 2, ...
+    'auditFullSimulations', 2, ...
+    'auditTopK', 1, ...
+    'visualTestSimulations', 2));
+
+% 5) Test rapido del mejor residual
+bestResidualCheckpoint = string(residualResults.consolidatedTable.bestCheckpointPath(1));
+runCheckpointTest(bestResidualCheckpoint, 2, false);
+```
+
 ### Paso 1: entrenar una base nueva
 
 ```matlab
@@ -146,3 +202,38 @@ Usa siempre:
 en vez de hardcodear rutas locales.
 
 Si vas a abrir una nueva linea residual sobre un agente tuyo, entonces si debes pasar explicitamente `baseCheckpointPath` al launcher `run_residual_lift_pilot(...)`.
+
+## Si quieres tocar `configurables.m` manualmente
+
+No es necesario para la prueba corta, pero estos son los cambios manuales correctos:
+
+### Base nueva desde cero
+
+```matlab
+params.run_training = true;
+params.newTraining = true;
+```
+
+### Continuar un TD3 viejo
+
+```matlab
+params.newTraining = false;
+params.agent_id = "td3";
+params.agentFile = "C:/ruta/a/AgentXXXX.mat";
+```
+
+### Continuar un residual viejo
+
+```matlab
+params.newTraining = false;
+params.agent_id = "td3_residual_lift";
+params.agentFile = "C:/ruta/a/ResidualAgentXXXX.mat";
+```
+
+### Residual nueva sobre otra base
+
+No se recomienda cambiar `params.td3Residual.baseCheckpointPath` a mano cada vez. Es mejor usar:
+
+```matlab
+run_residual_lift_pilot(struct('baseCheckpointPath',"C:/ruta/a/AgentXXXX.mat"))
+```
