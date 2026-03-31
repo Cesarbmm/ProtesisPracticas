@@ -61,6 +61,7 @@ params.trainingMaxEpisodes = 12000;
 params.trainingSaveAgentEvery = 100;
 params.trainingPlots = "training-progress";
 params.plotEpisodeOnTest = false;
+params.randomSeed = NaN; % use a numeric value for reproducible multi-seed studies
 
 % --- NOTE: removed
 % when true, calls goHomePostion(...) at the end of every episode
@@ -95,6 +96,11 @@ params.run_training = true;
 % launcher or command window instead of editing this file repeatedly.
 %   Launch with:
 %       trainInterface('td3','','')
+%
+% For explicit seeding in publication or reproducibility runs:
+%   params.randomSeed = 11;
+% If left as NaN, trainInterface keeps the historical rng('default')
+% behavior for backward compatibility.
 %
 % To continue an old plain TD3 agent:
 %   params.newTraining = false
@@ -173,10 +179,14 @@ if params.usePrerecorded
     % params.dataset = "CECILIA";
     % params.dataset = "GABI";
     % params.dataset = "JONATHAN";
+    % Portable default for other computers: this path is relative to
+    % matlab_code/ and should work after cloning the repo if the dataset is
+    % kept inside the project tree.
     params.dataset_folder = '.\data\datasets\Denis Dataset\';
 else
 
     % --- Connection devices Prosthesis
+    % Local-only parameters. Change these only when using hardware.
     params.comUNO = "COM4"; % prosthesis device
     params.comGlove = "COM3"; % glove
 end
@@ -227,6 +237,9 @@ params.rf_modify_actions = false;
 params.flagSaveTraining = true;
 % params.flagSaveTraining = false;
 
+% Portable local output root. Results are written under ../../Agentes
+% relative to matlab_code/, so this also works on another computer after
+% cloning the repo.
 % saving agent progress locally as backup, not in onedrive for overhead.
 params.agents_directory = @(agent_id, variant)(fullfile('..', '..', 'Agentes', ...
     "trainedAgentsProtesisTest", agent_id, variant, ...

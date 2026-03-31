@@ -42,7 +42,6 @@ end
 
 close all
 clc
-rng('default');
 
 %% Aux and dependent variables
 % libs
@@ -53,6 +52,14 @@ addpath(genpath('.\agents\'))
 
 configs = configurables();
 hardware = definitions();
+
+if isfield(configs, 'randomSeed') && ~isempty(configs.randomSeed) && ...
+        isnumeric(configs.randomSeed) && isscalar(configs.randomSeed) && ...
+        isfinite(configs.randomSeed)
+    rng(double(configs.randomSeed), 'twister');
+else
+    rng('default');
+end
 
 %% Agent
 if configs.newTraining

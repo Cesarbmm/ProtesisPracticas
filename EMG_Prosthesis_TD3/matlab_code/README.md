@@ -18,6 +18,7 @@ Trabaja desde esta carpeta:
 
 ```matlab
 cd('C:/ruta/al/repo/EMG_Prosthesis_TD3/matlab_code')
+addpath(genpath(pwd))
 ```
 
 Limpia la configuracion persistente antes de cada corrida:
@@ -38,6 +39,122 @@ Eso hace lo siguiente:
 - congela la politica base;
 - inicializa la rama residual en cero;
 - entrena una nueva correccion residual por estado.
+
+## Reproducibilidad multi-seed del residual final
+
+Para una corrida reviewer-facing del residual con seeds fijas:
+
+```matlab
+results = run_residual_lift_multiseed();
+```
+
+Defaults publicados:
+
+- seeds = `[11 22 33 44 55]`
+- base congelada = `Agent7250`
+- `alpha_res = 0.20`
+- `trainingEpisodes = 2000`
+- auditoria de cola `k = 50`, `n = 12`
+- test final de `50` simulaciones por seed
+
+Para un smoke test corto del launcher multi-seed:
+
+```matlab
+results = run_residual_lift_multiseed(struct( ...
+    'trainingEpisodes', 5, ...
+    'trainingSaveEvery', 1, ...
+    'trainingPlots', "none", ...
+    'auditFastSimulations', 1, ...
+    'auditFullSimulations', 1, ...
+    'auditTopK', 1, ...
+    'visualTestSimulations', 1));
+```
+
+## Corrida larga de evaluacion en otro ordenador
+
+Para una maquina distinta, el repo ya queda casi portable por defecto:
+
+- `dataset_folder` es relativo al repo;
+- `agents_directory` guarda resultados en `../../Agentes`;
+- solo cambian `comUNO` y `comGlove` si hubiese hardware.
+
+Launcher recomendado para una corrida larga de evaluacion:
+
+```matlab
+results = run_residual_lift_longrun();
+```
+
+Defaults de ese launcher:
+
+- base congelada = `Agent7250`
+- `alpha_res = 0.20`
+- `trainingEpisodes = 50000`
+- `trainingSaveEvery = 500`
+- `episodeSaveFreq = 500`
+- `trainingPlots = "none"`
+- `alwaysRunVisualTest = true`
+
+Si quieres una corrida larga con seed fija:
+
+```matlab
+results = run_residual_lift_longrun(struct( ...
+    'randomSeed', 22));
+```
+
+Si quieres usar otra base TD3 tuya:
+
+```matlab
+results = run_residual_lift_longrun(struct( ...
+    'baseCheckpointPath', "C:/ruta/a/tu/AgentXXXX.mat", ...
+    'baseLabel', "MiBaseTD3"));
+```
+
+### Sobre la idea de `1,000,000` episodios
+
+No se recomienda arrancar con `1e6` episodios en una sola corrida.
+
+Motivos practicos:
+
+- las corridas previas de este proyecto no mostraron una mejora monotona al seguir entrenando sin control;
+- el costo temporal y de almacenamiento crece mucho, aunque espacies checkpoints y episodios guardados;
+- una corrida tan larga puede derivar y terminar peor que un checkpoint intermedio bueno.
+
+Recomendacion operativa:
+
+1. correr primero `50000` episodios;
+2. auditar el mejor checkpoint;
+3. solo si la tendencia es buena, subir a `100000` o continuar por bloques.
+
+Si luego quieres continuar un residual ya entrenado por otro bloque, usa el
+checkpoint residual guardado y reanuda entrenamiento asi:
+
+```matlab
+clearConfigurablesOverride()
+setConfigurablesOverride(struct( ...
+    'run_training', true, ...
+    'newTraining', false, ...
+    'agent_id', "td3_residual_lift", ...
+    'agentFile', "C:/ruta/a/tu/ResidualCheckpoint.mat", ...
+    'trainingMaxEpisodes', 50000, ...
+    'trainingSaveAgentEvery', 500, ...
+    'trainingPlots', "none", ...
+    'flagSaveTraining', true, ...
+    'episode_save_freq', 500));
+trainInterface('td3_residual_lift','','')
+clearConfigurablesOverride()
+```
+
+Si igual quieres lanzar una prueba extrema, hazlo explicito y con guardado espaciado:
+
+```matlab
+results = run_residual_lift_longrun(struct( ...
+    'trainingEpisodes', 1e6, ...
+    'trainingSaveEvery', 5000, ...
+    'episodeSaveFreq', 5000, ...
+    'randomSeed', 22));
+```
+
+Eso se puede ejecutar, pero queda como experimento exploratorio de alto costo, no como configuracion recomendada.
 
 ## Rehacer toda la linea desde cero
 
@@ -188,6 +305,7 @@ Notas:
 - `agents_directory` define donde se guardan corridas locales.
 - `agentFile` no hace falta si usas los helpers canonicos.
 - `comUNO` y `comGlove` solo importan en hardware.
+- en este repo publicado, `dataset_folder` y `agents_directory` ya vienen en forma portable para otro ordenador.
 
 ## Checkpoints canonicos publicados
 

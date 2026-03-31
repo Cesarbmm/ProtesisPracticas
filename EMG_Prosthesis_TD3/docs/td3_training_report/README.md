@@ -13,6 +13,10 @@ Carpeta canonica de documentacion tecnica, didactica y de presentacion del proye
 - `avance_exploracion_threshold_y_siguiente_intervencion_20260325.pdf`
 - `fase_residual_agent7250_y_barridos_alpha_20260326.tex`
 - `fase_residual_agent7250_y_barridos_alpha_20260326.pdf`
+- `ieee_paper_td3_prosthesis_residual_20260330.tex`
+- `ieee_paper_td3_prosthesis_residual_20260330.pdf`
+- `reporte_reproducibilidad_residual_multiseed_20260330.tex`
+- `reporte_reproducibilidad_residual_multiseed_20260330.pdf`
 - `reporte_general_td3_protesis_estado_final_20260326.tex`
 - `reporte_general_td3_protesis_estado_final_20260326.pdf`
 - `guia_didactica_td3_protesis_20260326.tex`
@@ -40,6 +44,7 @@ Carpeta canonica de documentacion tecnica, didactica y de presentacion del proye
 - `figures/residual_phase_tradeoff_20260326.png`
 - `figures/residual_alpha_sweep_metrics_20260326.png`
 - `figures/residual_alpha_diagnostics_20260326.png`
+- `figures/residual_multiseed_summary_20260330.png` (generated after running the multi-seed campaign)
 - `figures/guia_tecnica_pipeline_20260325.png`
 - `figures/charla_linea_proyecto_20260326.png`
 - `figures/charla_training_residual_20260326.png`
@@ -66,6 +71,7 @@ Las figuras ya quedan versionadas. El script es opcional y sirve solo para regen
 
 ```text
 matlab -batch "cd('C:/ruta/al/repo/EMG_Prosthesis_TD3/docs/td3_training_report/scripts'); build_charla_divulgativa_figures"
+matlab -batch "cd('C:/ruta/al/repo/EMG_Prosthesis_TD3/docs/td3_training_report/scripts'); build_residual_multiseed_publication_figure"
 pdflatex guia_charla_divulgativa_td3_protesis_20260326.tex
 bibtex guia_charla_divulgativa_td3_protesis_20260326
 pdflatex guia_charla_divulgativa_td3_protesis_20260326.tex
@@ -102,6 +108,22 @@ pdflatex fase_residual_agent7250_y_barridos_alpha_20260326.tex
 bibtex fase_residual_agent7250_y_barridos_alpha_20260326
 pdflatex fase_residual_agent7250_y_barridos_alpha_20260326.tex
 pdflatex fase_residual_agent7250_y_barridos_alpha_20260326.tex
+```
+
+### Paper IEEE final
+
+```text
+pdflatex ieee_paper_td3_prosthesis_residual_20260330.tex
+bibtex ieee_paper_td3_prosthesis_residual_20260330
+pdflatex ieee_paper_td3_prosthesis_residual_20260330.tex
+pdflatex ieee_paper_td3_prosthesis_residual_20260330.tex
+```
+
+### Reporte de reproducibilidad multi-seed
+
+```text
+pdflatex reporte_reproducibilidad_residual_multiseed_20260330.tex
+pdflatex reporte_reproducibilidad_residual_multiseed_20260330.tex
 ```
 
 ### Reporte general final

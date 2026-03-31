@@ -34,6 +34,7 @@ override.actionWarpDeadzone = baseConfigs.actionWarpDeadzone;
 override.actionWarpOutputLevels = baseConfigs.actionWarpOutputLevels;
 override.dataset = baseConfigs.dataset;
 override.dataset_folder = baseConfigs.dataset_folder;
+override.randomSeed = baseConfigs.randomSeed;
 override.numEMGFeatures = baseConfigs.numEMGFeatures;
 override.emgHistoryLength = baseConfigs.emgHistoryLength;
 override.td3 = baseConfigs.td3;
