@@ -111,6 +111,10 @@ for i = 1:numel(overrideFields)
         override.(fieldName) = savedConfigs.(fieldName);
     end
 end
+
+if isfield(override, "td3Residual")
+    override.td3Residual = normalizeResidualConfig(override.td3Residual);
+end
 end
 
 function merged = mergeStructs(baseStruct, patchStruct)
@@ -129,4 +133,15 @@ if isappdata(0, 'configurables_override_key')
     rmappdata(0, 'configurables_override_key');
 end
 clear configurables
+end
+
+function td3Residual = normalizeResidualConfig(td3Residual)
+if ~isstruct(td3Residual)
+    return;
+end
+if ~isfield(td3Residual, "baseCheckpointPath") || ...
+        strlength(string(td3Residual.baseCheckpointPath)) == 0 || ...
+        ~isfile(string(td3Residual.baseCheckpointPath))
+    td3Residual.baseCheckpointPath = getAgent7250CheckpointPath();
+end
 end

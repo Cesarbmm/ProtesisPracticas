@@ -47,6 +47,24 @@ results = run_residual_lift_pilot(struct( ...
     'baseCheckpointPath', "C:/ruta/a/tu/AgentXXXX.mat"));
 ```
 
+### Workflow exploratorio nuevo: corrida larga base antes del residual
+
+Si quieres probar primero si `Agent7250` mejora simplemente por seguir entrenando mas tiempo:
+
+```matlab
+results = run_agent7250_longrun();
+audit = run_longrun_td3_audit(struct( ...
+    'experimentDir', string(results.trainingRunDir)));
+```
+
+Si la corrida larga base se promueve como nueva base de trabajo y quieres abrir una residual nueva sobre ella:
+
+```matlab
+audit = run_longrun_td3_audit(struct( ...
+    'experimentDir', string(results.trainingRunDir), ...
+    'launchResidualIfPromoted', true));
+```
+
 ### Rehacer toda la linea desde cero
 
 ```matlab

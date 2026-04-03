@@ -63,6 +63,24 @@ Interpretacion:
 - la politica base congelada ahora puede ser cualquier checkpoint TD3 compatible;
 - el benchmark oficial del proyecto sigue siendo `Agent7250`, pero ya no estas nominalmente atado a el para generar una nueva rama residual.
 
+### Corrida larga base antes del residual
+
+Tambien hay un flujo nuevo para responder una duda metodologica distinta: si `Agent7250` mejora por seguir entrenando mucho mas tiempo aun sin residual.
+
+```matlab
+results = run_agent7250_longrun();
+audit = run_longrun_td3_audit(struct( ...
+    'experimentDir', string(results.trainingRunDir)));
+```
+
+Si el mejor checkpoint largo base supera al benchmark bajo `ConditionA` o `ConditionB`, puede usarse como nueva base de trabajo para una residual nueva:
+
+```matlab
+audit = run_longrun_td3_audit(struct( ...
+    'experimentDir', string(results.trainingRunDir), ...
+    'launchResidualIfPromoted', true));
+```
+
 ### Rehacer la linea completa desde cero
 
 ```matlab

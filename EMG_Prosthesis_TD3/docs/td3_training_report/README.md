@@ -17,6 +17,8 @@ Carpeta canonica de documentacion tecnica, didactica y de presentacion del proye
 - `ieee_paper_td3_prosthesis_residual_20260330.pdf`
 - `reporte_reproducibilidad_residual_multiseed_20260330.tex`
 - `reporte_reproducibilidad_residual_multiseed_20260330.pdf`
+- `reporte_corrida_larga_residual_20260402.tex`
+- `reporte_corrida_larga_residual_20260402.pdf`
 - `reporte_general_td3_protesis_estado_final_20260326.tex`
 - `reporte_general_td3_protesis_estado_final_20260326.pdf`
 - `guia_didactica_td3_protesis_20260326.tex`
@@ -45,6 +47,11 @@ Carpeta canonica de documentacion tecnica, didactica y de presentacion del proye
 - `figures/residual_alpha_sweep_metrics_20260326.png`
 - `figures/residual_alpha_diagnostics_20260326.png`
 - `figures/residual_multiseed_summary_20260330.png` (generated after running the multi-seed campaign)
+- `figures/longrun_residual_training_progress_20260402.png`
+- `figures/longrun_residual_checkpoint_evolution_20260402.png`
+- `figures/longrun_residual_candidate_comparison_20260402.png`
+- `figures/longrun_residual_best_visual_20260402.png`
+- `figures/longrun_residual_benchmark_visual_20260402.png`
 - `figures/guia_tecnica_pipeline_20260325.png`
 - `figures/charla_linea_proyecto_20260326.png`
 - `figures/charla_training_residual_20260326.png`
@@ -124,6 +131,13 @@ pdflatex ieee_paper_td3_prosthesis_residual_20260330.tex
 ```text
 pdflatex reporte_reproducibilidad_residual_multiseed_20260330.tex
 pdflatex reporte_reproducibilidad_residual_multiseed_20260330.tex
+```
+
+### Reporte de corrida larga residual
+
+```text
+pdflatex reporte_corrida_larga_residual_20260402.tex
+pdflatex reporte_corrida_larga_residual_20260402.tex
 ```
 
 ### Reporte general final

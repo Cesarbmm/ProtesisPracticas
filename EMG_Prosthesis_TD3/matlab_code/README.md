@@ -156,6 +156,87 @@ results = run_residual_lift_longrun(struct( ...
 
 Eso se puede ejecutar, pero queda como experimento exploratorio de alto costo, no como configuracion recomendada.
 
+## Corrida larga base antes del residual
+
+Si quieres separar "mejoro porque el residual ayuda" de "mejoro porque seguimos entrenando mas tiempo una base fuerte", el flujo nuevo recomendado es:
+
+1. continuar `Agent7250` como TD3 plano en una corrida larga exploratoria;
+2. auditar toda la trayectoria;
+3. solo si el mejor checkpoint final supera a `Agent7250`, usarlo como nueva base de trabajo para abrir una residual nueva.
+
+### Paso 1: corrida larga base sobre `Agent7250`
+
+```matlab
+results = run_agent7250_longrun();
+```
+
+Defaults:
+
+- base = `Agent7250`
+- `trainingEpisodes = 50000`
+- `trainingSaveEvery = 500`
+- `episodeSaveFreq = 500`
+- `trainingPlots = "none"`
+
+### Smoke test corto del long run base
+
+```matlab
+results = run_agent7250_longrun(struct( ...
+    'trainingEpisodes', 5, ...
+    'trainingSaveEvery', 1, ...
+    'episodeSaveFreq', 1, ...
+    'trainingPlots', "none"));
+```
+
+### Paso 2: auditar la corrida larga base
+
+Usa la carpeta del experimento que produjo `run_agent7250_longrun()`. Luego:
+
+```matlab
+audit = run_longrun_td3_audit(struct( ...
+    'experimentDir', string(results.trainingRunDir)));
+```
+
+Ese flujo:
+
+- analiza la curva de entrenamiento;
+- audita todos los checkpoints;
+- retestea el top 1 con `50` simulaciones;
+- compara contra `Agent7250`, `Agent1850` y `seed 22`;
+- genera un reporte standalone en `docs/td3_training_report/`.
+
+### Smoke test corto de la auditoria base
+
+```matlab
+audit = run_longrun_td3_audit(struct( ...
+    'experimentDir', string(results.trainingRunDir), ...
+    'auditFastSimulations', 1, ...
+    'auditFullSimulations', 1, ...
+    'auditTopK', 1, ...
+    'comparisonSimulations', 1, ...
+    'comparisonPlotEpisodes', false, ...
+    'generateReport', false));
+```
+
+### Paso 3: abrir residual solo si la base larga se promueve
+
+Por defecto, la auditoria base no abre una residual nueva automaticamente. Si el mejor checkpoint largo base pasa `ConditionA` o `ConditionB`, puedes relanzar la auditoria con el puente residual:
+
+```matlab
+audit = run_longrun_td3_audit(struct( ...
+    'experimentDir', string(results.trainingRunDir), ...
+    'launchResidualIfPromoted', true));
+```
+
+Eso hace dos cosas adicionales:
+
+- promueve el mejor checkpoint largo como nueva base de trabajo;
+- abre una residual nueva sobre esa base y la compara contra:
+  - la base promovida,
+  - `Agent7250`,
+  - `Agent1850`,
+  - `seed 22`.
+
 ## Rehacer toda la linea desde cero
 
 Si quieres repetir la estrategia completa sobre una base nueva tuya, el orden recomendado ahora es:

@@ -22,6 +22,8 @@ if ~isfield(td3Residual, "baseCheckpointPath") || ...
     return;
 end
 
+td3Residual = normalizeResidualBaseCheckpoint(td3Residual);
+
 [baseActor, residualScale] = getCachedBaseActor(td3Residual);
 
 numSteps = size(actionLog, 1);
@@ -84,4 +86,15 @@ baseActor = getActor(baseAgent);
 cachedPath = checkpointPath;
 cachedActor = baseActor;
 cachedResidualScale = residualScale;
+end
+
+function td3Residual = normalizeResidualBaseCheckpoint(td3Residual)
+checkpointPath = "";
+if isfield(td3Residual, "baseCheckpointPath")
+    checkpointPath = string(td3Residual.baseCheckpointPath);
+end
+
+if strlength(checkpointPath) == 0 || ~isfile(checkpointPath)
+    td3Residual.baseCheckpointPath = getAgent7250CheckpointPath();
+end
 end

@@ -369,6 +369,9 @@ for i = 1:numel(overrideFields)
         override.(fieldName) = savedConfigs.(fieldName);
     end
 end
+if isfield(override, "td3Residual")
+    override.td3Residual = normalizeResidualConfig(override.td3Residual);
+end
 override.run_training = false;
 override.newTraining = false;
 override.plotEpisodeOnTest = false;
@@ -405,4 +408,15 @@ if fid < 0
 end
 cleanup = onCleanup(@() fclose(fid)); %#ok<NASGU>
 fprintf(fid, "%s", textValue);
+end
+
+function td3Residual = normalizeResidualConfig(td3Residual)
+if ~isstruct(td3Residual)
+    return;
+end
+if ~isfield(td3Residual, "baseCheckpointPath") || ...
+        strlength(string(td3Residual.baseCheckpointPath)) == 0 || ...
+        ~isfile(string(td3Residual.baseCheckpointPath))
+    td3Residual.baseCheckpointPath = getAgent7250CheckpointPath();
+end
 end
