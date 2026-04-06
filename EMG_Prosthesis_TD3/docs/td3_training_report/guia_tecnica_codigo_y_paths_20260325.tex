@@ -66,14 +66,14 @@ La carpeta principal relevante es \texttt{EMG\_Prosthesis\_TD3/matlab\_code}. De
 Ruta & Funcion principal \\
 \midrule
 \texttt{config/configurables.m} & Punto central de configuracion: modo train/test, dataset, reward, TD3, paths, hardware y opciones de guardado. \\
-\texttt{src/trainInterface.m} & Entry point operativo para entrenamiento y evaluacion. \\
+\texttt{src/runtime/trainInterface.m} & Entry point operativo para entrenamiento y evaluacion. \\
 \texttt{agents/load\_agent.m} & Fabrica de agentes; decide que agente crear segun \texttt{agent\_id}. \\
 \texttt{agents/agentTd3.m} & Construccion del actor, criticos y opciones TD3. \\
 \texttt{src/@Env} & Entorno RL: estado, paso temporal, logging, guardado por episodio y remapeo de accion. \\
-\texttt{src/reward functions} & Reward actual y variantes historicas o experimentales. \\
+\texttt{src/reward\_functions} & Reward actual y variantes historicas o experimentales. \\
 \texttt{src/@SimController} & Simulador de la protesis y capa de control de motores. \\
-\texttt{src/runCheckpointAudit.m} & Auditoria automatizada de checkpoints. \\
-\texttt{src/runCheckpointTest.m} & Test directo de un checkpoint con simulacion y plots. \\
+\texttt{src/evaluation/runCheckpointAudit.m} & Auditoria automatizada de checkpoints. \\
+\texttt{src/evaluation/runCheckpointTest.m} & Test directo de un checkpoint con simulacion y plots. \\
 \texttt{data/datasets} & Datasets EMG+glove usados en simulacion. \\
 \texttt{docs/td3\_training\_report} & Documentacion tecnica, reportes y guias. \\
 \bottomrule
@@ -113,15 +113,15 @@ En ejecucion normal, el flujo es:
 Archivo & Tipo & Responsabilidad \\
 \midrule
 \makecell[tl]{\texttt{config/}\\\texttt{configurables.m}} & Configuracion & Define parametros del experimento y construye \texttt{RLtrainingOptions} o \texttt{simOpts}. \\
-\makecell[tl]{\texttt{src/}\\\texttt{trainInterface.m}} & Launcher & Orquesta carga del agente, carga del dataset, creacion de entorno y ejecucion de \texttt{train} o \texttt{sim}. \\
+\makecell[tl]{\texttt{src/runtime/}\\\texttt{trainInterface.m}} & Launcher & Orquesta carga del agente, carga del dataset, creacion de entorno y ejecucion de \texttt{train} o \texttt{sim}. \\
 \makecell[tl]{\texttt{agents/}\\\texttt{agentTd3.m}} & Modelo RL & Construye actor, criticos y opciones TD3. \\
 \makecell[tl]{\texttt{src/@Env/}\\\texttt{calculateState.m}} & Estado & Convierte EMG y encoder a observacion \texttt{legacy44}, \texttt{markov52} o \texttt{stackedEmg132}. \\
 \makecell[tl]{\texttt{src/@Env/}\\\texttt{remapActionForActuator.m}} & Accion efectiva & Aplica umbral y cuantizacion antes de enviar PWM. \\
 \makecell[tl]{\texttt{src/@Env/}\\\texttt{step.m}} & Dinamica del entorno & Aplica accion, avanza tiempo, lee sensores, calcula reward y registra logs. \\
-\makecell[tl]{\texttt{src/reward functions/}\\\texttt{trackingMseActionRateReward.m}} & Reward actual & Penaliza tracking MSE, magnitud de accion y cambio de accion. \\
+\makecell[tl]{\texttt{src/reward\_functions/}\\\texttt{trackingMseActionRateReward.m}} & Reward actual & Penaliza tracking MSE, magnitud de accion y cambio de accion. \\
 \makecell[tl]{\texttt{src/@SimController/}\\\texttt{prosthesis\_simulator.m}} & Simulador & Genera la dinamica de la protesis. Aqui se corrigio el fallback cuando \texttt{ws} estaba vacio. \\
-\makecell[tl]{\texttt{src/}\\\texttt{runCheckpointAudit.m}} & Infraestructura & Lanza auditorias reproducibles de checkpoints. \\
-\makecell[tl]{\texttt{src/}\\\texttt{runCheckpointTest.m}} & Evaluacion & Ejecuta una simulacion batch sobre un checkpoint concreto. \\
+\makecell[tl]{\texttt{src/evaluation/}\\\texttt{runCheckpointAudit.m}} & Infraestructura & Lanza auditorias reproducibles de checkpoints. \\
+\makecell[tl]{\texttt{src/evaluation/}\\\texttt{runCheckpointTest.m}} & Evaluacion & Ejecuta una simulacion batch sobre un checkpoint concreto. \\
 \bottomrule
 \end{tabularx}
 \normalsize
@@ -295,7 +295,7 @@ Parametro o ruta & Archivo y lineas & Cuando cambiarlo & Observacion practica \\
 \texttt{params.comUNO} & \makecell[tl]{\texttt{configurables.m:}\\\texttt{149--151}} & Solo hardware real & Puerto serie de la protesis. No afecta simulacion. \\
 \texttt{params.comGlove} & \makecell[tl]{\texttt{configurables.m:}\\\texttt{149--151}} & Solo hardware real con glove real & Puerto serie del guante. No afecta simulacion prerecorded. \\
 \makecell[tl]{\texttt{agentFile} de\\\texttt{runProsthesis.m}} & \makecell[tl]{\texttt{runProsthesis.m:}\\\texttt{33--40}} & Solo si usas el script legacy de hardware & No tiene default valido. Debe ponerse a mano. \\
-\makecell[tl]{\texttt{defaultCheckpoint}\\\texttt{Path()}} & \makecell[tl]{\texttt{runCheckpointTest.m:}\\\texttt{42--49}} & \makecell[tl]{Solo si llamas a\\\texttt{runCheckpoint}\\\texttt{Test()}\\sin argumentos} & Ese fallback es historico; lo correcto es pasar la ruta explicitamente. \\
+\makecell[tl]{\texttt{defaultCheckpoint}\\\texttt{Path()}} & \makecell[tl]{\texttt{src/evaluation/}\\\texttt{runCheckpointTest.m}} & \makecell[tl]{Solo si llamas a\\\texttt{runCheckpoint}\\\texttt{Test()}\\sin argumentos} & Ese fallback es historico; lo correcto es pasar la ruta explicitamente. \\
 \makecell[tl]{\texttt{cd(.../}\\\texttt{matlab\_code)}} & No es archivo, es requisito operativo & Siempre & Los comandos de train/test/audit asumen que MATLAB esta en \makecell[tl]{\texttt{EMG\_Prosthesis\_TD3/}\\\texttt{matlab\_code}}. \\
 \end{longtable}
 \normalsize
@@ -304,7 +304,7 @@ Parametro o ruta & Archivo y lineas & Cuando cambiarlo & Observacion practica \\
 
 \begin{itemize}
 \item \texttt{.\textbackslash config\textbackslash normValues.mat}: ya se carga relativo en \texttt{configurables.m:209--213}.
-\item \texttt{.\textbackslash src}, \texttt{.\textbackslash agents}, \texttt{.\textbackslash lib}: los \texttt{addpath} ya se resuelven desde \texttt{trainInterface.m:49--52}.
+\item \texttt{.\textbackslash src}, \texttt{.\textbackslash agents}, \texttt{.\textbackslash lib}: los \texttt{addpath} ya se resuelven desde \texttt{src/runtime/trainInterface.m}.
 \item rutas internas de auditoria: las herramientas nuevas ya trabajan repo-relativas si se les pasa una carpeta de experimento o checkpoints explicitos.
 \end{itemize}
 

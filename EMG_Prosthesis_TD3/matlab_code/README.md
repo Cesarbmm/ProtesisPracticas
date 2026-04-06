@@ -1,106 +1,72 @@
 # MATLAB Code Guide
 
-Guia operativa del codigo MATLAB de `EMG_Prosthesis_TD3`.
+Guia operativa corta del arbol `matlab_code/`.
 
-## Punto actual
+## Estado operativo validado en este repo
 
-El flujo activo del proyecto ya no es una corrida residual larga ni una corrida base larga. El flujo activo es:
+- MATLAB detectado: `R2023b Update 11`
+- toolboxes validadas: `Reinforcement Learning Toolbox`, `Deep Learning Toolbox`, `Signal Processing Toolbox`
+- bootstrap validado desde `matlab_code/`
+- benchmark canonico validado: `Agent7250`
+- smoke residual validado: `run_residual_lift_stopband_confirmation(...)` reducido
 
-1. usar `Agent7250` como benchmark oficial y base congelada;
-2. entrenar residual con checkpoints densos;
-3. auditar toda la trayectoria;
-4. seleccionar temprano dentro de la `stop-band` confirmada.
+El flujo oficial de simulacion queda centrado en:
 
-Referencias activas:
+- checkpoint benchmark: `getAgent7250CheckpointPath()`
+- residual historico canonico: `getResidualFinalCheckpointPath()`
+- linea residual activa: `run_residual_lift_stopband_confirmation()`
+- helper de validacion local: `run_repo_smoke_validation()`
 
-- benchmark oficial: `Agent7250`
-- linea residual activa: `stop-band` confirmada alrededor de `2000` episodios
-- mejor residual historico single-run: `Agent1850`
-
-## Antes de ejecutar
+## Arranque minimo
 
 Trabaja desde esta carpeta:
 
 ```matlab
 cd('C:/ruta/al/repo/EMG_Prosthesis_TD3/matlab_code')
 addpath(genpath(pwd))
-```
-
-Limpia la configuracion persistente antes de cada corrida:
-
-```matlab
 clearConfigurablesOverride()
 ```
 
-## Tests canonicamente publicados
-
-Benchmark oficial:
+Comprobacion minima:
 
 ```matlab
-runCheckpointTest(getAgent7250CheckpointPath(), 50, true);
+c = configurables();
+disp(c.dataset_folder)
+disp(getAgent7250CheckpointPath())
+disp(getResidualFinalCheckpointPath())
 ```
 
-Residual canonico historico:
+## Test minimo recomendado
+
+Smoke del benchmark canonico:
 
 ```matlab
-runCheckpointTest(getResidualFinalCheckpointPath(), 50, true);
+runCheckpointTest(getAgent7250CheckpointPath(), 2, false);
 ```
 
-## Flujo residual activo: stop-band confirmada
+Smoke integral de repo migrado:
 
-La linea recomendada ahora es confirmation sobre la banda ya validada.
+```matlab
+results = run_repo_smoke_validation();
+```
+
+Este helper:
+
+- comprueba version y toolboxes
+- valida `addpath`, `configurables()` y helpers de checkpoints
+- corre el smoke del benchmark
+- corre el smoke reducido de `stop-band confirmation`
+- escribe resultados bajo `Agentes/repo_smoke_validation/`
+
+## Flujo oficial actual
+
+Linea residual activa publicada:
 
 ```matlab
 results = run_residual_lift_stopband_confirmation();
 ```
 
-Defaults relevantes:
-
-- seeds = `[66 77 88 99 111]`
-- `trainingEpisodes = stopBandEpisode + 500`
-- guardado cada `100` episodios
-- auditoria completa `mode = "all"`
-- retest final por seed
-
-Interpretacion:
-
-- `Agent7250` sigue como benchmark oficial;
-- la fase confirmada pasa a ser la referencia residual operativa;
-- la banda util queda alrededor de `2000` episodios.
-
-## Discovery de una nueva stop-band
-
-Si quieres volver a descubrir una banda desde cero:
-
-```matlab
-results = run_residual_lift_stopband_discovery();
-```
-
-Defaults relevantes:
-
-- seeds = `[11 22 33 44 55]`
-- `trainingEpisodes = 10000`
-- `trainingSaveEvery = 250`
-- `episodeSaveFreq = 250`
-- auditoria completa `mode = "all"`
-
-### Smoke test validado de discovery
-
-```matlab
-results = run_residual_lift_stopband_discovery(struct( ...
-    'seeds', [11 22], ...
-    'trainingEpisodes', 100, ...
-    'trainingSaveEvery', 50, ...
-    'episodeSaveFreq', 50, ...
-    'auditFastSimulations', 2, ...
-    'auditFullSimulations', 2, ...
-    'auditTopK', 1, ...
-    'comparisonSimulations', 2, ...
-    'generateReport', false, ...
-    'compileReport', false));
-```
-
-### Smoke test validado de confirmation
+Smoke reducido documentado:
 
 ```matlab
 results = run_residual_lift_stopband_confirmation(struct( ...
@@ -118,54 +84,26 @@ results = run_residual_lift_stopband_confirmation(struct( ...
     'compileReport', false));
 ```
 
-## Residual generico sobre cualquier base
+## Artefactos canonicos
 
-Si quieres abrir una residual sobre otro checkpoint TD3:
+- checkpoints publicados: `checkpoints/canonical/`
+- documentacion curada: `../docs/td3_training_report/`
+- configuracion global: `config/configurables.m`
 
-```matlab
-results = run_residual_lift_pilot(struct( ...
-    'baseCheckpointPath', "C:/ruta/a/tu/AgentXXXX.mat"));
-```
+## Guia de estructura
 
-## Rehacer toda la linea desde cero
+- `src/`: core operativo reusable
+- `agents/`: definiciones de agentes y variantes residuales
+- `checkpoints/canonical/`: checkpoints pequenos publicados
+- `data/`: dataset portable para simulacion
+- `workflows/published/`: launchers vigentes y helpers de campana activos
+- `workflows/legacy/`: launchers historicos movidos fuera del core
+- `analysis/legacy/`: viewers legacy con rutas absolutas antiguas
+- `development/archive/`: material historico y datasets auxiliares con procedencia preservada
+- `src/runtime/`, `src/evaluation/`, `src/checkpoints/`: subdivision funcional del core MATLAB
 
-Entrenamiento base de referencia:
+Para clasificacion y reorganizacion prevista:
 
-```matlab
-trainInterface('td3','','')
-```
-
-Auditoria de esa corrida:
-
-```matlab
-results = runCheckpointAudit(20, 50, 2, struct( ...
-    'experimentDir', 'C:/ruta/a/una/corrida', ...
-    'samplingPolicy', struct('mode','tail_every_k_last_n','k',50,'n',12)));
-```
-
-Residual generica sobre el checkpoint escogido:
-
-```matlab
-results = run_residual_lift_pilot(struct( ...
-    'baseCheckpointPath', "C:/ruta/a/tu/AgentXXXX.mat"));
-```
-
-## Portabilidad a otra PC
-
-El repo queda pensado para simulacion primero. En otra PC suele bastar con revisar:
-
-- `dataset_folder`
-- `agents_directory`
-
-Y solo si hay hardware:
-
-- `comUNO`
-- `comGlove`
-
-Arranque minimo:
-
-```matlab
-cd('C:/ruta/al/clon/ProtesisPracticas/EMG_Prosthesis_TD3/matlab_code')
-addpath(genpath(pwd))
-clearConfigurablesOverride()
-```
+- ver `REPO_CLASSIFICATION.md`
+- ver `MIGRATION_CHECKLIST.md`
+- ver `src/readme.md`

@@ -105,14 +105,14 @@ Archivo & Funcion \\
 \midrule
 \path{matlab_code/agents/agentTd3Residual7250.m} & Construye el nuevo agente residual a partir del checkpoint base \texttt{Agent7250}. \\
 \path{matlab_code/agents/load_agent.m} & Incorpora el caso \texttt{td3\_residual7250} al flujo normal de carga. \\
-\path{matlab_code/src/loadSavedAgent.m} & Estandariza la carga del checkpoint base y de checkpoints residuales. \\
-\path{matlab_code/src/run_agent7250_residual_policy_pilot.m} & Lanza el piloto principal con \(\alpha=0.20\). \\
-\path{matlab_code/src/run_agent7250_residual_continuation.m} & Continua desde el mejor checkpoint residual para evaluar si mas episodios ayudan. \\
-\path{matlab_code/src/run_agent7250_residual_alpha_sweep.m} & Ejecuta el barrido corto inicial \(\alpha \in \{0.10,0.20,0.30\}\). \\
-\path{matlab_code/src/run_agent7250_residual_alpha_refinement_sweep.m} & Ejecuta el refinamiento fino \(\alpha \in \{0.18,0.20,0.22,0.25\}\). \\
-\path{matlab_code/src/reconstructResidualPolicyDiagnostics.m} & Reconstruye en postproceso la descomposicion entre accion base y correccion residual. \\
+\path{matlab_code/src/checkpoints/loadSavedAgent.m} & Estandariza la carga del checkpoint base y de checkpoints residuales. \\
+\path{matlab_code/workflows/legacy/run_agent7250_residual_policy_pilot.m} & Lanza el piloto principal con \(\alpha=0.20\). \\
+\path{matlab_code/workflows/legacy/run_agent7250_residual_continuation.m} & Continua desde el mejor checkpoint residual para evaluar si mas episodios ayudan. \\
+\path{matlab_code/workflows/legacy/run_agent7250_residual_alpha_sweep.m} & Ejecuta el barrido corto inicial \(\alpha \in \{0.10,0.20,0.30\}\). \\
+\path{matlab_code/workflows/legacy/run_agent7250_residual_alpha_refinement_sweep.m} & Ejecuta el refinamiento fino \(\alpha \in \{0.18,0.20,0.22,0.25\}\). \\
+\path{matlab_code/src/evaluation/reconstructResidualPolicyDiagnostics.m} & Reconstruye en postproceso la descomposicion entre accion base y correccion residual. \\
 \path{matlab_code/src/@Env/step.m} y \path{saveEpisode.m} & Guardan estado, accion final y logs necesarios para diagnostico residual. \\
-\path{matlab_code/src/summarizeEpisodeDirectory.m} & Agrega las metricas residuales por episodio y por corrida. \\
+\path{matlab_code/src/evaluation/summarizeEpisodeDirectory.m} & Agrega las metricas residuales por episodio y por corrida. \\
 \bottomrule
 \end{tabularx}
 \end{table}

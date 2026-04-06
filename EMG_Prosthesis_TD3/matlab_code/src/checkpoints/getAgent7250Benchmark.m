@@ -1,0 +1,36 @@
+function benchmark = getAgent7250Benchmark()
+%getAgent7250Benchmark returns the current valid operating benchmark.
+
+srcDir = fileparts(mfilename("fullpath"));
+srcRoot = fileparts(srcDir);
+matlabRoot = fileparts(srcRoot);
+repoRoot = fileparts(fileparts(matlabRoot));
+canonicalRoot = getCanonicalCheckpointRoot();
+
+canonicalDir = fullfile(canonicalRoot, "Agent7250_valid_baseline");
+canonicalPath = fullfile(canonicalDir, "Agent7250_valid_baseline.mat");
+
+legacyDir = fullfile(repoRoot, "Agentes", ...
+    "trainedAgentsProtesisTest", "td3", "_", "26-03-22 10 5 40");
+legacyPath = fullfile(legacyDir, "Agent7250.mat");
+
+if isfile(canonicalPath)
+    experimentDir = string(canonicalDir);
+    checkpointPath = string(canonicalPath);
+else
+    experimentDir = string(legacyDir);
+    checkpointPath = string(legacyPath);
+end
+
+benchmark = struct( ...
+    "label", "Agent7250", ...
+    "experimentDir", experimentDir, ...
+    "checkpointPath", checkpointPath, ...
+    "checkpointEpisode", 7250, ...
+    "trackingMse", 0.043045, ...
+    "trackingMae", 0.160336, ...
+    "actionL2", 0.596444, ...
+    "saturationFraction", 0.392086, ...
+    "deltaActionL2", 0.321385, ...
+    "absPwmMean", 178.288566);
+end

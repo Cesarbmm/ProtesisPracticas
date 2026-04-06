@@ -116,7 +116,8 @@ params.run_training = true;
 % file every time. Prefer the launcher:
 %   run_residual_lift_pilot(struct('baseCheckpointPath',"C:/ruta/a/AgentXXXX.mat"))
 %
-% Historical published wrapper over Agent7250:
+% Historical published wrapper over Agent7250
+% (kept now under workflows/legacy/):
 %   run_agent7250_residual_policy_pilot()
 % -------------------------------------------------------------------------
 
@@ -252,7 +253,8 @@ params.savePerMotorMetrics = true;
 
 %% feature extraction
 % normalization of EMG features
-fileCS = ".\config\normValues.mat";
+configDir = fileparts(mfilename("fullpath"));
+fileCS = fullfile(configDir, "normValues.mat");
 bars = load (fileCS,"C","S");
 params.norm.C = bars.C;
 params.norm.S = bars.S;
