@@ -210,39 +210,61 @@ function resultsTable = runCheckpointBatch(checkpointPaths, outputRoot, simOpts,
 rows = cell(numel(checkpointPaths), 1);
 
 for i = 1:numel(checkpointPaths)
-    checkpointPath = string(checkpointPaths(i));
-    if ~isfile(checkpointPath)
-        error("Checkpoint not found: %s", checkpointPath);
-    end
-
-    checkpointLabel = buildCheckpointLabel(checkpointPath);
-    runDir = fullfile(outputRoot, sprintf("%02d_%s", i, checkpointLabel));
-    mkdir(runDir);
-
-    checkpointMeta = loadCheckpointMetadata(checkpointPath);
-    applyConfigurablesOverride(checkpointMeta.override);
-    configs = configurables();
-    hardware = definitions();
-    [emg, glove] = getDataset(configs.dataset, configs.dataset_folder);
-
-    agent = loadSavedAgent(checkpointPath);
-    env = Env(runDir, true, emg, glove);
-    env.log(sprintf("Checkpoint audit for %s", checkpointLabel));
-
-    trainingInfo = sim(agent, env, simOpts); %#ok<NASGU>
-    summary = summarizeEpisodeDirectory(runDir);
-    benchmarkDecision = classifyBenchmarkAcceptance(summary, benchmark);
-
-    save(fullfile(runDir, "audit_run.mat"), ...
-        "summary", "benchmarkDecision", "checkpointPath", "checkpointLabel", ...
-        "configs", "hardware", "simOpts", "checkpointMeta");
-
-    rows{i} = buildResultRow( ...
-        checkpointLabel, checkpointPath, checkpointMeta, summary, benchmarkDecision);
-    clear env agent trainingInfo
+    rows{i} = runSingleCheckpointAudit( ...
+        string(checkpointPaths(i)), outputRoot, i, simOpts, benchmark);
 end
 
 resultsTable = struct2table(vertcat(rows{:}));
+end
+
+function row = runSingleCheckpointAudit(checkpointPath, outputRoot, rowIndex, simOpts, benchmark)
+if ~isfile(checkpointPath)
+    error("Checkpoint not found: %s", checkpointPath);
+end
+
+checkpointLabel = buildCheckpointLabel(checkpointPath);
+runDir = fullfile(outputRoot, sprintf("%02d_%s", rowIndex, checkpointLabel));
+mkdir(runDir);
+
+checkpointMeta = loadCheckpointMetadata(checkpointPath);
+applyConfigurablesOverride(checkpointMeta.override);
+setappdata(0, "checkpoint_audit_reload_context", struct( ...
+    "checkpointPath", checkpointPath, ...
+    "checkpointLabel", checkpointLabel, ...
+    "runDir", string(runDir), ...
+    "checkpointMeta", checkpointMeta, ...
+    "simOpts", simOpts, ...
+    "benchmark", benchmark));
+clear classes
+clear configurables
+reloadContext = getappdata(0, "checkpoint_audit_reload_context");
+rmappdata(0, "checkpoint_audit_reload_context");
+
+checkpointPath = string(reloadContext.checkpointPath);
+checkpointLabel = string(reloadContext.checkpointLabel);
+runDir = char(reloadContext.runDir);
+checkpointMeta = reloadContext.checkpointMeta;
+simOpts = reloadContext.simOpts;
+benchmark = reloadContext.benchmark;
+configs = configurables();
+hardware = definitions();
+[emg, glove] = getDataset(configs.dataset, configs.dataset_folder);
+
+agent = loadSavedAgent(checkpointPath);
+env = Env(runDir, true, emg, glove);
+env.log(sprintf("Checkpoint audit for %s", checkpointLabel));
+
+trainingInfo = sim(agent, env, simOpts); %#ok<NASGU>
+summary = summarizeEpisodeDirectory(runDir);
+benchmarkDecision = classifyBenchmarkAcceptance(summary, benchmark);
+
+save(fullfile(runDir, "audit_run.mat"), ...
+    "summary", "benchmarkDecision", "checkpointPath", "checkpointLabel", ...
+    "configs", "hardware", "simOpts", "checkpointMeta");
+
+row = buildResultRow( ...
+    checkpointLabel, checkpointPath, checkpointMeta, summary, benchmarkDecision);
+clear env agent trainingInfo
 end
 
 function row = buildResultRow(checkpointLabel, checkpointPath, checkpointMeta, summary, benchmarkDecision)
@@ -375,6 +397,8 @@ end
 override.run_training = false;
 override.newTraining = false;
 override.plotEpisodeOnTest = false;
+override.flagSaveTraining = true;
+override.episode_save_freq = 1;
 
 checkpointMeta.override = override;
 end

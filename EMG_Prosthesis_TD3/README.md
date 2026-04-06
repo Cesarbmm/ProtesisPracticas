@@ -4,14 +4,14 @@ Proyecto MATLAB para entrenar y evaluar agentes TD3 en el control de una protesi
 
 ## Estado publicado
 
-La linea final publicada del proyecto es:
+La version actual del proyecto deja este punto fijo:
 
-- benchmark canonico: `Agent7250`
-- candidato final canonico: `Agent1850`
-- workflow oficial: entrenamiento residual sobre `Agent7250`
-- nombre generico de la ruta residual: `Residual Lift`
+- benchmark oficial: `Agent7250`
+- linea residual activa: `stop-band` confirmada alrededor de `2000` episodios
+- referencia residual reproducible historica previa: `seed 22`
+- mejor residual single-run historico: `Agent1850`
 
-El entrenamiento TD3 base se conserva como referencia historica, pero ya no es el entrypoint principal del repositorio.
+La `stop-band` confirmada pasa a ser la nueva linea operativa para continuar la exploracion residual, pero `Agent7250` sigue siendo el benchmark oficial.
 
 ## Requisitos
 
@@ -23,104 +23,52 @@ El entrenamiento TD3 base se conserva como referencia historica, pero ya no es e
 
 ## Estructura relevante
 
-- `matlab_code/config/`: configuracion global.
-- `matlab_code/src/`: entorno, reward, auditoria y launchers.
-- `matlab_code/agents/`: definicion de agentes, incluida la rama residual.
-- `matlab_code/checkpoints/canonical/`: benchmark y residual final publicados.
-- `docs/td3_training_report/`: documentacion final curada.
+- `matlab_code/config/`: configuracion global
+- `matlab_code/src/`: entorno, reward, auditoria y launchers
+- `matlab_code/agents/`: definicion de agentes y rama residual
+- `matlab_code/checkpoints/canonical/`: benchmark y residual publicado
+- `docs/td3_training_report/`: documentacion final curada
 
-## Flujo recomendado
+## Flujos principales
 
 Trabaja desde:
 
 ```matlab
 cd('C:/ruta/al/repo/EMG_Prosthesis_TD3/matlab_code')
+addpath(genpath(pwd))
 clearConfigurablesOverride()
 ```
 
-### Entrenamiento residual publicado
+### Flujo residual activo con stop-band
 
 ```matlab
-results = run_agent7250_residual_policy_pilot();
+results = run_residual_lift_stopband_confirmation();
 ```
 
-Interpretacion:
+Esto usa:
 
-- la rama residual arranca en cero;
-- la politica base congelada es `Agent7250`;
-- esta es la forma correcta de "entrenar desde cero" en la linea residual.
+- base congelada `Agent7250`
+- una banda de parada temprana ya confirmada
+- auditoria completa y retest final por seed
 
-### Entrenamiento residual generico sobre cualquier base
+### Discovery de una nueva stop-band
+
+```matlab
+results = run_residual_lift_stopband_discovery();
+```
+
+### Residual generico sobre cualquier base
 
 ```matlab
 results = run_residual_lift_pilot(struct( ...
     'baseCheckpointPath', "C:/ruta/a/tu/AgentXXXX.mat"));
 ```
 
-Interpretacion:
-
-- la rama residual sigue arrancando en cero;
-- la politica base congelada ahora puede ser cualquier checkpoint TD3 compatible;
-- el benchmark oficial del proyecto sigue siendo `Agent7250`, pero ya no estas nominalmente atado a el para generar una nueva rama residual.
-
-### Corrida larga base antes del residual
-
-Tambien hay un flujo nuevo para responder una duda metodologica distinta: si `Agent7250` mejora por seguir entrenando mucho mas tiempo aun sin residual.
-
-```matlab
-results = run_agent7250_longrun();
-audit = run_longrun_td3_audit(struct( ...
-    'experimentDir', string(results.trainingRunDir)));
-```
-
-Si el mejor checkpoint largo base supera al benchmark bajo `ConditionA` o `ConditionB`, puede usarse como nueva base de trabajo para una residual nueva:
-
-```matlab
-audit = run_longrun_td3_audit(struct( ...
-    'experimentDir', string(results.trainingRunDir), ...
-    'launchResidualIfPromoted', true));
-```
-
-### Rehacer la linea completa desde cero
-
-```matlab
-trainInterface('td3','','')
-results = runCheckpointAudit(20, 50, 2, struct( ...
-    'experimentDir', 'C:/ruta/a/una/corrida', ...
-    'samplingPolicy', struct('mode','tail_every_k_last_n','k',50,'n',12)));
-results = run_residual_lift_pilot(struct( ...
-    'baseCheckpointPath', "C:/ruta/a/tu/AgentXXXX.mat"));
-```
-
-Para una prueba corta, usa la guia paso a paso ya preparada en:
-
-- `matlab_code/README.md`
-
-Esa guia incluye:
-
-- una base TD3 corta;
-- auditoria corta para escoger checkpoint;
-- una residual corta sobre esa base;
-- y un test rapido final.
-
-### Test del residual final canonico
-
-```matlab
-runCheckpointTest(getResidualFinalCheckpointPath(), 50, true);
-```
-
-### Test del benchmark canonico
+### Tests canonicos
 
 ```matlab
 runCheckpointTest(getAgent7250CheckpointPath(), 50, true);
-```
-
-### Auditoria explicita de una corrida
-
-```matlab
-results = runCheckpointAudit(20, 50, 2, struct( ...
-    'experimentDir', 'C:/ruta/a/una/corrida', ...
-    'samplingPolicy', struct('mode','tail_every_k_last_n','k',50,'n',12)));
+runCheckpointTest(getResidualFinalCheckpointPath(), 50, true);
 ```
 
 ### Entrenamiento base de referencia
@@ -129,21 +77,21 @@ results = runCheckpointAudit(20, 50, 2, struct( ...
 trainInterface('td3','','')
 ```
 
-## Parametros locales a revisar
+## Portabilidad
 
-En `matlab_code/config/configurables.m`:
+En otra PC normalmente solo hay que revisar en `matlab_code/config/configurables.m`:
 
 - `params.dataset_folder`
 - `params.agents_directory`
+
+Y solo si se usa hardware:
+
 - `params.comUNO`
 - `params.comGlove`
-- `params.trainingMaxEpisodes`
-- `params.trainingSaveAgentEvery`
-- `params.trainingPlots`
 
-Los puertos `COM` solo importan para hardware. El flujo publicado es simulacion.
+`dataset_folder` y `agents_directory` deben quedar relativos/portables para el flujo publicado.
 
 ## Documentacion adicional
 
-- `matlab_code/README.md`: guia operativa del codigo.
-- `docs/td3_training_report/README.md`: reportes, presentacion y referencias canonicas.
+- `matlab_code/README.md`: guia operativa detallada
+- `docs/td3_training_report/README.md`: documentos, figuras y compilacion manual

@@ -5,7 +5,8 @@
 /baseline_article.txt
 
 EMG_Prosthesis_TD3/matlab_code/trainedAgents/
-EMG_Prosthesis_TD3/docs/td3_training_report/report*
+EMG_Prosthesis_TD3/docs/td3_training_report/report_*
+EMG_Prosthesis_TD3/docs/td3_training_report/report-*
 EMG_Prosthesis_TD3/docs/td3_training_report/report_valid_baseline_*
 EMG_Prosthesis_TD3/docs/td3_training_report/*.aux
 EMG_Prosthesis_TD3/docs/td3_training_report/*.bbl
@@ -22,3 +23,5 @@ EMG_Prosthesis_TD3/docs/td3_training_report/$job.*
 EMG_Prosthesis_TD3/docs/td3_training_report/build/
 EMG_Prosthesis_TD3/docs/td3_training_report/presentacion_final*_recompilada*
 EMG_Prosthesis_TD3/docs/td3_training_reportbuild/
+EMG_Prosthesis_TD3/docs/td3_training_report/reporte_*_smoke.*
+EMG_Prosthesis_TD3/docs/td3_training_report/figures/*_smoke.png

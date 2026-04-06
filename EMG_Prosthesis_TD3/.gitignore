@@ -13,12 +13,15 @@ docs/td3_training_report/*.toc
 docs/td3_training_report/*.fdb_latexmk
 docs/td3_training_report/*.fls
 docs/td3_training_report/*.synctex.gz
-docs/td3_training_report/report*
+docs/td3_training_report/report_*
+docs/td3_training_report/report-*
 docs/td3_training_report/report_valid_baseline_*
 docs/td3_training_report/$job.*
 docs/td3_training_report/build/
 docs/td3_training_report/presentacion_final*_recompilada*
 docs/td3_training_reportbuild/
+docs/td3_training_report/reporte_*_smoke.*
+docs/td3_training_report/figures/*_smoke.png
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

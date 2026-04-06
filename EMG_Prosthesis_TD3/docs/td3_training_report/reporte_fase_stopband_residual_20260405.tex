@@ -1,0 +1,300 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-nodecimaldot]{babel}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{hyperref}
+\geometry{margin=2.2cm}
+\hypersetup{colorlinks=true, linkcolor=blue!50!black, urlcolor=blue!50!black}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+
+\title{Reporte integral de la fase stop-band residual\\\large Proyecto TD3 para prótesis mioeléctrica}
+\author{César Zapata\\Research Laboratory in Artificial Intelligence and Computer Vision ``Alan Turing''}
+\date{05-04-2026}
+
+\begin{document}
+\maketitle
+
+\section*{Propósito de esta fase}
+Después de las corridas largas de \(50{,}000\) episodios sobre la base y sobre el residual, quedó claro que entrenar más tiempo no garantizaba mejora sostenida. En ambos casos apareció el mismo fenómeno: una parte de la trayectoria era útil, pero al seguir empujando episodios el agente podía entrar en meseta y después degradarse.
+
+Por eso esta fase no se diseñó para ``ganar por fuerza bruta'', sino para responder una pregunta más precisa: \textbf{en qué banda de episodios aparece el mejor compromiso residual antes de la deriva}. La idea fue dividir el problema en dos pasos:
+
+\begin{enumerate}
+\item \textbf{discovery}: explorar varias seeds y proponer una banda objetivo de parada;
+\item \textbf{confirmation}: repetir con seeds nuevas para verificar si esa banda realmente se sostiene.
+\end{enumerate}
+
+El punto fijo de partida durante toda la fase fue:
+\begin{itemize}
+\item benchmark oficial: \texttt{Agent7250};
+\item referencia residual reproducible previa: \texttt{seed 22};
+\item mejor residual histórico single-run: \texttt{Agent1850}.
+\end{itemize}
+
+\section*{Motivación metodológica}
+Las dos corridas largas previas mostraron que la pregunta correcta ya no era ``si entrenar más mejora'', sino \textbf{qué pasa con la curva a futuro}. Esa observación justificó cambiar de estrategia:
+
+\begin{itemize}
+\item se dejaron de perseguir corridas ciegas de muchos episodios;
+\item se aumentó la densidad de checkpoints;
+\item se auditó \emph{toda} la trayectoria, no solo la cola;
+\item la selección final pasó a depender de auditoría y re-test, no del último checkpoint.
+\end{itemize}
+
+En otras palabras, la fase stop-band intentó convertir la intuición de meseta y desaprendizaje en un flujo experimental controlado.
+
+\section*{Discovery: búsqueda inicial de la banda}
+\subsection*{Configuración}
+\begin{table}[H]
+\centering
+\caption{Configuración de discovery}
+\begin{tabularx}{\linewidth}{lY}
+\toprule
+Elemento & Valor \\
+\midrule
+Base congelada & \texttt{Agent7250} \\
+Seeds & \texttt{[11 22 33 44 55]} \\
+Episodios por seed & \(10{,}000\) \\
+Guardado & cada \(250\) episodios \\
+Auditoría & \(20\) simulaciones rápidas, \(50\) completas, \(\texttt{topK}=5\) \\
+Selección & auditoría completa + re-test final independiente \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection*{Resultado agregado}
+Discovery dejó el siguiente resumen:
+
+\begin{table}[H]
+\centering
+\caption{Resumen agregado de discovery}
+\begin{tabularx}{\linewidth}{l c}
+\toprule
+Métrica & Valor \\
+\midrule
+Seeds aceptadas & \(1/5\) \\
+ConditionA & \(1\) \\
+ConditionB & \(0\) \\
+Rejected & \(4\) \\
+trackingMSE medio \(\pm\) std & \(0.042706 \pm 0.000190\) \\
+trackingMAE medio \(\pm\) std & \(0.160010 \pm 0.000368\) \\
+actionL2 medio \(\pm\) std & \(0.611654 \pm 0.014540\) \\
+saturationFraction media \(\pm\) std & \(0.404822 \pm 0.040419\) \\
+deltaActionL2 medio \(\pm\) std & \(0.367862 \pm 0.014986\) \\
+Estado agregado vs benchmark & \texttt{Rejected} \\
+stop-band propuesta & episodio \(3000\) \\
+Ventana propuesta & \([2750, 3250]\) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{figures/residual_stopband_discovery_training_overview_20260405.png}
+\caption{Vista general de entrenamiento por seed durante discovery.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{figures/residual_stopband_discovery_winner_episodes_20260405.png}
+\caption{Episodios ganadores por seed y distribución final de estados en discovery.}
+\end{figure}
+
+\subsection*{Lectura}
+Discovery \textbf{no estabilizó la línea por sí solo}. Solo una seed quedó aceptada y el promedio agregado terminó rechazado. Aun así, la fase sí produjo una señal útil:
+
+\begin{itemize}
+\item mostró que la mejora residual no estaba repartida uniformemente a lo largo de toda la trayectoria;
+\item dejó una zona de episodios candidata para probar de nuevo;
+\item justificó pasar a confirmation en lugar de seguir extendiendo corridas largas.
+\end{itemize}
+
+La regla usada fue deliberadamente conservadora. Como hubo muy pocas seeds aceptadas, la propuesta de banda se mantuvo acotada para evitar reaccionar en exceso a un outlier tardío.
+
+\section*{Confirmation: validación de la banda}
+\subsection*{Configuración}
+\begin{table}[H]
+\centering
+\caption{Configuración de confirmation}
+\begin{tabularx}{\linewidth}{lY}
+\toprule
+Elemento & Valor \\
+\midrule
+Base congelada & \texttt{Agent7250} \\
+Seeds & \texttt{[66 77 88 99 111]} \\
+stop-band de entrada & episodio \(3000\) desde discovery \\
+Ventana de trabajo & \([2750, 3250]\) como referencia de entrada, con selección final re-evaluada por auditoría y re-test \\
+Episodios por seed & \(3500\) \\
+Guardado & cada \(100\) episodios \\
+Auditoría & \(20\) simulaciones rápidas, \(50\) completas, \(\texttt{topK}=5\) \\
+Selección final & checkpoint re-testeado; dentro de la ventana se prioriza el más temprano aceptado \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection*{Resultado agregado}
+\begin{table}[H]
+\centering
+\caption{Resumen agregado de confirmation}
+\begin{tabularx}{\linewidth}{l c}
+\toprule
+Métrica & Valor \\
+\midrule
+Seeds aceptadas & \(3/5\) \\
+ConditionA & \(2\) \\
+ConditionB & \(1\) \\
+Rejected & \(2\) \\
+trackingMSE medio \(\pm\) std & \(0.042674 \pm 0.000490\) \\
+trackingMAE medio \(\pm\) std & \(0.159880 \pm 0.000776\) \\
+actionL2 medio \(\pm\) std & \(0.588257 \pm 0.037177\) \\
+saturationFraction media \(\pm\) std & \(0.355790 \pm 0.080166\) \\
+deltaActionL2 medio \(\pm\) std & \(0.368386 \pm 0.021190\) \\
+Estado agregado vs benchmark & \texttt{ConditionA} \\
+stop-band confirmada & episodio \(2000\) \\
+Ventana confirmada & \([1750, 2250]\) \\
+Promoción de línea activa & Sí \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{figures/residual_stopband_confirmation_training_overview_20260405.png}
+\caption{Vista general de entrenamiento por seed durante confirmation.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{figures/residual_stopband_confirmation_winner_episodes_20260405.png}
+\caption{Episodios ganadores por seed y distribución final de estados en confirmation.}
+\end{figure}
+
+\subsection*{Detalle por seed}
+\begin{table}[H]
+\centering
+\caption{Checkpoint final seleccionado por seed en confirmation}
+\scriptsize
+\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{1.0cm} c c c c c >{\raggedright\arraybackslash}p{1.5cm}}
+\toprule
+Seed & Episodio & trackingMSE & actionL2 & saturation & deltaActionL2 & Estado \\
+\midrule
+66 & 2200 & 0.043016 & 0.626795 & 0.439649 & 0.389861 & Rejected \\
+77 & 2200 & 0.042057 & 0.553707 & 0.276106 & 0.346460 & ConditionA \\
+88 & 2000 & 0.043291 & 0.545418 & 0.268202 & 0.353852 & ConditionB \\
+99 & 2200 & 0.042400 & 0.619077 & 0.421728 & 0.392167 & Rejected \\
+111 & 1700 & 0.042606 & 0.596287 & 0.373263 & 0.359592 & ConditionA \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection*{Lectura}
+Aquí apareció la señal fuerte de la fase. A diferencia de discovery:
+
+\begin{itemize}
+\item \(3/5\) seeds quedaron aceptadas;
+\item la media agregada pasó a \texttt{ConditionA};
+\item la nueva banda confirmada se concentró temprano, entre \(1700\) y \(2200\) episodios;
+\item la mediana de las seeds aceptadas llevó naturalmente a una stop-band de \(2000\) episodios.
+\end{itemize}
+
+Esto es importante porque alinea tres cosas a la vez:
+
+\begin{enumerate}
+\item una mejora agregada frente a \texttt{Agent7250};
+\item una reducción de saturación frente al benchmark;
+\item una evidencia más fuerte de que la parte útil de la trayectoria ocurre antes de la deriva tardía.
+\end{enumerate}
+
+\section*{Comparación contra referencias activas}
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{figures/residual_stopband_confirmation_comparison_20260405.png}
+\caption{Comparación del resultado de confirmation contra \texttt{Agent7250}, \texttt{seed 22} y \texttt{Agent1850}.}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\caption{Comparación final de referencias y campaña confirmada}
+\scriptsize
+\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{2.2cm} c c c c c >{\raggedright\arraybackslash}p{1.6cm}}
+\toprule
+Candidato & trackingMSE & trackingMAE & actionL2 & saturation & deltaActionL2 & Estado \\
+\midrule
+Agent7250 & 0.043045 & 0.160336 & 0.596444 & 0.392086 & 0.321385 & Reference \\
+Seed22 & 0.043045 & 0.160786 & 0.582152 & 0.337475 & 0.327141 & ConditionA \\
+Agent1850 & 0.043445 & 0.163542 & 0.523597 & 0.272637 & 0.299262 & ConditionB \\
+CampaignMean & 0.042674 & 0.159880 & 0.588257 & 0.355790 & 0.368386 & ConditionA \\
+BestCampaignSeed & 0.042057 & 0.158791 & 0.553707 & 0.276106 & 0.346460 & ConditionA \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection*{Interpretación comparativa}
+La fase confirmada deja una lectura bastante limpia:
+
+\begin{itemize}
+\item frente a \texttt{Agent7250}, la media de la campaña confirmada mejora tracking, reduce \texttt{actionL2} y reduce \texttt{saturationFraction};
+\item frente a \texttt{seed 22}, la campaña confirmada mejora el tracking y sostiene una media aceptada, aunque \texttt{seed 22} sigue siendo una referencia muy sólida;
+\item frente a \texttt{Agent1850}, la nueva fase no reemplaza su valor histórico: \texttt{Agent1850} sigue siendo un residual single-run muy fuerte en reducción de esfuerzo, pero la stop-band confirmada gana como \textbf{línea reproducible activa}.
+\end{itemize}
+
+Eso permite separar correctamente los roles:
+\begin{itemize}
+\item \texttt{Agent7250}: benchmark oficial estable;
+\item \texttt{Agent1850}: mejor residual histórico single-run;
+\item stop-band confirmada: nueva línea residual activa para continuar.
+\end{itemize}
+
+\section*{Por qué este resultado sí cambia el punto operativo}
+La diferencia entre discovery y confirmation no es solo numérica; es metodológica.
+
+Discovery dijo: ``parece haber una zona útil, pero todavía no está demostrada''.  
+Confirmation respondió: ``esa zona sí se sostiene lo suficiente como para convertirla en línea operativa''.
+
+La razón principal es que confirmation cumplió simultáneamente las cuatro condiciones definidas para promoción:
+
+\begin{enumerate}
+\item al menos \(3/5\) seeds en \texttt{ConditionA} o \texttt{ConditionB};
+\item media agregada de tracking dentro del margen aceptado;
+\item \texttt{actionL2} media menor que \texttt{Agent7250};
+\item \texttt{saturationFraction} media menor que \texttt{Agent7250}.
+\end{enumerate}
+
+En esta fase, por lo tanto, sí hubo evidencia suficiente para pasar de una idea prometedora a una regla de trabajo concreta.
+
+\section*{Punto actual del proyecto}
+El estado recomendado del proyecto queda fijado así:
+
+\begin{itemize}
+\item \textbf{benchmark oficial}: \texttt{Agent7250};
+\item \textbf{línea residual activa}: \textbf{stop-band confirmada} alrededor del episodio \(2000\), con ventana \([1750, 2250]\);
+\item \textbf{mejor residual reproducible de referencia}: la campaña de confirmation del 05-04-2026;
+\item \textbf{mejor residual histórico single-run}: \texttt{Agent1850}.
+\end{itemize}
+
+Esto significa que ya no conviene seguir con corridas largas ciegas como estrategia principal. La recomendación operativa para continuar es:
+
+\begin{enumerate}
+\item seguir usando \texttt{Agent7250} como base congelada;
+\item entrenar residual con checkpoints densos;
+\item auditar toda la trayectoria;
+\item priorizar checkpoints dentro de la ventana \([1750, 2250]\);
+\item elegir el checkpoint aceptado más temprano dentro de esa banda;
+\item usar la banda confirmada como nueva plataforma para barridos finos o nuevas variantes.
+\end{enumerate}
+
+\section*{Veredicto final}
+La fase stop-band residual fue exitosa.
+
+No cambió el benchmark oficial del proyecto, pero sí cambió de forma clara la estrategia correcta para continuar. El trabajo ya no debe avanzar por extensión de episodios a ciegas. Debe avanzar sobre una \textbf{parada temprana controlada}, centrada en la banda confirmada alrededor de \(2000\) episodios, que fue precisamente donde la línea residual mostró su comportamiento más estable y útil.
+
+\end{document}
