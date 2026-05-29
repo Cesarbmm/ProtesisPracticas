@@ -62,6 +62,7 @@ params.trainingSaveAgentEvery = 100;
 params.trainingPlots = "training-progress";
 params.plotEpisodeOnTest = false;
 params.randomSeed = NaN; % use a numeric value for reproducible multi-seed studies
+params.useGpu = false; % launchers may opt in; training falls back to CPU safely
 
 % --- NOTE: removed
 % when true, calls goHomePostion(...) at the end of every episode
@@ -344,7 +345,7 @@ params = localApplyOverride(params, override);
 params = localFinalizeStateSettings(params, override);
 params = localFinalizeModeSettings(params, override);
 params = localFinalizeResumeSettings(params);
-params = localFinalizeRuntimeSettings(params);
+params = localFinalizeRuntimeSettings(params, override);
 params.reward_function = @(env, action, observation) ...
     rewardFunctionSelector(env, params.rewardType, action, observation);
 overrideKey = currentOverrideKey;
@@ -440,7 +441,7 @@ if ~isfield(params, "agentFile") || isempty(params.agentFile)
 end
 end
 
-function params = localFinalizeRuntimeSettings(params)
+function params = localFinalizeRuntimeSettings(params, override)
 if params.run_training
     params.RLtrainingOptions = rlTrainingOptions(...
         'MaxEpisodes', params.trainingMaxEpisodes, ...
@@ -451,11 +452,15 @@ if params.run_training
         'SaveAgentValue', params.trainingSaveAgentEvery, ...
         'Plots', params.trainingPlots);
 else
-    params.simOpts = rlSimulationOptions( ...
-        'MaxSteps', 500, ...
-        'NumSimulations', 50, ...
-        'StopOnError', 'on', ...
-        'UseParallel', false);
+    if isfield(override, "simOpts")
+        params.simOpts = override.simOpts;
+    else
+        params.simOpts = rlSimulationOptions( ...
+            'MaxSteps', 500, ...
+            'NumSimulations', 50, ...
+            'StopOnError', 'on', ...
+            'UseParallel', false);
+    end
 end
 end
 

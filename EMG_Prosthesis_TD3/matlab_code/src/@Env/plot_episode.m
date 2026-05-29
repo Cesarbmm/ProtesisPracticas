@@ -12,7 +12,11 @@ srcDir = fileparts(envDir);
 matlabRoot = fileparts(srcDir);
 projectRoot = fileparts(matlabRoot);
 repoRoot = fileparts(projectRoot);
-saveDir = fullfile(repoRoot, 'Imagenes');
+if strlength(string(this.episode_folder)) > 0
+    saveDir = fullfile(char(string(this.episode_folder)), 'visual_episodes');
+else
+    saveDir = fullfile(repoRoot, 'Imagenes');
+end
 if ~exist(saveDir, 'dir')
     mkdir(saveDir);
 end

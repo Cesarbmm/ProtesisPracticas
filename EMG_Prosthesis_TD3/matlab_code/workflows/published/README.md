@@ -1,20 +1,24 @@
 # Published Workflows
 
-Launchers vigentes y helpers de campana que no forman parte del core reusable de `src/`.
+Launchers activos y estables que no forman parte del core reusable de
+`src/`.
 
-## Contenido
+## Contenido activo
 
-- `run_residual_lift_pilot.m`: piloto residual base sobre `Agent7250`
-- `run_residual_lift_multiseed.m`: reproducibilidad multi-seed
-- `run_residual_lift_longrun.m`: variante larga con guardado disperso
-- `run_residual_lift_stopband_discovery.m`: discovery de stop-band residual
-- `run_residual_lift_stopband_confirmation.m`: confirmacion de stop-band residual
-- `runResidualStopbandCampaignCore.m`: orquestacion comun de discovery y confirmation
-- `summarizeResidualStopbandCampaign.m`: agregacion de metricas de campana
-- `run_repo_smoke_validation.m`: validacion automatizada del repo migrado
+- `run_benchmark_td3_seeded_retrain_motor2_diagnostic.m`: fase actual,
+  reentrenamiento TD3 base por seeds y diagnostico del motor 2.
+- `run_motor2_simulation_sanity_check.m`: prueba controlada del simulador
+  con acciones fijas, sin aprendizaje y sin hardware.
+- `run_repo_smoke_validation.m`: validacion automatizada corta del repo.
+
+## Experimentos pausados
+
+Los flujos Residual Lift y residual stop-band se movieron a
+`../future_experiments/`. Siguen disponibles con `addpath(genpath(pwd))`,
+pero no son la linea principal actual.
 
 ## Regla
 
 - mantener aqui los puntos de entrada activos del proyecto
 - no mover runtime, evaluacion ni checkpoints reutilizables fuera de `src/`
-- no mezclar aqui launchers legacy; esos quedan en `../legacy/`
+- no mezclar aqui launchers legacy o pausados
