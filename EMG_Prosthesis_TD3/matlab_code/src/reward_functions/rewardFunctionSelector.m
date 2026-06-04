@@ -39,6 +39,11 @@ switch rewardType
             trackingMseActionRateReward(this, action, user_data);
         return;
 
+    case 'trackingMseActionRateMotorWeightedReward'
+        [reward, rewardVector, rewardInfo] = ...
+            trackingMseActionRateMotorWeightedReward(this, action, user_data);
+        return;
+
     case 'trackingMseActionRateSaturationReward'
         [reward, rewardVector, rewardInfo] = ...
             trackingMseActionRateSaturationReward(this, action, user_data);

@@ -2,13 +2,13 @@
 
 Guia operativa corta del arbol `matlab_code/`.
 
-## Fase actual: Benchmark TD3 seeded retrain + motor 2 diagnostic
+## Fase actual: Motor 2 targeted diagnostic and ablation
 
-La linea activa vuelve al TD3 base para diagnosticar si la falla visual
-recurrente del motor 2 viene del entrenamiento residual o ya existe en el
-entorno/simulador/mapeo.
+La linea activa aisla el problema del motor 2 antes de volver a entrenar
+campanas largas o retomar Residual Lift/stop-band. El benchmark TD3 base ya
+confirmo que el problema tambien aparece sin residual.
 
-Esta fase usa:
+Los flujos activos usan:
 
 - agente: `td3`
 - reward: `trackingMseActionRateReward`
@@ -18,6 +18,7 @@ Esta fase usa:
 - `connect_glove=false`
 - `unifyActions=false`
 - `actionInterfaceVariant="baselineQuantized"`
+- GPU si esta disponible mediante `configureGpuForTraining(true)`
 
 Todo corre en software/simulacion. No usa hardware fisico, no cambia
 COM3/COM4 y no activa ejecucion real.
@@ -49,45 +50,57 @@ disp(c.dataset_folder)
 disp(getAgent7250CheckpointPath())
 ```
 
-## Smoke benchmark + motor 2
+## Sanity extendido sin entrenamiento
 
-Prueba corta antes de lanzar una campana larga:
+Primera prueba recomendada para revisar indice, signo, zona muerta y escala
+del simulador por motor:
 
 ```matlab
 cd('C:/ruta/al/repo/ProtesisPracticas/EMG_Prosthesis_TD3/matlab_code')
 addpath(genpath(pwd))
 clearConfigurablesOverride()
 
-results = run_benchmark_td3_seeded_retrain_motor2_diagnostic(struct( ...
-    'seeds', 66, ...
-    'trainingEpisodes', 200, ...
-    'trainingSaveEvery', 100, ...
-    'episodeSaveFreq', 100, ...
-    'auditFastSimulations', 2, ...
-    'auditFullSimulations', 2, ...
-    'auditTopK', 1, ...
-    'finalTestEpisodes', 2, ...
-    'plotEpisodeOnTest', true, ...
-    'useGpu', true, ...
-    'runMotor2SanityCheck', true));
+results = run_motor2_simulation_sanity_check_extended();
 ```
 
-El smoke debe generar al menos:
+Guarda resultados bajo:
 
-- `figures/seed_066_training_progress.png`
-- `figures/seed_066_selected_checkpoint_episode_2_visual_test.png`
-- `figures/seed_066_motor_diagnostic.png`
-- `figures/motor2_diagnostic_summary.png`
-- `summary/benchmark_seeded_summary.*`
-- `summary/benchmark_seeded_figures.md`
+```text
+../../Agentes/motor2_simulation_sanity_check_extended/YY-MM-DD_HH-mm-ss/
+```
 
-## Campana real sugerida
+## Smoke integrado del diagnostico
 
 ```matlab
-cd('C:/ruta/al/repo/ProtesisPracticas/EMG_Prosthesis_TD3/matlab_code')
-addpath(genpath(pwd))
-clearConfigurablesOverride()
+results = run_motor2_targeted_diagnostic_ablation(struct( ...
+    'mode', 'smoke', ...
+    'seeds', [11 55], ...
+    'trainingEpisodes', 300, ...
+    'finalTestEpisodes', 5, ...
+    'useGpu', true));
+```
 
+## Ablation corta
+
+```matlab
+results = run_motor2_reward_ablation(struct( ...
+    'seeds', [11 22 55], ...
+    'trainingEpisodes', 3000, ...
+    'finalTestEpisodes', 20, ...
+    'useGpu', true, ...
+    'selectionMode', 'motor2_aware'));
+```
+
+Salidas:
+
+```text
+../../Agentes/motor2_targeted_diagnostic_ablation/YY-MM-DD_HH-mm-ss/
+../../Agentes/motor2_reward_ablation/YY-MM-DD_HH-mm-ss/
+```
+
+## Benchmark TD3 base largo solo si se necesita
+
+```matlab
 results = run_benchmark_td3_seeded_retrain_motor2_diagnostic(struct( ...
     'seeds', [11 22 33 44 55], ...
     'trainingEpisodes', 12000, ...
@@ -102,78 +115,18 @@ results = run_benchmark_td3_seeded_retrain_motor2_diagnostic(struct( ...
     'runMotor2SanityCheck', true));
 ```
 
-Si `12000` episodios es demasiado pesado, cambia solo
-`trainingEpisodes` a `8000` o `15000` desde el struct de opciones.
+Cada ejecucion crea una carpeta nueva bajo `../../Agentes/`. Esa carpeta no
+se versiona.
 
-Cada checkpoint seleccionado se evalua con `finalTestEpisodes=50` en la
-campana real.
+Criterios para considerar una mejora en campana corta:
 
-## Salidas
-
-Cada ejecucion crea una carpeta nueva, sin sobrescribir corridas previas:
-
-```text
-../../Agentes/benchmark_td3_seeded_retrain_motor2_diagnostic/YY-MM-DD_HH-mm-ss/
-```
-
-Estructura principal:
-
-```text
-summary/
-  benchmark_seeded_summary.csv
-  benchmark_seeded_summary.txt
-  benchmark_seeded_results.mat
-  benchmark_seeded_figures.md
-figures/
-  seed_011_training_progress.png
-  seed_011_selected_checkpoint_episode_50_visual_test.png
-  seed_011_motor_diagnostic.png
-  benchmark_training_overview.png
-  benchmark_selected_checkpoints.png
-  benchmark_final_comparison.png
-  motor2_diagnostic_summary.png
-seed_011/
-  training/
-  checkpoint_audit/
-  final_test_50/
-  motor_diagnostic.csv
-motor2_sanity_check/
-  motor2_sanity_check.csv
-  motor2_sanity_check.png
-```
-
-El checkpoint seleccionado por seed se consulta con:
-
-```matlab
-results.perSeedTable(:, {'seed','selectedCheckpointEpisode', ...
-    'selectedCheckpointPath','selectionReason'})
-```
-
-La informacion de GPU queda en:
-
-```matlab
-results.gpuInfo
-```
-
-Si MATLAB no expone una configuracion GPU segura para la version local, el
-flujo sigue en CPU y guarda el motivo en `gpuFallbackReason`.
-
-## Sanity check aislado del motor 2
-
-Tambien se puede correr sin entrenamiento:
-
-```matlab
-results = run_motor2_simulation_sanity_check();
-```
-
-Guarda resultados bajo:
-
-```text
-../../Agentes/motor2_simulation_sanity_check/YY-MM-DD_HH-mm-ss/
-```
-
-Este helper manda acciones fijas al simulador para revisar indice, signo,
-escala y respuesta del motor 2.
+- `motor2_flat_response <= 1/3`
+- `motor2_action_no_motion <= 1/3`
+- `responseRange_motor2 >= 0.20` promedio o al menos 50% de
+  `targetRange_motor2`
+- `trackingMSE_motor2` mejora contra baseline actual o `Agent7250`
+- tracking global no empeora mas de 10%
+- saturacion no empeora mas de 15%
 
 ## Smoke integral de repo
 

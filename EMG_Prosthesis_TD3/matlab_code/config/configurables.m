@@ -208,6 +208,9 @@ params.rewardSmoothnessWeight = 0.05;
 params.rewardDeltaActionWeight = 0.05;
 params.rewardSaturationThreshold = 0.90;
 params.rewardSaturationWeight = 0.02;
+params.rewardMotorWeights = [1.0 2.0 1.0 1.0];
+params.rewardActionMotorWeights = [1.0 1.0 1.0 1.0];
+params.rewardDeltaActionMotorWeights = [1.0 1.0 1.0 1.0];
 
 params.reward_function = @(env, action, observation) ...
     rewardFunctionSelector(env, params.rewardType, action, observation);
