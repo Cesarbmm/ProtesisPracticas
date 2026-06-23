@@ -31,6 +31,10 @@ experimentales:
   `encoder2Flex` baseline/calibrada.
 - `run_compare_against_canonical_benchmark_all_motor.m`: compara `Agent7250`
   contra corridas actuales con diagnostico y figuras M1-M4.
+- `run_motor2_flag_forensic_audit.m`: evalua solo `Agent7250` congelado
+  con conversion baseline/calibrada y correccion aislada de M2. No entrena;
+  separa por episodio los flags de M2, prueba sensibilidad de thresholds y
+  guarda figuras MATLAB solo de episodios con flags.
 
 ## Experimentos pausados
 

@@ -377,7 +377,70 @@ Figuras curadas:
 
 ![Motor 2 only correction visual](figures/frozen_agent7250_final/agent7250_m2only_heuristic_motor2Calibrated_gap_neg256_episode50_visual_test_20260623.png)
 
-## L. Comandos para repetir
+## L. Motor 2 flag forensic audit
+
+Para explicar los flags restantes se agrego una auditoria por episodio. No
+hubo entrenamiento; se uso `Agent7250` congelado y el mismo protocolo de 50
+episodios:
+
+```text
+Agentes/motor2_flag_forensic_audit/26-06-23_12-40-46/
+```
+
+| Config | Total flags M2 | Episodios con flags | Flat | No-motion | High-action-flat | Posibles falsos positivos | Delta no-M2 | Decision |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| Agent7250 baseline | 81 | 27 | 27 | 27 | 27 | 0 | 0 | rejected |
+| Agent7250 + motor2Calibrated -256 | 78 | 26 | 26 | 26 | 26 | 0 | 0 | rejected |
+| Agent7250 + M2 heuristic | 81 | 27 | 27 | 27 | 27 | 0 | 0 | rejected |
+| Agent7250 + M2 heuristic + motor2Calibrated -256 | 78 | 26 | 26 | 26 | 26 | 0 | 0 | rejected |
+
+Episodios con flags en baseline:
+`2;4;6;8;10;11;12;14;16;18;20;22;24;26;28;30;32;34;36;38;40;42;44;46;48;49;50`.
+
+Episodios con flags con conversion calibrada:
+`2;4;6;8;10;11;12;14;16;18;20;22;24;26;28;30;32;34;36;38;40;42;44;46;48;50`.
+
+El cambio `motor2Calibrated -256` elimina solo el episodio 49 de la lista
+de flags y baja el conteo total de `81` a `78`. La heuristica aislada
+aumenta la accion de M2 (`meanAbsMotor2ActionDelta=0.035457` en baseline y
+`0.036039` con conversion calibrada), pero no limpia mas episodios. La
+integridad de accion si pasa: `maxNonMotor2ActionDelta=0` en todas las
+configuraciones.
+
+La columna `possibleFalsePositive` no marco casos. Los episodios con flags
+tienen target de M2 con rango claro y respuesta baja. En baseline, el
+promedio de episodios marcados fue:
+
+- `meanTargetRange_M2_flagged = 0.475309`
+- `meanResponseRange_M2_flagged = 0.019729`
+- `meanActionRange_M2_flagged = 0.097316`
+
+En `M2 heuristic + motor2Calibrated -256`:
+
+- `meanTargetRange_M2_flagged = 0.469810`
+- `meanResponseRange_M2_flagged = 0.014281`
+- `meanActionRange_M2_flagged = 0.150830`
+
+La sensibilidad de thresholds muestra que el problema no desaparece al
+relajar la regla. Con thresholds relajados quedan `25` episodios marcados
+por configuracion; con respuesta estricta suben a `40-43`. Por eso el
+siguiente paso no es aceptar el candidato ni entrenar una campana larga, sino
+entender por que esos episodios tienen target alto, accion presente y
+respuesta plana.
+
+Figuras generadas por MATLAB:
+
+![Forensic baseline episode 2](figures/frozen_agent7250_final/motor2_flag_forensic/a7250_base_episode_002_flags_flat_nomotion_highflat.png)
+
+![Forensic M2-only calibrated episode 2](figures/frozen_agent7250_final/motor2_flag_forensic/a7250_m2heur_m2cal256_episode_002_flags_flat_nomotion_highflat.png)
+
+Veredicto forense: `rejected`. La correccion aislada se mantiene como
+direccion tecnica porque no altera M1/M3/M4, pero el candidato actual no se
+acepta. Los flags de M2 parecen reales bajo la metrica actual y requieren
+otra revision de zona plana/conversion o de la heuristica, no una nueva
+campana TD3 desde cero.
+
+## M. Comandos para repetir
 
 Diagnostico sin entrenamiento:
 

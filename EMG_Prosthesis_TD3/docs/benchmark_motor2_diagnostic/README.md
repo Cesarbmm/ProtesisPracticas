@@ -508,6 +508,61 @@ Figuras curadas nuevas:
 PDF actualizado de cierre:
 
 - `motor2_calibration_report_frozen_agent7250_v5.pdf`
+- `motor2_calibration_report_flag_forensic_v6.pdf`
+
+### Motor 2 flag forensic audit
+
+La siguiente revision no entreno nada. Se evaluo `Agent7250` congelado en
+cuatro configuraciones para explicar por que M2 mejora en metricas pero
+mantiene flags:
+
+```matlab
+results = run_motor2_flag_forensic_audit(struct( ...
+    'finalTestEpisodes', 50, ...
+    'plotEpisodeOnTest', true, ...
+    'useGpu', true));
+```
+
+Salida revisada:
+
+```text
+Agentes/motor2_flag_forensic_audit/26-06-23_12-40-46/
+```
+
+| Config | Total flags M2 | Episodios con flags | Flat | No-motion | High-action-flat | Falsos positivos | Delta no-M2 | Decision |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| Agent7250 baseline | 81 | 27 | 27 | 27 | 27 | 0 | 0 | rejected |
+| Agent7250 + motor2Calibrated -256 | 78 | 26 | 26 | 26 | 26 | 0 | 0 | rejected |
+| Agent7250 + M2 heuristic | 81 | 27 | 27 | 27 | 27 | 0 | 0 | rejected |
+| Agent7250 + M2 heuristic + motor2Calibrated -256 | 78 | 26 | 26 | 26 | 26 | 0 | 0 | rejected |
+
+Los flags no parecen ser falsos positivos bajo la regla actual:
+`possibleFalsePositiveCount=0` para todas las configuraciones. En los
+episodios marcados, el target de M2 tiene rango claro, mientras la respuesta
+queda muy baja. Por ejemplo, en baseline el promedio de episodios con flag
+fue `targetRange_M2=0.475309`, `responseRange_M2=0.019729` y
+`actionRange_M2=0.097316`. Con `M2 heuristic + motor2Calibrated -256` el
+promedio queda en `targetRange_M2=0.469810`, `responseRange_M2=0.014281` y
+`actionRange_M2=0.150830`.
+
+La sensibilidad de thresholds tampoco elimina el problema: con umbrales
+relajados quedan `25` episodios con flags por configuracion, y con umbral
+de respuesta estricto suben a `40-43`. Por eso no conviene solo relajar
+thresholds. La correccion aislada si queda validada en integridad:
+`maxNonMotor2ActionDelta=0` y M1/M3/M4 no aumentan flags frente a baseline,
+pero el candidato sigue rechazado porque M2 conserva demasiados episodios
+planos.
+
+Figuras generadas por MATLAB:
+
+- carpeta completa: `figures/frozen_agent7250_final/motor2_flag_forensic/`
+- ejemplo baseline: `figures/frozen_agent7250_final/motor2_flag_forensic/a7250_base_episode_002_flags_flat_nomotion_highflat.png`
+- ejemplo M2-only + conversion: `figures/frozen_agent7250_final/motor2_flag_forensic/a7250_m2heur_m2cal256_episode_002_flags_flat_nomotion_highflat.png`
+
+Conclusion: `rejected`. `Agent7250` congelado debe mantenerse como base; la
+correccion aislada de M2 es segura para no tocar M1/M3/M4, pero todavia no
+resuelve el modo plano de M2. No se recomienda una campana larga ni cambios
+de reward antes de explicar esos episodios.
 
 ## Figuras seleccionadas
 

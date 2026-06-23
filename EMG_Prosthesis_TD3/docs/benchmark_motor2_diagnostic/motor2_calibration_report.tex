@@ -473,6 +473,60 @@ como linea principal.
 \caption{Test visual MATLAB, seed 11, episodio 5, accion calibrada.}
 \end{figure}
 
+\section{Auditoria forense de flags de motor 2}
+
+Despues de la evaluacion congelada se hizo una auditoria por episodio para
+entender por que motor 2 seguia con flags. No hubo entrenamiento. Se evaluo
+\texttt{Agent7250} congelado en cuatro configuraciones: baseline, conversion
+\texttt{motor2Calibrated -256}, heuristica M2-only, y heuristica M2-only con
+conversion calibrada.
+
+\begin{table}[H]
+\centering
+\caption{Auditoria forense de flags de motor 2, 50 episodios.}
+\scriptsize
+\begin{tabular}{lrrrrrrr}
+\toprule
+Config & Flags M2 & Episodios & Flat & No-motion & High-action & Falsos + & non-M2 \\
+\midrule
+Baseline & 81 & 27 & 27 & 27 & 27 & 0 & 0 \\
+M2Cal -256 & 78 & 26 & 26 & 26 & 26 & 0 & 0 \\
+M2 heuristic & 81 & 27 & 27 & 27 & 27 & 0 & 0 \\
+M2 heuristic + M2Cal & 78 & 26 & 26 & 26 & 26 & 0 & 0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+La conversion calibrada reduce poco el conteo: elimina solo el episodio 49
+de la lista de flags y baja de 81 a 78 flags totales. La heuristica M2-only
+si cambia la accion de motor 2, pero no toca M1, M3 ni M4:
+\texttt{maxNonMotor2ActionDelta=0}. Eso valida la integridad de la correccion
+aislada, pero no valida el candidato.
+
+Los flags no parecen falsos positivos con la regla actual. En episodios
+marcados, el target de M2 tiene rango claro y la respuesta queda baja. En
+baseline, el promedio fue \texttt{targetRange\_M2=0.475309} contra
+\texttt{responseRange\_M2=0.019729}. Con heuristica mas conversion calibrada,
+fue \texttt{targetRange\_M2=0.469810} contra
+\texttt{responseRange\_M2=0.014281}.
+
+Tambien se probo sensibilidad de thresholds. Con reglas relajadas quedan 25
+episodios con flags por configuracion. Con regla estricta de respuesta suben
+a 40--43 episodios. Por eso no se recomienda aceptar el candidato solo
+relajando thresholds.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\linewidth]{frozen_agent7250_final/motor2_flag_forensic/a7250_base_episode_002_flags_flat_nomotion_highflat.png}
+\caption{Figura MATLAB forense, baseline, episodio 2 con flags de motor 2.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\linewidth]{frozen_agent7250_final/motor2_flag_forensic/a7250_m2heur_m2cal256_episode_002_flags_flat_nomotion_highflat.png}
+\caption{Figura MATLAB forense, heuristica M2-only con conversion calibrada, episodio 2 con flags de motor 2.}
+\end{figure}
+
 \section{Conclusion}
 
 Se concluye de forma provisional que el problema del motor 2 no es un simple
@@ -494,5 +548,11 @@ nuevo. La direccion actual es usar \texttt{Agent7250} como base congelada y
 probar correcciones aisladas de motor 2 que mantengan M1, M3 y M4 intactos.
 El candidato actual queda rechazado hasta que limpie los flags de motor 2
 sin cambiar acciones de M1, M3 y M4.
+
+La auditoria forense confirma esa decision. La correccion aislada conserva
+\texttt{maxNonMotor2ActionDelta=0}, pero M2 mantiene 26--27 episodios con
+flags de respuesta plana. La direccion inmediata es explicar esos episodios
+marcados y revisar la zona plana de M2 antes de modificar reward, lanzar
+campanas largas o retomar residual/stop-band.
 
 \end{document}

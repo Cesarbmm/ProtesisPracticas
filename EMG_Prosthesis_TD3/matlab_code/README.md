@@ -401,6 +401,56 @@ pero solo se aceptaran si limpian flags de M2 sin tocar M1/M3/M4.
 `baselineQuantized` sigue siendo la accion oficial; `motorCalibratedQuantized`
 queda como experimento futuro y no se recomienda para la linea principal.
 
+### Motor 2 flag forensic audit
+
+Se ejecuto una auditoria forense sin entrenamiento para explicar por que la
+correccion aislada mejora metricas de M2, pero conserva flags:
+
+```matlab
+results = run_motor2_flag_forensic_audit(struct( ...
+    'finalTestEpisodes', 50, ...
+    'plotEpisodeOnTest', true, ...
+    'useGpu', true));
+```
+
+Salida revisada:
+
+```text
+../../Agentes/motor2_flag_forensic_audit/26-06-23_12-40-46/
+```
+
+| Config | Total flags M2 | Episodios con flags | Flat | No-motion | High-action-flat | Falsos positivos | Delta no-M2 | Decision |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| Agent7250 baseline | 81 | 27 | 27 | 27 | 27 | 0 | 0 | rejected |
+| Agent7250 + motor2Calibrated -256 | 78 | 26 | 26 | 26 | 26 | 0 | 0 | rejected |
+| Agent7250 + M2 heuristic | 81 | 27 | 27 | 27 | 27 | 0 | 0 | rejected |
+| Agent7250 + M2 heuristic + motor2Calibrated -256 | 78 | 26 | 26 | 26 | 26 | 0 | 0 | rejected |
+
+Episodios con flags en baseline:
+`2, 4, 6, 8, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 49, 50`.
+
+Episodios con flags con `motor2Calibrated -256`:
+`2, 4, 6, 8, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50`.
+
+La sensibilidad de thresholds no explica el problema completo. Con umbrales
+relajados quedan `25` episodios con flags por configuracion; con umbral de
+respuesta estricto suben a `40-43`. La regla de falsos positivos marco `0`
+casos, por lo que los flags se tratan como reales hasta revisar visualmente
+cada episodio. La correccion aislada paso integridad de accion:
+`maxNonMotor2ActionDelta=0`, y cuando la heuristica esta activa el delta de
+M2 es distinto de cero.
+
+Artefactos:
+
+- CSV por episodio: `../../Agentes/motor2_flag_forensic_audit/26-06-23_12-40-46/summary/motor2_flag_forensic_by_episode.csv`
+- resumen: `../../Agentes/motor2_flag_forensic_audit/26-06-23_12-40-46/summary/motor2_flag_forensic_summary.csv`
+- sensibilidad: `../../Agentes/motor2_flag_forensic_audit/26-06-23_12-40-46/summary/motor2_flag_threshold_sensitivity.csv`
+- figuras MATLAB por episodio con flag: `../docs/benchmark_motor2_diagnostic/figures/frozen_agent7250_final/motor2_flag_forensic/`
+
+Decision: `rejected`. La direccion sigue siendo `Agent7250` congelado con
+correcciones aisladas, pero el candidato actual no se acepta hasta que
+reduzca los flags reales de M2.
+
 Barrido de limites sin entrenamiento:
 
 ```matlab
