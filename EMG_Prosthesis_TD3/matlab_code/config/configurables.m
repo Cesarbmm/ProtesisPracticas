@@ -226,9 +226,33 @@ params.speeds = 255* [1, 1, 1, 1]; % little, idx, thumb, mid
 params.quantizeCommandsForSimulation = true;
 params.actionCommandActivationThreshold = 0.05;
 params.actionCommandLevels = [0 64 96 128 160 192 224 255];
+params.actionCommandLevelsByMotor = struct( ...
+    "m1", [0 64 96 128 160 192 224 255], ...
+    "m2", [0 128 160 192 224 255], ...
+    "m3", [0 64 96 128 160 192 224 255], ...
+    "m4", [0 64 96 128 160 192 224 255]);
 params.actionInterfaceVariant = "baselineQuantized";
 params.actionWarpDeadzone = 0.05;
 params.actionWarpOutputLevels = [64 96 128 160 192 224 255] / 255;
+
+% Experimental post-processing. The official path is "none". The
+% motor2OnlyHeuristicCorrection option is only for frozen Agent7250
+% diagnostics: it leaves motors 1, 3 and 4 unchanged and adds a small
+% correction to motor 2 based on the current normalized tracking error.
+params.actionPostprocessVariant = "none";
+params.motor2OnlyCorrectionGain = 0.50;
+params.motor2OnlyCorrectionMaxDelta = 0.20;
+params.motor2OnlyCorrectionMinBoost = 0.08;
+params.motor2OnlyCorrectionMinError = 0.08;
+params.motor2OnlyCorrectionFlatUpper = 0.18;
+
+% Experimental encoder-to-flex conversion. The baseline path is the official
+% behavior. motor2Calibrated only lowers the motor 2 gap threshold in
+% simulation diagnostics/ablations and must not be promoted without review.
+params.encoder2FlexVariant = "baseline";
+params.motor2Encoder2FlexGapOffset = -64;
+params.motor2Encoder2FlexBreakOffset = 0;
+params.motor2Encoder2FlexMinEffectiveEncoder = 0;
 
 % clipping
 % when true, the reward function can limit, modify or clip the action.

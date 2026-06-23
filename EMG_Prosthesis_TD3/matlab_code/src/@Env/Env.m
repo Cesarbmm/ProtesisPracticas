@@ -72,6 +72,15 @@ classdef Env < rl.env.MATLABEnvironment
         actionCommandActivationThreshold = ...
             configurables("actionCommandActivationThreshold");
         actionCommandLevels = configurables("actionCommandLevels");
+        actionCommandLevelsByMotor = configurables("actionCommandLevelsByMotor");
+        actionInterfaceVariant = configurables("actionInterfaceVariant");
+        actionPostprocessVariant = configurables("actionPostprocessVariant");
+        motor2OnlyCorrectionGain = configurables("motor2OnlyCorrectionGain");
+        motor2OnlyCorrectionMaxDelta = configurables("motor2OnlyCorrectionMaxDelta");
+        motor2OnlyCorrectionMinBoost = configurables("motor2OnlyCorrectionMinBoost");
+        motor2OnlyCorrectionMinError = configurables("motor2OnlyCorrectionMinError");
+        motor2OnlyCorrectionFlatUpper = configurables("motor2OnlyCorrectionFlatUpper");
+        encoder2FlexVariant = configurables("encoder2FlexVariant");
         enableDetailedActionDiagnostics = ...
             configurables("enableDetailedActionDiagnostics");
         savePerMotorMetrics = configurables("savePerMotorMetrics");

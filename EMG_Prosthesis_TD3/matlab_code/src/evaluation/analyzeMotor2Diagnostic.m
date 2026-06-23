@@ -33,6 +33,7 @@ trackingMAE = nan(numEpisodes, numMotors);
 actionL2 = nan(numEpisodes, numMotors);
 deltaActionL2 = nan(numEpisodes, numMotors);
 saturationFraction = nan(numEpisodes, numMotors);
+actionRange = nan(numEpisodes, numMotors);
 responseRange = nan(numEpisodes, numMotors);
 targetRange = nan(numEpisodes, numMotors);
 correlationValue = nan(numEpisodes, numMotors);
@@ -59,6 +60,7 @@ for episodeIdx = 1:numEpisodes
         end
         saturationFraction(episodeIdx, motorIdx) = ...
             mean(abs(actionMotor) >= 0.95, "omitnan");
+        actionRange(episodeIdx, motorIdx) = localRange(actionMotor);
         responseRange(episodeIdx, motorIdx) = localRange(responseMotor);
         targetRange(episodeIdx, motorIdx) = localRange(targetMotor);
         correlationValue(episodeIdx, motorIdx) = ...
@@ -73,9 +75,21 @@ metricMeans.trackingMAE = mean(trackingMAE, 1, "omitnan");
 metricMeans.actionL2 = mean(actionL2, 1, "omitnan");
 metricMeans.deltaActionL2 = mean(deltaActionL2, 1, "omitnan");
 metricMeans.saturationFraction = mean(saturationFraction, 1, "omitnan");
+metricMeans.actionRange = mean(actionRange, 1, "omitnan");
 metricMeans.responseRange = mean(responseRange, 1, "omitnan");
 metricMeans.targetRange = mean(targetRange, 1, "omitnan");
 metricMeans.correlation = mean(correlationValue, 1, "omitnan");
+metricMeans.flatResponse = false(1, numMotors);
+metricMeans.actionNoMotion = false(1, numMotors);
+metricMeans.highActionFlatResponse = false(1, numMotors);
+for motorIdx = 1:numMotors
+    metricMeans.flatResponse(motorIdx) = ...
+        localMotorFlatResponse(metricMeans, motorIdx);
+    metricMeans.actionNoMotion(motorIdx) = ...
+        localMotorActionNoMotion(metricMeans, motorIdx);
+    metricMeans.highActionFlatResponse(motorIdx) = ...
+        localMotorHighActionFlatResponse(metricMeans, motorIdx, options);
+end
 
 motor = (1:numMotors)';
 trackingMSEColumn = metricMeans.trackingMSE(:);
@@ -83,16 +97,23 @@ trackingMAEColumn = metricMeans.trackingMAE(:);
 actionL2Column = metricMeans.actionL2(:);
 deltaActionL2Column = metricMeans.deltaActionL2(:);
 saturationFractionColumn = metricMeans.saturationFraction(:);
+actionRangeColumn = metricMeans.actionRange(:);
 responseRangeColumn = metricMeans.responseRange(:);
 targetRangeColumn = metricMeans.targetRange(:);
 correlationColumn = metricMeans.correlation(:);
+flatResponseColumn = metricMeans.flatResponse(:);
+actionNoMotionColumn = metricMeans.actionNoMotion(:);
+highActionFlatResponseColumn = metricMeans.highActionFlatResponse(:);
 metricsByMotor = table( ...
     motor, trackingMSEColumn, trackingMAEColumn, actionL2Column, ...
-    deltaActionL2Column, saturationFractionColumn, responseRangeColumn, ...
-    targetRangeColumn, correlationColumn, ...
+    deltaActionL2Column, saturationFractionColumn, actionRangeColumn, ...
+    responseRangeColumn, ...
+    targetRangeColumn, correlationColumn, flatResponseColumn, ...
+    actionNoMotionColumn, highActionFlatResponseColumn, ...
     'VariableNames', {'motor', 'trackingMSE', 'trackingMAE', 'actionL2', ...
-    'deltaActionL2', 'saturationFraction', 'responseRange', ...
-    'targetRange', 'correlation'});
+    'deltaActionL2', 'saturationFraction', 'actionRange', 'responseRange', ...
+    'targetRange', 'correlation', 'flatResponse', 'actionNoMotion', ...
+    'highActionFlatResponse'});
 
 diagnostic = struct();
 diagnostic.testRunDir = string(testRunDir);
@@ -107,13 +128,21 @@ for motorIdx = 1:numMotors
     diagnostic.(sprintf("actionL2_motor%d", motorIdx)) = metricMeans.actionL2(motorIdx);
     diagnostic.(sprintf("deltaActionL2_motor%d", motorIdx)) = metricMeans.deltaActionL2(motorIdx);
     diagnostic.(sprintf("saturationFraction_motor%d", motorIdx)) = metricMeans.saturationFraction(motorIdx);
+    diagnostic.(sprintf("actionRange_motor%d", motorIdx)) = metricMeans.actionRange(motorIdx);
     diagnostic.(sprintf("responseRange_motor%d", motorIdx)) = metricMeans.responseRange(motorIdx);
     diagnostic.(sprintf("targetRange_motor%d", motorIdx)) = metricMeans.targetRange(motorIdx);
     diagnostic.(sprintf("correlation_motor%d", motorIdx)) = metricMeans.correlation(motorIdx);
+    diagnostic.(sprintf("flat_response_motor%d", motorIdx)) = ...
+        metricMeans.flatResponse(motorIdx);
+    diagnostic.(sprintf("action_no_motion_motor%d", motorIdx)) = ...
+        metricMeans.actionNoMotion(motorIdx);
+    diagnostic.(sprintf("high_action_flat_response_motor%d", motorIdx)) = ...
+        metricMeans.highActionFlatResponse(motorIdx);
 end
 
-diagnostic.motor2_flat_response = localMotor2FlatResponse(metricMeans);
-diagnostic.motor2_action_no_motion = localMotor2ActionNoMotion(metricMeans);
+diagnostic.motor2_flat_response = metricMeans.flatResponse(2);
+diagnostic.motor2_action_no_motion = metricMeans.actionNoMotion(2);
+diagnostic.motor2_high_action_flat_response = metricMeans.highActionFlatResponse(2);
 diagnostic.motor2_tracking_outlier = localMotor2TrackingOutlier(metricMeans);
 diagnostic.motor2Interpretation = localBuildInterpretation(diagnostic);
 
@@ -173,6 +202,7 @@ else
 end
 actionSteps = localEnsureFourColumns(actionSteps);
 actionAligned = localAlignRows(actionSteps, size(target, 1));
+actionSteps = actionAligned;
 end
 
 function rows = localCellOrMatrixToRows(value)
@@ -247,23 +277,46 @@ c = corrcoef(x, y);
 value = c(1, 2);
 end
 
-function tf = localMotor2FlatResponse(metricMeans)
-targetRange2 = metricMeans.targetRange(2);
-responseRange2 = metricMeans.responseRange(2);
-otherTargetRange = metricMeans.targetRange([1 3 4]);
-tf = localFinite(targetRange2) && localFinite(responseRange2) && ...
-    targetRange2 >= max(0.10, 0.50 * mean(otherTargetRange, "omitnan")) && ...
-    responseRange2 <= max(0.03, 0.35 * targetRange2);
+function tf = localMotorFlatResponse(metricMeans, motorIdx)
+targetRange = metricMeans.targetRange(motorIdx);
+responseRange = metricMeans.responseRange(motorIdx);
+otherIdx = setdiff(1:numel(metricMeans.targetRange), motorIdx);
+otherTargetRange = metricMeans.targetRange(otherIdx);
+tf = localFinite(targetRange) && localFinite(responseRange) && ...
+    targetRange >= max(0.10, 0.50 * mean(otherTargetRange, "omitnan")) && ...
+    responseRange <= max(0.03, 0.35 * targetRange);
 end
 
-function tf = localMotor2ActionNoMotion(metricMeans)
-action2 = metricMeans.actionL2(2);
-responseRange2 = metricMeans.responseRange(2);
-targetRange2 = metricMeans.targetRange(2);
-otherAction = metricMeans.actionL2([1 3 4]);
-tf = localFinite(action2) && localFinite(responseRange2) && localFinite(targetRange2) && ...
-    action2 >= max(0.10, 0.75 * mean(otherAction, "omitnan")) && ...
-    responseRange2 <= max(0.03, 0.35 * targetRange2);
+function tf = localMotorActionNoMotion(metricMeans, motorIdx)
+actionValue = metricMeans.actionL2(motorIdx);
+responseRange = metricMeans.responseRange(motorIdx);
+targetRange = metricMeans.targetRange(motorIdx);
+otherIdx = setdiff(1:numel(metricMeans.actionL2), motorIdx);
+otherAction = metricMeans.actionL2(otherIdx);
+tf = localFinite(actionValue) && localFinite(responseRange) && ...
+    localFinite(targetRange) && ...
+    actionValue >= max(0.10, 0.75 * mean(otherAction, "omitnan")) && ...
+    responseRange <= max(0.03, 0.35 * targetRange);
+end
+
+function tf = localMotorHighActionFlatResponse(metricMeans, motorIdx, options)
+actionValue = metricMeans.actionL2(motorIdx);
+saturationValue = metricMeans.saturationFraction(motorIdx);
+responseRange = metricMeans.responseRange(motorIdx);
+targetRange = metricMeans.targetRange(motorIdx);
+actionThreshold = localGetOption(options, "highActionFlatActionL2Threshold", 0.70);
+saturationThreshold = localGetOption(options, ...
+    "highActionFlatSaturationThreshold", 0.25);
+targetThreshold = localGetOption(options, "highActionFlatTargetRangeThreshold", 0.10);
+responseRatio = localGetOption(options, "highActionFlatResponseRatio", 0.35);
+responseFloor = localGetOption(options, "highActionFlatResponseFloor", 0.03);
+
+highAction = (localFinite(actionValue) && actionValue >= actionThreshold) || ...
+    (localFinite(saturationValue) && saturationValue >= saturationThreshold);
+flatResponse = localFinite(responseRange) && localFinite(targetRange) && ...
+    responseRange <= max(responseFloor, responseRatio * targetRange);
+targetMoves = localFinite(targetRange) && targetRange >= targetThreshold;
+tf = highAction && flatResponse && targetMoves;
 end
 
 function tf = localMotor2TrackingOutlier(metricMeans)
@@ -284,6 +337,10 @@ messages = strings(0, 1);
 if diagnostic.motor2_action_no_motion
     messages(end+1, 1) = "Motor 2 receives action but has low response range; check simulator mapping or motor scale.";
 end
+if isfield(diagnostic, "motor2_high_action_flat_response") && ...
+        diagnostic.motor2_high_action_flat_response
+    messages(end+1, 1) = "Motor 2 receives high action or saturation while response remains flat.";
+end
 if diagnostic.motor2_flat_response
     messages(end+1, 1) = "Motor 2 target varies while response is flat; check simulator response and encoder/flex scaling.";
 end
@@ -294,6 +351,14 @@ if isempty(messages)
     messages = "No strong motor 2 failure flag was triggered by these thresholds.";
 end
 interpretation = strjoin(messages, " ");
+end
+
+function value = localGetOption(options, fieldName, defaultValue)
+if isstruct(options) && isfield(options, fieldName) && ~isempty(options.(fieldName))
+    value = double(options.(fieldName));
+else
+    value = defaultValue;
+end
 end
 
 function localCreateDiagnosticFigure(episodeFile, episodeNumber, figurePath)

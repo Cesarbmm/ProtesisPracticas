@@ -33,6 +33,12 @@ override.actionInterfaceVariant = baseConfigs.actionInterfaceVariant;
 override.actionCommandActivationThreshold = ...
     baseConfigs.actionCommandActivationThreshold;
 override.actionCommandLevels = baseConfigs.actionCommandLevels;
+override.actionCommandLevelsByMotor = baseConfigs.actionCommandLevelsByMotor;
+override.encoder2FlexVariant = baseConfigs.encoder2FlexVariant;
+override.motor2Encoder2FlexGapOffset = baseConfigs.motor2Encoder2FlexGapOffset;
+override.motor2Encoder2FlexBreakOffset = baseConfigs.motor2Encoder2FlexBreakOffset;
+override.motor2Encoder2FlexMinEffectiveEncoder = ...
+    baseConfigs.motor2Encoder2FlexMinEffectiveEncoder;
 override.actionWarpDeadzone = baseConfigs.actionWarpDeadzone;
 override.actionWarpOutputLevels = baseConfigs.actionWarpOutputLevels;
 override.dataset = baseConfigs.dataset;

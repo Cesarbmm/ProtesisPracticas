@@ -165,3 +165,17 @@ evaluarse con mas cuidado y no debe reemplazar la reward oficial todavia.
 - `figures/motor2_diagnostic_summary.png`
 - `figures/motor_response_gain_matrix.png`
 - `figures/ablation_motor2_summary.png`
+
+## I. Seguimiento 2026-06-04
+
+Se corrio la fase `Motor response calibration before reward tuning`.
+El diagnostico mostro que motor 2 si mueve encoder en niveles bajos, pero
+la salida queda plana despues de `encoder2Flex` hasta cruzar la zona util.
+La ablation corta con `motorCalibratedQuantized` redujo `trackingMSE`
+global, `trackingMSE_motor2` y `saturationFraction`, pero no aumento
+`responseRange_motor2` y dejo `motor2_action_no_motion=1/2`.
+
+El resumen completo de esta etapa quedo en:
+
+- `motor2_calibration_report.tex`
+- `motor2_calibration_report.pdf`
