@@ -2,15 +2,16 @@
 
 Guia operativa corta del arbol `matlab_code/`.
 
-## Fase actual: Motor 2 targeted diagnostic and ablation
+## Fase actual: Frozen Agent7250 + motor 2 isolated correction
 
-La linea activa aisla el problema del motor 2 antes de volver a entrenar
-campanas largas o retomar Residual Lift/stop-band. El benchmark TD3 base ya
-confirmo que el problema tambien aparece sin residual.
+La linea activa usa `Agent7250` congelado y evalua correcciones aisladas de
+motor 2 antes de volver a entrenar campanas largas o retomar Residual
+Lift/stop-band. El benchmark TD3 base ya confirmo que el problema tambien
+aparece sin residual, y los reentrenamientos desde cero pueden degradar M4.
 
 Los flujos activos usan:
 
-- agente: `td3`
+- agente: `Agent7250` congelado para la validacion activa
 - reward: `trackingMseActionRateReward`
 - estado: `markov52`
 - dataset pregrabado
@@ -30,6 +31,7 @@ Los launchers se preservan en:
 ```text
 workflows/future_experiments/residual_lift/
 workflows/future_experiments/residual_stopband/
+workflows/future_experiments/paused_motor2_training/
 ```
 
 ## Arranque minimo
@@ -50,7 +52,7 @@ disp(c.dataset_folder)
 disp(getAgent7250CheckpointPath())
 ```
 
-## Sanity extendido sin entrenamiento
+## Sanity all-motor sin entrenamiento
 
 Primera prueba recomendada para revisar indice, signo, zona muerta y escala
 del simulador por motor:
@@ -60,13 +62,15 @@ cd('C:/ruta/al/repo/ProtesisPracticas/EMG_Prosthesis_TD3/matlab_code')
 addpath(genpath(pwd))
 clearConfigurablesOverride()
 
-results = run_motor2_simulation_sanity_check_extended();
+results = run_all_motor_actuation_sanity_check_extended(struct( ...
+    'initialMode', 'all', ...
+    'encoder2FlexVariant', ["baseline", "motor2Calibrated"]));
 ```
 
 Guarda resultados bajo:
 
 ```text
-../../Agentes/motor2_simulation_sanity_check_extended/YY-MM-DD_HH-mm-ss/
+../../Agentes/all_motor_actuation_sanity_check_extended/YY-MM-DD_HH-mm-ss/
 ```
 
 ## Calibracion de respuesta antes de reward
@@ -331,57 +335,71 @@ aceptable all-motor. No promover `motor2Calibrated` ni
 
 ## Agent7250 congelado + correccion aislada de motor 2
 
-Las corridas de `run_benchmark_td3_seeded_retrain_motor2_diagnostic` y
-`run_motor2_conversion_fix_ablation` entrenan TD3 desde cero
-(`newTraining=true`). `Agent7250` se usaba como referencia, no como politica
-base congelada. Por eso se separo la conversion del entrenamiento con:
+La fase activa ya no entrena TD3 desde cero. Las corridas de
+`run_benchmark_td3_seeded_retrain_motor2_diagnostic` y
+`run_motor2_conversion_fix_ablation` entrenaban desde cero
+(`newTraining=true` crea un agente nuevo en `trainInterface`).
+`Agent7250` se usaba como benchmark historico, no como politica congelada.
+La degradacion de M4 aparecio en esos checkpoints nuevos.
+
+La validacion final congelada se hizo con 50 episodios:
 
 ```matlab
-results = run_agent7250_frozen_conversion_evaluation(struct( ...
+resultsFrozen = run_agent7250_frozen_conversion_evaluation(struct( ...
     'gapOffsets', [0 -64 -128 -256], ...
-    'finalTestEpisodes', 20, ...
+    'finalTestEpisodes', 50, ...
+    'plotEpisodeOnTest', true, ...
     'useGpu', true));
 ```
 
 Salida revisada:
 
 ```text
-../../Agentes/agent7250_frozen_conversion_evaluation/26-06-22_10-50-05/
+../../Agentes/agent7250_frozen_conversion_evaluation/26-06-23_09-38-15/
 ```
 
-Resultado congelado: `Agent7250 + motor2Calibrated gapOffset=-256` bajo
-`trackingMSE` de `0.041453` a `0.041064`, bajo `trackingMSE_motor2` de
-`0.046330` a `0.044679` y subio `responseRange_motor2` de `0.109520` a
-`0.114906`. M4 quedo igual (`trackingMSE_motor4=0.030247`,
-`responseRange_motor4=0.209431`) y con flags `0/0/0`.
+| Config | MSE | MSE M2 | Range M2 | M2 flags | MSE M4 | Range M4 | M4 flags | Aceptada |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| Agent7250 baseline | 0.037229 | 0.042474 | 0.109618 | 3 | 0.026250 | 0.231700 | 0 | no |
+| Agent7250 + motor2Calibrated -64 | 0.037113 | 0.041993 | 0.110996 | 3 | 0.026250 | 0.231700 | 0 | no |
+| Agent7250 + motor2Calibrated -128 | 0.037003 | 0.041534 | 0.112352 | 3 | 0.026250 | 0.231700 | 0 | no |
+| Agent7250 + motor2Calibrated -256 | 0.036800 | 0.040681 | 0.115000 | 3 | 0.026250 | 0.231700 | 0 | no |
+
+La conversion `motor2Calibrated` no dano M4 con `Agent7250` congelado, pero
+no se acepta porque conserva 3 flags en M2.
 
 Luego se probo una correccion heuristica que solo puede cambiar motor 2:
 
 ```matlab
 results = run_motor2_only_correction_evaluation(struct( ...
     'mode', 'heuristic', ...
-    'finalTestEpisodes', 20, ...
+    'gapOffset', -256, ...
+    'finalTestEpisodes', 50, ...
+    'plotEpisodeOnTest', true, ...
     'useGpu', true));
 ```
 
 Salida revisada:
 
 ```text
-../../Agentes/agent7250_motor2_only_correction_evaluation/26-06-23_07-22-34/
+../../Agentes/agent7250_motor2_only_correction_evaluation/26-06-23_09-28-45/
 ```
 
-| Config | MSE | MSE M2 | Range M2 | MSE M4 | Range M4 | M4 flags | non-M2 delta | Aceptada |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| Agent7250 baseline | 0.041453 | 0.046330 | 0.109520 | 0.030247 | 0.209431 | 0/0/0 | 0 | no |
-| Agent7250 + motor2Calibrated -256 | 0.041064 | 0.044679 | 0.114906 | 0.030247 | 0.209431 | 0/0/0 | 0 | si |
-| Agent7250 + M2 heuristic | 0.041368 | 0.045744 | 0.110305 | 0.030249 | 0.209431 | 0/0/0 | 0 | si |
-| Agent7250 + M2 heuristic + motor2Calibrated -256 | 0.040983 | 0.044114 | 0.115666 | 0.030249 | 0.209431 | 0/0/0 | 0 | si |
+| Config | MSE | MSE M2 | Range M2 | M2 flags | MSE M4 | Range M4 | M4 flags | non-M2 delta | Aceptada |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| Agent7250 baseline | 0.037229 | 0.042474 | 0.109618 | 3 | 0.026250 | 0.231700 | 0 | 0 | no |
+| Agent7250 + motor2Calibrated -256 | 0.036800 | 0.040681 | 0.115000 | 3 | 0.026250 | 0.231700 | 0 | 0 | no |
+| Agent7250 + M2 heuristic | 0.037127 | 0.042015 | 0.110570 | 3 | 0.025986 | 0.231700 | 0 | 0 | no |
+| Agent7250 + M2 heuristic + motor2Calibrated -256 | 0.036692 | 0.040224 | 0.115923 | 3 | 0.025986 | 0.231700 | 0 | 0 | no |
 
-Decision actual: no aceptar el fix global entrenado desde cero. La ruta
-correcta es usar `Agent7250` como base congelada y probar correcciones
-aisladas de motor 2, manteniendo M1, M3 y M4 intactos. `baselineQuantized`
-sigue siendo la accion oficial; `motorCalibratedQuantized` queda como
-experimento futuro y no se recomienda para la linea principal.
+La correccion M2-only si mantiene M1, M3 y M4 intactos
+(`maxNonMotor2ActionDelta=0`), pero tambien queda rechazada porque M2
+mejora en metricas y conserva flags. Decision actual: no aceptar el fix
+global entrenado desde cero ni el candidato M2-only actual. La ruta
+correcta sigue siendo `Agent7250` congelado + correcciones aisladas de M2,
+pero solo se aceptaran si limpian flags de M2 sin tocar M1/M3/M4.
+`baselineQuantized` sigue siendo la accion oficial; `motorCalibratedQuantized`
+queda como experimento futuro y no se recomienda para la linea principal.
 
 Barrido de limites sin entrenamiento:
 

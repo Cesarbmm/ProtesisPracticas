@@ -323,56 +323,59 @@ siguen pausados.
 
 ## K. Frozen Agent7250 + correccion aislada de motor 2
 
-Se confirmo que las ablations anteriores entrenaban TD3 desde cero:
-`newTraining=true`, `initialAgentSource="new_td3_agent"` y
-`isTrainingFromScratch=true`. `Agent7250` era benchmark, no politica base
-congelada.
+Se confirmo que las ablations anteriores entrenaban TD3 desde cero.
+`newTraining=true` crea un agente nuevo en `trainInterface`, y
+`run_benchmark_td3_seeded_retrain_motor2_diagnostic` usaba `Agent7250`
+como benchmark historico, no como politica congelada.
 
-La evaluacion congelada se ejecuto sin aprendizaje:
+La evaluacion final se ejecuto sin aprendizaje y con 50 episodios:
 
 ```text
-Agentes/agent7250_frozen_conversion_evaluation/26-06-22_10-50-05/
+Agentes/agent7250_frozen_conversion_evaluation/26-06-23_09-38-15/
 ```
 
-| Config | MSE | MSE M2 | Range M2 | MSE M4 | Range M4 | M4 flags | Aceptada |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| Agent7250 baseline | 0.041453 | 0.046330 | 0.109520 | 0.030247 | 0.209431 | 0/0/0 | no |
-| Agent7250 + motor2Calibrated -64 | 0.041348 | 0.045885 | 0.110899 | 0.030247 | 0.209431 | 0/0/0 | si |
-| Agent7250 + motor2Calibrated -128 | 0.041248 | 0.045462 | 0.112256 | 0.030247 | 0.209431 | 0/0/0 | si |
-| Agent7250 + motor2Calibrated -256 | 0.041064 | 0.044679 | 0.114906 | 0.030247 | 0.209431 | 0/0/0 | si |
+| Config | MSE | MSE M2 | Range M2 | M2 flags | MSE M4 | Range M4 | M4 flags | Aceptada | Motivo |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- |
+| Agent7250 baseline | 0.037229 | 0.042474 | 0.109618 | 3 | 0.026250 | 0.231700 | 0 | no | baseline_reference |
+| Agent7250 + motor2Calibrated 0 | 0.037229 | 0.042474 | 0.109618 | 3 | 0.026250 | 0.231700 | 0 | no | motor2_acceptance_failed |
+| Agent7250 + motor2Calibrated -64 | 0.037113 | 0.041993 | 0.110996 | 3 | 0.026250 | 0.231700 | 0 | no | m2_metrics_improved_but_flags_remain |
+| Agent7250 + motor2Calibrated -128 | 0.037003 | 0.041534 | 0.112352 | 3 | 0.026250 | 0.231700 | 0 | no | m2_metrics_improved_but_flags_remain |
+| Agent7250 + motor2Calibrated -256 | 0.036800 | 0.040681 | 0.115000 | 3 | 0.026250 | 0.231700 | 0 | no | m2_metrics_improved_but_flags_remain |
 
 La conversion no degrado M4 cuando `Agent7250` quedo congelado. La
 regresion vista antes en M4 aparece ligada al entrenamiento desde cero,
-selector o reward, no a la conversion local de motor 2 por si sola.
+selector o reward, no a la conversion local de motor 2 por si sola. Aun
+asi, la variante no se acepta: M2 mejora en MSE/rango, pero conserva 3
+flags.
 
 Tambien se evaluo una correccion heuristica que solo puede cambiar
 `action(2)`. M1, M3 y M4 quedaron iguales a la politica base:
 `maxNonMotor2ActionDelta=0`.
 
 ```text
-Agentes/agent7250_motor2_only_correction_evaluation/26-06-23_07-22-34/
+Agentes/agent7250_motor2_only_correction_evaluation/26-06-23_09-28-45/
 ```
 
-| Config | MSE | MSE M2 | Range M2 | MSE M4 | Range M4 | M4 flags | non-M2 delta | Aceptada |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| Agent7250 baseline | 0.041453 | 0.046330 | 0.109520 | 0.030247 | 0.209431 | 0/0/0 | 0 | no |
-| Agent7250 + motor2Calibrated -256 | 0.041064 | 0.044679 | 0.114906 | 0.030247 | 0.209431 | 0/0/0 | 0 | si |
-| Agent7250 + M2 heuristic | 0.041368 | 0.045744 | 0.110305 | 0.030249 | 0.209431 | 0/0/0 | 0 | si |
-| Agent7250 + M2 heuristic + motor2Calibrated -256 | 0.040983 | 0.044114 | 0.115666 | 0.030249 | 0.209431 | 0/0/0 | 0 | si |
+| Config | MSE | MSE M2 | Range M2 | M2 flags | MSE M4 | Range M4 | M4 flags | non-M2 delta | Aceptada | Motivo |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- |
+| Agent7250 baseline | 0.037229 | 0.042474 | 0.109618 | 3 | 0.026250 | 0.231700 | 0 | 0 | no | baseline_reference |
+| Agent7250 + motor2Calibrated -256 | 0.036800 | 0.040681 | 0.115000 | 3 | 0.026250 | 0.231700 | 0 | 0 | no | m2_metrics_improved_but_flags_remain |
+| Agent7250 + M2 heuristic | 0.037127 | 0.042015 | 0.110570 | 3 | 0.025986 | 0.231700 | 0 | 0 | no | m2_metrics_improved_but_flags_remain |
+| Agent7250 + M2 heuristic + motor2Calibrated -256 | 0.036692 | 0.040224 | 0.115923 | 3 | 0.025986 | 0.231700 | 0 | 0 | no | m2_metrics_improved_but_flags_remain |
 
-Veredicto: la ruta viable ahora es `Frozen Agent7250 + motor 2 isolated
-correction`. No se acepta el fix global entrenado desde cero. No se
-promueve `motorCalibratedQuantized`. El siguiente paso razonable es
-validar esta correccion M2-only con mas episodios de evaluacion, no con
-entrenamiento largo.
+Veredicto: la ruta correcta sigue siendo `Frozen Agent7250 + motor 2
+isolated correction`, pero el candidato actual queda rechazado. La
+correccion aislada preserva M1, M3 y M4 y mejora metricas de M2, pero no
+limpia los flags de M2. No se acepta el fix global entrenado desde cero. No
+se promueve `motorCalibratedQuantized` ni `motor2Calibrated` como default.
 
 Figuras curadas:
 
-![Frozen Agent7250 all-motor](figures/all_motor_review/agent7250_frozen_all_motor_comparison_20260622.png)
+![Frozen Agent7250 all-motor](figures/frozen_agent7250_final/agent7250_frozen_all_motor_comparison_20260623_episode50.png)
 
-![Motor 2 only correction all-motor](figures/all_motor_review/agent7250_motor2_only_correction_all_motor_comparison_20260623.png)
+![Motor 2 only correction all-motor](figures/frozen_agent7250_final/agent7250_motor2_only_correction_all_motor_comparison_20260623_episode50.png)
 
-![Motor 2 only correction visual](figures/all_motor_review/agent7250_m2only_heuristic_motor2Calibrated_gap_neg256_episode20_visual_test_20260623.png)
+![Motor 2 only correction visual](figures/frozen_agent7250_final/agent7250_m2only_heuristic_motor2Calibrated_gap_neg256_episode50_visual_test_20260623.png)
 
 ## L. Comandos para repetir
 
@@ -435,7 +438,8 @@ Evaluacion congelada de Agent7250:
 ```matlab
 results = run_agent7250_frozen_conversion_evaluation(struct( ...
     'gapOffsets', [0 -64 -128 -256], ...
-    'finalTestEpisodes', 20, ...
+    'finalTestEpisodes', 50, ...
+    'plotEpisodeOnTest', true, ...
     'useGpu', true));
 ```
 
@@ -444,6 +448,8 @@ Correccion aislada de motor 2:
 ```matlab
 results = run_motor2_only_correction_evaluation(struct( ...
     'mode', 'heuristic', ...
-    'finalTestEpisodes', 20, ...
+    'gapOffset', -256, ...
+    'finalTestEpisodes', 50, ...
+    'plotEpisodeOnTest', true, ...
     'useGpu', true));
 ```

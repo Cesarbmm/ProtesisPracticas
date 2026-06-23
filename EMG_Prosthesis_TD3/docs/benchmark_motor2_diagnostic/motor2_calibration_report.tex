@@ -13,7 +13,7 @@
 
 \title{Motor 2: calibracion de respuesta antes de ajustar reward}
 \author{Proyecto Protesis Mioelectrica TD3}
-\date{2026-06-04}
+\date{2026-06-23}
 
 \begin{document}
 \maketitle
@@ -385,34 +385,36 @@ Se verifico que las ablations anteriores entrenaban TD3 desde cero. En esas
 corridas, \texttt{Agent7250} se usaba como referencia historica, no como
 politica base congelada. Por eso se separo la conversion del entrenamiento.
 
-Primero se evaluo \texttt{Agent7250} congelado con conversion baseline y
-\texttt{motor2Calibrated}. No hubo entrenamiento, no se tocaron puertos COM y
-todo corrio en simulacion con dataset pregrabado.
+La validacion final se ejecuto sin aprendizaje, con 50 episodios, sin tocar
+puertos COM y usando solo simulacion con dataset pregrabado.
 
 \begin{table}[H]
 \centering
-\caption{Agent7250 congelado con variantes de conversion.}
-\begin{tabular}{lrrrrrr}
+\caption{Agent7250 congelado con variantes de conversion, 50 episodios.}
+\scriptsize
+\begin{tabular}{lrrrrrrrr}
 \toprule
-Config & MSE & MSE M2 & Range M2 & MSE M4 & Range M4 & M4 flags \\
+Config & MSE & MSE M2 & Range M2 & Flags M2 & MSE M4 & Range M4 & Flags M4 & Aceptada \\
 \midrule
-Baseline & 0.041453 & 0.046330 & 0.109520 & 0.030247 & 0.209431 & 0/0/0 \\
-M2Cal -64 & 0.041348 & 0.045885 & 0.110899 & 0.030247 & 0.209431 & 0/0/0 \\
-M2Cal -128 & 0.041248 & 0.045462 & 0.112256 & 0.030247 & 0.209431 & 0/0/0 \\
-M2Cal -256 & 0.041064 & 0.044679 & 0.114906 & 0.030247 & 0.209431 & 0/0/0 \\
+Baseline & 0.037229 & 0.042474 & 0.109618 & 3 & 0.026250 & 0.231700 & 0 & no \\
+M2Cal 0 & 0.037229 & 0.042474 & 0.109618 & 3 & 0.026250 & 0.231700 & 0 & no \\
+M2Cal -64 & 0.037113 & 0.041993 & 0.110996 & 3 & 0.026250 & 0.231700 & 0 & no \\
+M2Cal -128 & 0.037003 & 0.041534 & 0.112352 & 3 & 0.026250 & 0.231700 & 0 & no \\
+M2Cal -256 & 0.036800 & 0.040681 & 0.115000 & 3 & 0.026250 & 0.231700 & 0 & no \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 La conversion \texttt{motor2Calibrated} no degrado M4 cuando
 \texttt{Agent7250} quedo congelado. Esto indica que la regresion previa de
-M4 viene mas del entrenamiento desde cero, del selector o de la reward, no de
-la conversion local de motor 2 por si sola.
+M4 viene mas del entrenamiento desde cero, del selector o de la reward. Aun
+asi, no se acepta la conversion: motor 2 mejora en MSE y rango, pero conserva
+3 flags.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.92\linewidth]{all_motor_review/agent7250_frozen_all_motor_comparison_20260622.png}
-\caption{Comparacion MATLAB all-motor con \texttt{Agent7250} congelado.}
+\includegraphics[width=0.92\linewidth]{frozen_agent7250_final/agent7250_frozen_all_motor_comparison_20260623_episode50.png}
+\caption{Comparacion MATLAB all-motor con \texttt{Agent7250} congelado, 50 episodios.}
 \end{figure}
 
 Luego se probo una correccion heuristica aislada. Esta correccion solo puede
@@ -421,35 +423,35 @@ la politica base. En la corrida, \texttt{maxNonMotor2ActionDelta=0}.
 
 \begin{table}[H]
 \centering
-\caption{Agent7250 congelado con correccion aislada de motor 2.}
-\begin{tabular}{lrrrrrrr}
+\caption{Agent7250 congelado con correccion aislada de motor 2, 50 episodios.}
+\scriptsize
+\begin{tabular}{lrrrrrrrrr}
 \toprule
-Config & MSE & MSE M2 & Range M2 & MSE M4 & Range M4 & M4 flags & non-M2 \\
+Config & MSE & MSE M2 & Range M2 & Flags M2 & MSE M4 & Range M4 & Flags M4 & non-M2 & Aceptada \\
 \midrule
-Baseline & 0.041453 & 0.046330 & 0.109520 & 0.030247 & 0.209431 & 0/0/0 & 0 \\
-M2Cal -256 & 0.041064 & 0.044679 & 0.114906 & 0.030247 & 0.209431 & 0/0/0 & 0 \\
-M2 heuristic & 0.041368 & 0.045744 & 0.110305 & 0.030249 & 0.209431 & 0/0/0 & 0 \\
-M2 heuristic + M2Cal & 0.040983 & 0.044114 & 0.115666 & 0.030249 & 0.209431 & 0/0/0 & 0 \\
+Baseline & 0.037229 & 0.042474 & 0.109618 & 3 & 0.026250 & 0.231700 & 0 & 0 & no \\
+M2Cal -256 & 0.036800 & 0.040681 & 0.115000 & 3 & 0.026250 & 0.231700 & 0 & 0 & no \\
+M2 heuristic & 0.037127 & 0.042015 & 0.110570 & 3 & 0.025986 & 0.231700 & 0 & 0 & no \\
+M2 heuristic + M2Cal & 0.036692 & 0.040224 & 0.115923 & 3 & 0.025986 & 0.231700 & 0 & 0 & no \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-La mejor opcion fue \texttt{Agent7250 + M2 heuristic + motor2Calibrated -256}.
-Bajo el MSE global y el MSE de motor 2, subio el rango de motor 2 y mantuvo
-M4 sin flags. Esto no promueve la variante como default. Solo cambia la
-direccion tecnica: usar \texttt{Agent7250} congelado y corregir motor 2 de
-forma aislada antes de volver a entrenamientos largos.
+La correccion aislada preservo M1, M3 y M4. Tambien bajo el MSE global,
+bajo el MSE de motor 2 y subio el rango de motor 2. Pero no se acepta porque
+los flags de motor 2 siguen presentes. La regla final no permite aceptar una
+variante que mejora metricas pero conserva flags.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.92\linewidth]{all_motor_review/agent7250_motor2_only_correction_all_motor_comparison_20260623.png}
-\caption{Comparacion MATLAB all-motor con correccion aislada de motor 2.}
+\includegraphics[width=0.92\linewidth]{frozen_agent7250_final/agent7250_motor2_only_correction_all_motor_comparison_20260623_episode50.png}
+\caption{Comparacion MATLAB all-motor con correccion aislada de motor 2, 50 episodios.}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.92\linewidth]{all_motor_review/agent7250_m2only_heuristic_motor2Calibrated_gap_neg256_episode20_visual_test_20260623.png}
-\caption{Test visual MATLAB, episodio 20, Agent7250 congelado con correccion aislada de motor 2 y conversion calibrada.}
+\includegraphics[width=0.92\linewidth]{frozen_agent7250_final/agent7250_m2only_heuristic_motor2Calibrated_gap_neg256_episode50_visual_test_20260623.png}
+\caption{Test visual MATLAB, episodio 50, Agent7250 congelado con correccion aislada de motor 2 y conversion calibrada.}
 \end{figure}
 
 \section{Evidencia visual de entrenamiento y test}
@@ -481,7 +483,8 @@ saturacion, pero no resolvio los flags. La variante experimental
 cuando se uso junto con \texttt{baselineQuantized}, pero queda rechazada en
 la validacion all-motor de 1500 episodios por regresion en M1 y M4. En
 cambio, cuando se evaluo sobre \texttt{Agent7250} congelado no degrado M4 y
-mejoro levemente motor 2.
+mejoro levemente motor 2. En la validacion final de 50 episodios, esa mejora
+no fue suficiente para aceptarla, porque motor 2 conservo 3 flags.
 
 Antes de volver a reward, Residual Lift o stop-band, conviene revisar
 \texttt{gap.idx}, \texttt{breakLimit.idx}, \texttt{encoder2Flex}, la
@@ -489,5 +492,7 @@ dinamica del simulador y el comportamiento de motor 4 para posiciones
 \texttt{mid} y \texttt{closed}. La direccion actual no es entrenar todo de
 nuevo. La direccion actual es usar \texttt{Agent7250} como base congelada y
 probar correcciones aisladas de motor 2 que mantengan M1, M3 y M4 intactos.
+El candidato actual queda rechazado hasta que limpie los flags de motor 2
+sin cambiar acciones de M1, M3 y M4.
 
 \end{document}
