@@ -24,9 +24,11 @@ if ~isempty(this.State)
 end
 
 rawAction = action;
-actionInterfaceVariant = string(configurables("actionInterfaceVariant"));
+actionInterfaceVariant = string(this.actionInterfaceVariant);
 switch actionInterfaceVariant
     case "baselineQuantized"
+        warpedAction = rawAction;
+    case "motorCalibratedQuantized"
         warpedAction = rawAction;
     case "alignedContinuousWarp"
         warpedAction = warpActionToAlignedContinuousMagnitude( ...
@@ -38,6 +40,7 @@ switch actionInterfaceVariant
 end
 
 this.actionLog(this.c, :) = rawAction.';
+warpedAction = this.applyActionPostprocess(warpedAction);
 this.actionWarpLog(this.c, :) = warpedAction.';
 [effectiveAction, appliedPwm] = this.remapActionForActuator(warpedAction);
 this.actionSatLog(this.c, :) = effectiveAction.';
@@ -121,7 +124,8 @@ observation = this.State;
 
 %% Reward and normalized tracking data
 this.flexConverted = this.flexJoined_scaler(reduceFlexDimension(this.flexData));
-this.adjustEnc = this.flexJoined_scaler(encoder2Flex(this.motorData));
+this.adjustEnc = this.flexJoined_scaler( ...
+    encoder2FlexVariant(this.motorData, configurables()));
 [reward, rewardVector, rewardInfo] = this.reward_function(this, effectiveAction, []);
 
 %% logs

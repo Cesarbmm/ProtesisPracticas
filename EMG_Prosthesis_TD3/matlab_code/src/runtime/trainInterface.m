@@ -56,6 +56,7 @@ addpath(genpath(fullfile(matlabRoot, 'agents')))
 
 configs = configurables();
 hardware = definitions();
+clear Env
 
 if isfield(configs, 'randomSeed') && ~isempty(configs.randomSeed) && ...
         isnumeric(configs.randomSeed) && isscalar(configs.randomSeed) && ...

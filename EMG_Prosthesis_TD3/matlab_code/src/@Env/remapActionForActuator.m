@@ -11,17 +11,26 @@ if ~this.simMotors || ~this.quantizeCommandsForSimulation
     return
 end
 
-levels = sort(unique(abs(double(this.actionCommandLevels(:)'))));
-nonZeroLevels = levels(levels > 0);
-
 effectiveAction = zeros(size(action));
 appliedPwm = zeros(size(action));
+actionInterfaceVariant = string(this.actionInterfaceVariant);
 
 for i = 1:numel(action)
     actionValue = action(i);
     magnitude = abs(actionValue);
 
     if magnitude < this.actionCommandActivationThreshold
+        continue
+    end
+
+    if actionInterfaceVariant == "motorCalibratedQuantized"
+        levels = localGetMotorLevels( ...
+            this.actionCommandLevelsByMotor, this.actionCommandLevels, i);
+    else
+        levels = sort(unique(abs(double(this.actionCommandLevels(:)'))));
+    end
+    nonZeroLevels = levels(levels > 0);
+    if isempty(nonZeroLevels)
         continue
     end
 
@@ -32,4 +41,17 @@ for i = 1:numel(action)
     appliedPwm(i) = sign(actionValue) * pwmMagnitude;
     effectiveAction(i) = appliedPwm(i) / maxPwm;
 end
+end
+
+function levels = localGetMotorLevels(levelsByMotor, fallbackLevels, motorIdx)
+levels = fallbackLevels;
+if isstruct(levelsByMotor)
+    fieldName = sprintf("m%d", motorIdx);
+    if isfield(levelsByMotor, fieldName)
+        levels = levelsByMotor.(fieldName);
+    end
+elseif iscell(levelsByMotor) && numel(levelsByMotor) >= motorIdx
+    levels = levelsByMotor{motorIdx};
+end
+levels = sort(unique(abs(double(levels(:)'))));
 end
