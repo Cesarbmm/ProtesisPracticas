@@ -15,6 +15,9 @@ Launchers vigentes y helpers de campana que no forman parte del core reusable de
   de entrenamiento; no usar como smoke de la linea sin guante
 - `run_no_glove_stage1_validation.m`: pruebas y smoke EMG-only determinista,
   exclusivamente pregrabado y con `SimController`
+- `run_no_glove_stage2_offline_validation.m`: calibración sintética por sesión,
+  decodificación de dos sinergias y referencia viable; no construye `Env`, no
+  usa simulador, agente, entrenamiento ni hardware
 
 ## Regla
 
