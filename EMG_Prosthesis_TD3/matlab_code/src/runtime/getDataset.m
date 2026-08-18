@@ -1,11 +1,13 @@
-function [emg, glove, metadata] = getDataset(datasetName_s, folderData)
+function [emg, glove, metadata] = getDataset(datasetName_s, folderData, referenceSource)
 %getDataset returns EMG and glove data from a formed dataset or various
 %datasets. It also returns the metadata of the datasets.
 %
 % Inputs
 %   datasetName_s   char with name, or cell of chars. Every char must
-%                   correspond to a file. The files must have emgs, gloves
-%                   and metadata fields.
+%                   correspond to a file.
+%   folderData      dataset folder.
+%   referenceSource "glove" requires emgs, gloves and metadata;
+%                   "emgIntent" loads only emgs and metadata.
 %
 % Outputs
 %   emg             N-by- 2 cell, N samples, 1st col closing, 2nd opening.
@@ -37,6 +39,12 @@ New ver modified after 2nd January 2024.
 arguments
     datasetName_s
     folderData (1, 1) string = '.\data\datasets\';
+    referenceSource (1, 1) string = "glove";
+end
+
+if ~any(referenceSource == ["glove", "emgIntent"])
+    error("getDataset:InvalidReferenceSource", ...
+        "referenceSource must be either 'glove' or 'emgIntent'.");
 end
 
 %% configs
@@ -49,11 +57,34 @@ folderData = resolveDatasetFolder(folderData);
 %% loading
 emg = {};
 glove = {};
+metadata = struct();
 
 for f = datasetName_s
-    vars = load( fullfile( folderData, f{1} ) );
+    datasetPath = fullfile(folderData, f{1});
+    availableVariables = string(who('-file', datasetPath));
+    if ~any(availableVariables == "emgs")
+        error("getDataset:MissingEmg", ...
+            "Dataset %s does not contain 'emgs'.", string(f{1}));
+    end
+    if ~any(availableVariables == "metadata")
+        error("getDataset:MissingMetadata", ...
+            "Dataset %s does not contain 'metadata'.", string(f{1}));
+    end
+    if referenceSource == "glove" && ~any(availableVariables == "gloves")
+        error("getDataset:MissingGloves", ...
+            "Dataset %s does not contain 'gloves'.", string(f{1}));
+    end
+
+    if referenceSource == "glove"
+        vars = load(datasetPath, "emgs", "gloves", "metadata");
+    else
+        % Do not materialize or require glove data in EMG-only mode.
+        vars = load(datasetPath, "emgs", "metadata");
+    end
     emg = [emg; vars.emgs];
-    glove = [glove; vars.gloves];
+    if referenceSource == "glove"
+        glove = [glove; vars.gloves];
+    end
     metadata.(f{1}) = vars.metadata;
 end
 

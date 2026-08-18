@@ -10,6 +10,7 @@ end
 
 paths = resolveMatlabCodePaths(string(mfilename("fullpath")));
 matlabRoot = char(paths.matlabRoot);
+repoRoot = char(paths.workspaceRoot);
 cd(matlabRoot);
 
 addpath(genpath(fullfile(matlabRoot, "src")));
@@ -17,12 +18,51 @@ addpath(genpath(fullfile(matlabRoot, "config")));
 addpath(genpath(fullfile(matlabRoot, "lib")));
 addpath(genpath(fullfile(matlabRoot, "agents")));
 
+if ~isstruct(options) || ~isscalar(options)
+    error("runCheckpointTest:InvalidOptions", ...
+        "options must be a scalar struct.");
+end
+allowedOptionFields = ["resultsRoot", "overridePatch"];
+unknownOptionFields = setdiff(string(fieldnames(options)), allowedOptionFields);
+if ~isempty(unknownOptionFields)
+    error("runCheckpointTest:UnknownOption", ...
+        "Unknown option(s): %s", strjoin(unknownOptionFields, ", "));
+end
+if isfield(options, "resultsRoot")
+    resultsRootOption = string(options.resultsRoot);
+    if ~isscalar(resultsRootOption) || ismissing(resultsRootOption)
+        error("runCheckpointTest:InvalidResultsRoot", ...
+            "options.resultsRoot must be a scalar string or character vector.");
+    end
+end
+if isfield(options, "overridePatch") && ...
+        (~isstruct(options.overridePatch) || ~isscalar(options.overridePatch))
+    error("runCheckpointTest:InvalidOverridePatch", ...
+        "options.overridePatch must be a scalar struct.");
+end
+
 override = loadCheckpointOverride(checkpointPath);
+if ~isfield(override, "referenceSource")
+    % Historical checkpoints predate the explicit reference-source field.
+    override.referenceSource = "glove";
+end
+if ~isfield(override, "actionInterfaceVariant")
+    % Agent7250 predates this field and was validated with this interface.
+    override.actionInterfaceVariant = "baselineQuantized";
+end
 agentId = "td3";
 if isfield(override, "agent_id") && strlength(string(override.agent_id)) > 0
     agentId = string(override.agent_id);
 end
-override = mergeStructs(override, struct( ...
+
+runDir = "";
+if isfield(options, "resultsRoot") && strlength(string(options.resultsRoot)) > 0
+    resultsRoot = char(string(options.resultsRoot));
+    runDir = string(fullfile( ...
+        resultsRoot, string(datetime("now", "Format", "yy-MM-dd HH m s"))));
+end
+
+fixedEvaluationOverride = struct( ...
     "run_training", false, ...
     "newTraining", false, ...
     "agentFile", checkpointPath, ...
@@ -38,16 +78,23 @@ override = mergeStructs(override, struct( ...
         'MaxSteps', 500, ...
         'NumSimulations', numSimulations, ...
         'StopOnError', 'on', ...
-        'UseParallel', false)));
-
-if isfield(options, "resultsRoot") && strlength(string(options.resultsRoot)) > 0
-    resultsRoot = char(string(options.resultsRoot));
-    override.agents_directory = @(agent_id, variant) fullfile( ...
-        resultsRoot, string(datetime("now", "Format", "yy-MM-dd HH m s")));
+        'UseParallel', false));
+if strlength(runDir) > 0
+    fixedEvaluationOverride.agents_directory = @(agent_id, variant) runDir;
 end
+override = mergeStructs(override, fixedEvaluationOverride);
 
-if isfield(options, "overridePatch") && isstruct(options.overridePatch)
+if isfield(options, "overridePatch")
     override = mergeStructs(override, options.overridePatch);
+end
+% Identity, output path and safety invariants cannot be replaced by a patch.
+override = mergeStructs(override, fixedEvaluationOverride);
+
+if override.run_training || override.newTraining || ~override.usePrerecorded || ...
+        ~override.simMotors || override.connect_glove
+    error("runCheckpointTest:UnsafeOverride", ...
+        "runCheckpointTest requires evaluation, prerecorded data, " + ...
+        "simMotors=true and connect_glove=false.");
 end
 
 setConfigurablesOverride(override);
@@ -55,6 +102,11 @@ clear configurables
 cleanup = onCleanup(@() clearConfigurablesOverride()); %#ok<NASGU>
 
 trainingInfo = trainInterface("td3", "", "");
+if strlength(runDir) > 0
+    writeCheckpointTestManifest( ...
+        runDir, checkpointPath, numSimulations, plotEpisodes, ...
+        options, matlabRoot, repoRoot);
+end
 end
 
 function checkpointPath = defaultCheckpointPath()
@@ -93,6 +145,7 @@ overrideFields = [ ...
     "actionWarpOutputLevels", ...
     "rf_modify_actions", ...
     "usePrerecorded", ...
+    "referenceSource", ...
     "simMotors", ...
     "connect_glove", ...
     "dataset", ...
@@ -128,6 +181,143 @@ for i = 1:numel(fields)
 end
 end
 
+function writeCheckpointTestManifest(runDir, checkpointPath, ...
+        numSimulations, plotEpisodes, launcherOptions, matlabRoot, repoRoot)
+configs = configurables();
+configPath = fullfile(runDir, "00_configs.mat");
+[gitCommit, gitDirty] = getGitState(repoRoot);
+episodeFiles = dir(fullfile(runDir, "episode*.mat"));
+[datasetPaths, datasetHashes] = getDatasetArtifacts(configs, matlabRoot);
+
+manifest = struct( ...
+    "stage", "1_historical_glove_regression", ...
+    "launcher", "runCheckpointTest", ...
+    "createdAt", string(datetime("now", "TimeZone", "UTC", ...
+        "Format", "yyyy-MM-dd'T'HH:mm:ssXXX")), ...
+    "gitCommit", gitCommit, ...
+    "gitDirty", gitDirty, ...
+    "matlabVersion", string(version), ...
+    "seed", configs.randomSeed, ...
+    "referenceSource", configs.referenceSource, ...
+    "actionInterfaceVariant", configs.actionInterfaceVariant, ...
+    "runTraining", logical(configs.run_training), ...
+    "newTraining", logical(configs.newTraining), ...
+    "simMotors", logical(configs.simMotors), ...
+    "usePrerecorded", logical(configs.usePrerecorded), ...
+    "connectGlove", logical(configs.connect_glove), ...
+    "hardwareUsed", false, ...
+    "checkpointUsed", string(checkpointPath), ...
+    "checkpointSha256", fileSha256(checkpointPath), ...
+    "dataset", string(configs.dataset), ...
+    "datasetPaths", datasetPaths, ...
+    "datasetSha256", datasetHashes, ...
+    "configPath", string(configPath), ...
+    "configSha256", fileSha256(configPath), ...
+    "requestedNumSimulations", numSimulations, ...
+    "effectiveNumSimulations", configs.simOpts.NumSimulations, ...
+    "effectiveMaxSteps", configs.simOpts.MaxSteps, ...
+    "numEpisodeFiles", numel(episodeFiles), ...
+    "plotEpisodes", plotEpisodes, ...
+    "outputPath", string(runDir));
+
+save(fullfile(runDir, "checkpoint_test_manifest.mat"), ...
+    "manifest", "launcherOptions");
+writeText(fullfile(runDir, "checkpoint_test_manifest.json"), ...
+    jsonencode(manifest, "PrettyPrint", true));
+
+manifestPath = fullfile(runDir, "checkpoint_test_manifest.mat");
+plotLiteral = "false";
+if plotEpisodes
+    plotLiteral = "true";
+end
+reproducibleCommand = sprintf( ...
+    "cd('%s'); addpath(genpath(pwd)); " + ...
+    "payload=load('%s','launcherOptions'); " + ...
+    "runCheckpointTest('%s',%d,%s,payload.launcherOptions)", ...
+    escapeMatlabString(matlabRoot), escapeMatlabString(manifestPath), ...
+    escapeMatlabString(checkpointPath), numSimulations, plotLiteral);
+writeText(fullfile(runDir, "reproducible_command.txt"), ...
+    reproducibleCommand);
+end
+
+function [datasetPaths, datasetHashes] = getDatasetArtifacts(configs, matlabRoot)
+datasetNames = string(configs.dataset);
+datasetNames = datasetNames(:);
+datasetFolder = string(configs.dataset_folder);
+folderText = char(datasetFolder);
+if ispc
+    isAbsolute = ~isempty(regexp(folderText, '^[A-Za-z]:[\\/]|^\\\\', 'once'));
+else
+    isAbsolute = startsWith(folderText, "/");
+end
+if ~isAbsolute
+    datasetFolder = string(fullfile(matlabRoot, folderText));
+end
+if ~isfolder(datasetFolder)
+    error("runCheckpointTest:DatasetFolderNotFound", ...
+        "Could not resolve dataset folder %s.", datasetFolder);
+end
+
+datasetPaths = strings(size(datasetNames));
+datasetHashes = strings(size(datasetNames));
+for i = 1:numel(datasetNames)
+    candidate = string(fullfile(datasetFolder, datasetNames(i)));
+    [~, ~, extension] = fileparts(candidate);
+    if strlength(extension) == 0 && ~isfile(candidate)
+        candidate = candidate + ".mat";
+    end
+    if ~isfile(candidate)
+        error("runCheckpointTest:DatasetNotFound", ...
+            "Could not resolve dataset file %s.", candidate);
+    end
+    datasetPaths(i) = candidate;
+    datasetHashes(i) = fileSha256(candidate);
+end
+end
+
+function escaped = escapeMatlabString(value)
+escaped = strrep(char(string(value)), "'", "''");
+end
+
+function [commit, dirty] = getGitState(repoRoot)
+[status, output] = system(sprintf('git -C "%s" rev-parse HEAD', repoRoot));
+if status ~= 0
+    commit = "unknown";
+else
+    commit = string(strtrim(output));
+end
+[status, output] = system(sprintf('git -C "%s" status --porcelain', repoRoot));
+dirty = status ~= 0 || strlength(strtrim(string(output))) > 0;
+end
+
+function hash = fileSha256(filePath)
+if ispc
+    escapedPath = strrep(char(string(filePath)), "'", "''");
+    command = sprintf([ ...
+        'powershell -NoProfile -Command "(Get-FileHash -Algorithm SHA256 ' ...
+        '-LiteralPath ''%s'').Hash"'], escapedPath);
+else
+    command = sprintf('sha256sum "%s"', char(string(filePath)));
+end
+[status, output] = system(command);
+if status ~= 0
+    error("runCheckpointTest:HashFailed", ...
+        "Could not calculate SHA-256 for %s.", string(filePath));
+end
+tokens = split(strtrim(string(output)));
+hash = upper(tokens(1));
+end
+
+function writeText(filePath, content)
+fid = fopen(filePath, "w");
+if fid < 0
+    error("runCheckpointTest:WriteFailed", ...
+        "Could not open %s for writing.", string(filePath));
+end
+cleanup = onCleanup(@() fclose(fid));
+fprintf(fid, "%s\n", content);
+end
+
 function clearConfigurablesOverride()
 if isappdata(0, 'configurables_override')
     rmappdata(0, 'configurables_override');
@@ -140,6 +330,9 @@ end
 
 function td3Residual = normalizeResidualConfig(td3Residual)
 if ~isstruct(td3Residual)
+    return;
+end
+if isfield(td3Residual, "enabled") && ~td3Residual.enabled
     return;
 end
 if ~isfield(td3Residual, "baseCheckpointPath") || ...

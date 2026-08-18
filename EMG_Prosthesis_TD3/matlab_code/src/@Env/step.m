@@ -72,10 +72,14 @@ if this.usePrerecorded
         "time elapsed %.2f is incorrect, must be %.2f", ...
         t_elapsed, this.period)
     emg = this.myo.readEmg(t_elapsed);
-    flexData = this.glove.read(t_elapsed);
+    if this.referenceSource == "glove"
+        flexData = this.glove.read(t_elapsed);
+    end
 else
     emg = this.myo.readEmg();
-    flexData = this.glove.read();
+    if this.referenceSource == "glove"
+        flexData = this.glove.read();
+    end
 end
 
 motorData = this.prosthesis.read();
@@ -95,11 +99,13 @@ else
     this.motorData = motorData;
 end
 
-if isempty(flexData)
-    flexData = this.flexData;
-    warning("--------------------flexdata is empty")
-else
-    this.flexData = flexData;
+if this.referenceSource == "glove"
+    if isempty(flexData)
+        flexData = this.flexData;
+        warning("--------------------flexdata is empty")
+    else
+        this.flexData = flexData;
+    end
 end
 
 %% end step timing
@@ -108,10 +114,17 @@ if this.wait_in_step
     this.period_realTic = tic;
 end
 
-this.log(sprintf(...
-    '%d. T=%.3f[s]. EmgSize %d. encodersSize %d. glovesize %d',...
-    this.c, this.episodeTic.elapsed_time,...
-    size(emg, 1), size(motorData, 1), size(flexData, 1)))
+if this.referenceSource == "glove"
+    this.log(sprintf(...
+        '%d. T=%.3f[s]. EmgSize %d. encodersSize %d. glovesize %d',...
+        this.c, this.episodeTic.elapsed_time,...
+        size(emg, 1), size(motorData, 1), size(flexData, 1)))
+else
+    this.log(sprintf(...
+        '%d. T=%.3f[s]. EmgSize %d. encodersSize %d. reference %s',...
+        this.c, this.episodeTic.elapsed_time,...
+        size(emg, 1), size(motorData, 1), this.referenceSource))
+end
 
 %% Update prosthesis states
 this.prevEffectiveActionForState = effectiveAction(:);
@@ -120,15 +133,49 @@ this.prevEffectiveActionForState = effectiveAction(:);
 observation = this.State;
 
 %% Reward and normalized tracking data
-this.flexConverted = this.flexJoined_scaler(reduceFlexDimension(this.flexData));
-this.adjustEnc = this.flexJoined_scaler(encoder2Flex(this.motorData));
-[reward, rewardVector, rewardInfo] = this.reward_function(this, effectiveAction, []);
+if this.referenceSource == "glove"
+    % Historical glove path: preserve conversion, sampling and reward inputs.
+    this.flexConverted = this.flexJoined_scaler(reduceFlexDimension(this.flexData));
+    this.adjustEnc = this.flexJoined_scaler(encoder2Flex(this.motorData));
+    this.referenceTarget = this.flexConverted(end, :)';
+    this.trackingPrediction = this.adjustEnc(end, :)';
+    rewardContext = [];
+else
+    % ETAPA 1 scaffold: intentTarget is initialized at reset and held.
+    % No EMG decoder is introduced before ETAPA 2.
+    this.referenceTarget = this.intentTarget(:);
+    this.trackingPrediction = currentEncoderNorm(:);
+    rewardContext = struct( ...
+        "trackingTarget", this.referenceTarget(:)', ...
+        "trackingPrediction", this.trackingPrediction(:)', ...
+        "referenceSource", this.referenceSource);
+end
+
+[reward, rewardVector, rewardInfo] = this.reward_function( ...
+    this, effectiveAction, rewardContext);
+[reward, rewardVector] = normalizeRewardOutputs( ...
+    reward, rewardVector, expectedActionSize);
+rewardContextForContract = struct( ...
+    "effectiveAction", effectiveAction(:)', ...
+    "previousEffectiveAction", this.prevAction(:)', ...
+    "trackingError", (this.trackingPrediction - this.referenceTarget)', ...
+    "referenceSource", this.referenceSource);
+rewardInfo = normalizeRewardInfo(rewardInfo, rewardContextForContract);
+
+% Commit the generic tracking history only after the complete reward
+% boundary has been validated. A failing reward cannot advance the history.
+this.referenceHistoryCount = this.referenceHistoryCount + 1;
+this.referenceHistory(this.referenceHistoryCount, :) = this.referenceTarget(:)';
+this.trackingPredictionHistory(this.referenceHistoryCount, :) = ...
+    this.trackingPrediction(:)';
 
 %% logs
 this.emgLog{this.c} = emg;
-this.encoderAdjustedLog{this.c} = this.adjustEnc;
+if this.referenceSource == "glove"
+    this.encoderAdjustedLog{this.c} = this.adjustEnc;
+end
 this.rewardLog(this.c) = reward;
-this.rewardVectorLog(this.c, :) = rewardVector(:).';
+this.rewardVectorLog(this.c, :) = rewardVector;
 this.trackingMseLog(this.c) = rewardInfo.trackingMse;
 this.trackingMaeLog(this.c) = rewardInfo.trackingMae;
 this.actionL2Log(this.c) = rewardInfo.actionL2;
@@ -136,13 +183,12 @@ this.progressTermLog(this.c) = rewardInfo.progressTerm;
 this.smoothnessPenaltyLog(this.c) = rewardInfo.smoothnessPenalty;
 this.deltaActionL2Log(this.c) = rewardInfo.deltaActionL2;
 this.saturationFractionLog(this.c) = rewardInfo.saturationFraction;
-if isfield(rewardInfo, "saturationPenalty")
-    this.saturationPenaltyLog(this.c) = rewardInfo.saturationPenalty;
-else
-    this.saturationPenaltyLog(this.c) = 0;
+this.saturationPenaltyLog(this.c) = rewardInfo.saturationPenalty;
+this.rewardIndividualLog{this.c} = rewardVector;
+this.rewardInfoLog{this.c} = rewardInfo;
+if this.referenceSource == "glove"
+    this.flexConvertedLog{this.c} = this.flexConverted;
 end
-this.rewardIndividualLog{this.c} = rewardVector(:).';
-this.flexConvertedLog{this.c} = this.flexConverted;
 this.prevAction = effectiveAction(:);
 this.prevTrackingMse = rewardInfo.trackingMse;
 this.hasPrevRewardState = true;

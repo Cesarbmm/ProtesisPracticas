@@ -11,7 +11,10 @@ Launchers vigentes y helpers de campana que no forman parte del core reusable de
 - `run_residual_lift_stopband_confirmation.m`: confirmacion de stop-band residual
 - `runResidualStopbandCampaignCore.m`: orquestacion comun de discovery y confirmation
 - `summarizeResidualStopbandCampaign.m`: agregacion de metricas de campana
-- `run_repo_smoke_validation.m`: validacion automatizada del repo migrado
+- `run_repo_smoke_validation.m`: validacion historica que incluye 200 episodios
+  de entrenamiento; no usar como smoke de la linea sin guante
+- `run_no_glove_stage1_validation.m`: pruebas y smoke EMG-only determinista,
+  exclusivamente pregrabado y con `SimController`
 
 ## Regla
 

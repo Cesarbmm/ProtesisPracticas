@@ -443,9 +443,14 @@ runCheckpointTest(getAgent7250CheckpointPath(), 2, false, opts);
 
 `runCheckpointTest` además fija evaluación, `newTraining=false` y carga el
 checkpoint existente. Resultado: PASS en 58.3 s; se crearon 50 archivos de
-episodio porque las dos simulaciones de RL (`MaxSteps=500`) reinician el entorno
-al agotarse cada segmento pregrabado. Por ello, el argumento
-`numSimulations=2` no equivale a dos archivos `episode*.mat`.
+episodio.
+
+**Errata identificada en ETAPA 1:** no fueron resets internos de dos
+simulaciones. `localFinalizeRuntimeSettings` reemplazaba silenciosamente el
+`simOpts` del launcher por `NumSimulations=50`; por tanto, la corrida efectiva
+fue de 50 simulaciones. ETAPA 1 corrige el finalizador para respetar el perfil
+explícito. La evidencia numérica de esta auditoría no cambia, pero el argumento
+`2` de este comando histórico no describía la configuración efectiva.
 
 El `00_configs.mat` guardado en la salida confirmó `randomSeed=11`,
 `run_training=0`, `newTraining=0`, `usePrerecorded=1`, `simMotors=1`,

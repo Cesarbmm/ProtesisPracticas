@@ -326,6 +326,10 @@ params.td3Residual.enabled = false;
 params.td3Residual.logDiagnostics = true;
 
 %% Environment
+% Source of the tracking reference. Keep "glove" as the historical default;
+% experiments must select "emgIntent" through setConfigurablesOverride.
+params.referenceSource = "glove";
+
 % Parameters that affect getObservationInfo()
 params.numEMGFeatures = 40;
 params.observationVariant = "markov52";
@@ -341,6 +345,7 @@ params.encodersLimits = [-2000 30000];
 params.EMGFeaturesLimits = [-inf inf];
 
 params = localApplyOverride(params, override);
+params = localFinalizeReferenceSettings(params);
 params = localFinalizeStateSettings(params, override);
 params = localFinalizeModeSettings(params, override);
 params = localFinalizeResumeSettings(params);
@@ -394,6 +399,15 @@ fields = fieldnames(override);
 for i = 1:numel(fields)
     params.(fields{i}) = override.(fields{i});
 end
+end
+
+function params = localFinalizeReferenceSettings(params)
+referenceSource = string(params.referenceSource);
+if ~isscalar(referenceSource) || ~any(referenceSource == ["glove", "emgIntent"])
+    error("configurables:InvalidReferenceSource", ...
+        "referenceSource must be either 'glove' or 'emgIntent'.");
+end
+params.referenceSource = referenceSource;
 end
 
 function params = localFinalizeStateSettings(params, override)
@@ -451,11 +465,15 @@ if params.run_training
         'SaveAgentValue', params.trainingSaveAgentEvery, ...
         'Plots', params.trainingPlots);
 else
-    params.simOpts = rlSimulationOptions( ...
-        'MaxSteps', 500, ...
-        'NumSimulations', 50, ...
-        'StopOnError', 'on', ...
-        'UseParallel', false);
+    % Respect a launcher-provided simulation profile. Previously this
+    % finalizer silently replaced runCheckpointTest's NumSimulations value.
+    if ~isfield(params, "simOpts") || isempty(params.simOpts)
+        params.simOpts = rlSimulationOptions( ...
+            'MaxSteps', 500, ...
+            'NumSimulations', 50, ...
+            'StopOnError', 'on', ...
+            'UseParallel', false);
+    end
 end
 end
 

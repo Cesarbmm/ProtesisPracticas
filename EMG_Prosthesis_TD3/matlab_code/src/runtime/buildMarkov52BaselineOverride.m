@@ -14,6 +14,7 @@ override = struct();
 override.run_training = true;
 override.newTraining = true;
 override.usePrerecorded = true;
+override.referenceSource = "glove";
 override.simMotors = true;
 override.connect_glove = false;
 override.observationVariant = "markov52";

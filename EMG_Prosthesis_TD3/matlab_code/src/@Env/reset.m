@@ -41,8 +41,16 @@ this.deltaActionL2Log = nan(this.maxNumberStepsInEpisodes, 1);
 this.saturationFractionLog = nan(this.maxNumberStepsInEpisodes, 1);
 this.saturationPenaltyLog = nan(this.maxNumberStepsInEpisodes, 1);
 this.rewardIndividualLog = cell(this.maxNumberStepsInEpisodes, 1);
+this.rewardInfoLog = cell(this.maxNumberStepsInEpisodes, 1);
 this.emgLog = cell(this.maxNumberStepsInEpisodes, 1);
 this.flexConvertedLog = cell(this.maxNumberStepsInEpisodes, 1);
+this.referenceHistory = nan(this.maxNumberStepsInEpisodes, 4);
+this.referenceHistoryCount = 0;
+this.trackingPredictionHistory = nan(this.maxNumberStepsInEpisodes, 4);
+this.referenceTarget = zeros(4, 1);
+this.trackingPrediction = zeros(4, 1);
+this.intentTarget = zeros(4, 1);
+this.intentVelocity = zeros(4, 1);
 this.prevAction = zeros(4, 1);
 this.prevTrackingMse = NaN;
 this.hasPrevRewardState = false;
@@ -99,14 +107,21 @@ if this.usePrerecorded
 
     % --- doing the loading
     emg = this.emgSet{this.repetitionId, side};
-    g = this.gloveSet{this.repetitionId, side};
     this.myo = RecordedMyo(emg);
-    this.glove = RecordedGlove(g);
     this.emgLength = size(emg,1);
+    if this.referenceSource == "glove"
+        g = this.gloveSet{this.repetitionId, side};
+        this.glove = RecordedGlove(g);
+    end
     this.log(sprintf("\n------------New Episode: %04d-------", ...
         this.episodeCounter));
-    this.log(sprintf("using rep: %d, hand %s, emg sz: %d, g. sz: %d", ...
-        this.repetitionId, this.episodeType, size(emg, 1), size(g, 1)));
+    if this.referenceSource == "glove"
+        this.log(sprintf("using rep: %d, hand %s, emg sz: %d, g. sz: %d", ...
+            this.repetitionId, this.episodeType, size(emg, 1), size(g, 1)));
+    else
+        this.log(sprintf("using rep: %d, hand %s, emg sz: %d, reference: %s", ...
+            this.repetitionId, this.episodeType, size(emg, 1), this.referenceSource));
+    end
 end
 
 drawnow
@@ -117,7 +132,9 @@ if this.wait_in_step
 end
 
 while true
-    this.glove.resetBuffer();
+    if this.referenceSource == "glove"
+        this.glove.resetBuffer();
+    end
     this.myo.resetBuffer();
     this.prosthesis.resetBuffer();
     drawnow
@@ -146,35 +163,56 @@ while true
     if this.usePrerecorded
         % only in this case, it waits a period
         emg = this.myo.readEmg(this.period);
-        flexData = this.glove.read(this.period);
+        if this.referenceSource == "glove"
+            flexData = this.glove.read(this.period);
+        end
     else
         while this.periodTic.toc() < this.period
             drawnow
         end
 
         emg = this.myo.readEmg(); % E-by-8
-        flexData = this.glove.read(); % n-by-9 double
+        if this.referenceSource == "glove"
+            flexData = this.glove.read(); % n-by-9 double
+        end
     end
 
     this.log("Reseting: reading hardware");
     motorData = this.prosthesis.read(); % m-by-4 double
 
-    if ~isempty(flexData) && ~isempty(emg)
+    if this.referenceSource == "glove"
+        dataReady = ~isempty(flexData) && ~isempty(emg);
+    else
+        dataReady = ~isempty(emg);
+    end
+
+    if dataReady
         break
     else
-        warning('No flex or EMG data, waiting again')
+        if this.referenceSource == "glove"
+            warning('No flex or EMG data, waiting again')
+        else
+            warning('No EMG data, waiting again')
+        end
         pause(0.5); % Espera un poco antes de intentar nuevamente
     end
 end
 
 this.emg = emg;
 this.motorData = motorData;
-this.flexData = flexData;
+if this.referenceSource == "glove"
+    this.flexData = flexData;
+end
 
 this.log(sprintf('encoder\t[%d %d %d %d]',motorData(end,1),...
     motorData(end,2),motorData(end,3),motorData(end,4)))
-this.log(sprintf('EmgSize %d. motorSize %d. glove size %d', ...
-    size(emg, 1), size(motorData, 1), size(motorData, 1)))
+if this.referenceSource == "glove"
+    this.log(sprintf('EmgSize %d. motorSize %d. glove size %d', ...
+        size(emg, 1), size(motorData, 1), size(flexData, 1)))
+else
+    this.log(sprintf('EmgSize %d. motorSize %d. reference %s', ...
+        size(emg, 1), size(motorData, 1), this.referenceSource))
+end
 drawnow
 
 %% # --------- Update state
@@ -185,6 +223,14 @@ assert(~isempty(emg), "EMG empty in reset")
 
 initialEncoderNorm = this.encoderNormCalculator(motorData(end, :)');
 this.prevEncoderNorm = initialEncoderNorm;
+if this.referenceSource == "emgIntent"
+    % ETAPA 1 scaffold: hold the measured initial position. The EMG
+    % decoder and dynamic reference are intentionally deferred to ETAPA 2.
+    this.intentTarget = initialEncoderNorm(:);
+    this.intentVelocity = zeros(4, 1);
+    this.referenceTarget = this.intentTarget;
+    this.trackingPrediction = initialEncoderNorm(:);
+end
 this.prevEffectiveActionForState = zeros(size(this.prevEffectiveActionForState));
 [~] = this.updateEmgFeatureHistory(emg, true);
 [this.State, currentEncoderNorm] = this.calculateState(emg, motorData);

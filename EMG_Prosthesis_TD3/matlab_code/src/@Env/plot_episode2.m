@@ -22,19 +22,27 @@ if this.episodeCounter > 1
     f = figure(1);
 
     % just getting vars...
-    aux_1 = this.encoderAdjustedLog(1:this.c);
-    aux_2 = this.flexConvertedLog(1:this.c);
-
-    prosthesis_position = cat(1, aux_1{:});
-    glove_position = cat(1, aux_2{:});
+    if this.referenceSource == "glove"
+        aux_1 = this.encoderAdjustedLog(1:this.c);
+        aux_2 = this.flexConvertedLog(1:this.c);
+        prosthesis_position = cat(1, aux_1{:});
+        reference_position = cat(1, aux_2{:});
+        referenceLabel = "Flexion glove";
+    else
+        prosthesis_position = ...
+            this.trackingPredictionHistory(1:this.referenceHistoryCount, :);
+        reference_position = ...
+            this.referenceHistory(1:this.referenceHistoryCount, :);
+        referenceLabel = "Intent reference";
+    end
     for i = 1:4
         ax = subplot(4, 1, i, "Parent", f);
         cla(ax);
         hold(ax, "on");
 
         plot(ax, prosthesis_position(:, i));
-        plot(ax, glove_position(:, i));
-        legend(ax, sprintf("Prosthesis motor %d", i), "Flexion glove", ...
+        plot(ax, reference_position(:, i));
+        legend(ax, sprintf("Prosthesis motor %d", i), referenceLabel, ...
             "Location","southwest")
 
         if i == 1

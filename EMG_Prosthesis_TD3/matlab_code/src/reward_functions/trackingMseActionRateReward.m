@@ -1,5 +1,5 @@
 function [reward, rewardVector, rewardInfo] = ...
-    trackingMseActionRateReward(this, action, ~)
+    trackingMseActionRateReward(this, action, rewardContext)
 %trackingMseActionRateReward penalizes normalized tracking error, action
 %magnitude and action rate using only information observable to the agent.
 
@@ -7,8 +7,29 @@ lambdaAction = configurables("rewardActionWeight");
 lambdaDeltaAction = configurables("rewardDeltaActionWeight");
 
 action = double(action(:)');
-target = this.flexConverted(end, :);
-pred = this.adjustEnc(end, :);
+if isempty(rewardContext)
+    % Historical glove path. Keep these inputs and arithmetic unchanged.
+    target = this.flexConverted(end, :);
+    pred = this.adjustEnc(end, :);
+else
+    requiredFields = ["trackingTarget", "trackingPrediction", "referenceSource"];
+    if ~isstruct(rewardContext) || ~isscalar(rewardContext) || ...
+            ~all(isfield(rewardContext, requiredFields))
+        error("trackingMseActionRateReward:InvalidContext", ...
+            "EMG-intent reward context is incomplete.");
+    end
+    if string(rewardContext.referenceSource) ~= "emgIntent"
+        error("trackingMseActionRateReward:InvalidReferenceSource", ...
+            "Nonempty reward context is reserved for emgIntent.");
+    end
+    target = double(rewardContext.trackingTarget(:)');
+    pred = double(rewardContext.trackingPrediction(:)');
+    if numel(target) ~= 4 || numel(pred) ~= 4 || ...
+            any(~isfinite(target)) || any(~isfinite(pred))
+        error("trackingMseActionRateReward:InvalidTrackingData", ...
+            "Tracking target and prediction must be finite four-vectors.");
+    end
+end
 
 err = pred - target;
 trackingMse = mean(err.^2);

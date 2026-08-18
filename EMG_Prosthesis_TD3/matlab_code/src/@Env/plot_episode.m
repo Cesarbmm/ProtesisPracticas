@@ -20,16 +20,21 @@ end
 f = figure('Visible', 'off');
 set(f, 'Units', 'normalized', 'OuterPosition', [0 0 1 1]);
 
-aux_1 = this.encoderAdjustedLog(1:this.c);
-aux_2 = this.flexConvertedLog(1:this.c);
 aux_actions = this.actionLog(1:this.c, :);
 aux_actions2 = this.actionSatLog(1:this.c, :);
 aux_reward_vectors = this.rewardVectorLog(1:this.c, :);
 
-prosthesis_position = cat(1, aux_1{:});
-glove_position = cat(1, aux_2{:});
+if this.referenceSource == "glove"
+    aux_1 = this.encoderAdjustedLog(1:this.c);
+    aux_2 = this.flexConvertedLog(1:this.c);
+    prosthesis_position = cat(1, aux_1{:});
+    reference_position = cat(1, aux_2{:});
+else
+    prosthesis_position = this.trackingPredictionHistory(1:this.referenceHistoryCount, :);
+    reference_position = this.referenceHistory(1:this.referenceHistoryCount, :);
+end
 
-n_glove = size(glove_position, 1);
+n_glove = size(reference_position, 1);
 n_prosthesis = size(prosthesis_position, 1);
 
 if n_prosthesis ~= n_glove
@@ -48,7 +53,7 @@ for i = 1:4
     hold(ax1, "on");
 
     plot(ax1, prosthesis_position_interp(:, i), '-', 'MarkerFaceColor', 'b', 'MarkerSize', 2);
-    plot(ax1, glove_position(:, i));
+    plot(ax1, reference_position(:, i));
 
     for j = 1:length(action_indices)
         action_value = aux_actions(j, i);
@@ -64,7 +69,7 @@ for i = 1:4
     hold(ax2, "on");
 
     plot(ax2, prosthesis_position_interp(:, i), '-', 'MarkerFaceColor', 'b', 'MarkerSize', 2);
-    plot(ax2, glove_position(:, i));
+    plot(ax2, reference_position(:, i));
 
     for j = 1:length(action_indices)
         action_sat_value = aux_actions2(j, i);

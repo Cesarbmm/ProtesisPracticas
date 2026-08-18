@@ -31,59 +31,38 @@ classdef Env < rl.env.MATLABEnvironment
     properties (Constant)
         % env
         v = 2.4; % must be changed in env changes.
-
-        % --- Constants
-        % when true, only 1 action. must match agent output.
-        unifyActions = configurables('unifyActions');
-        episodeDuration = configurables('episodeDuration'); % seconds
-        speeds = configurables('speeds'); % vector of const speeds by motor
-        period = configurables("period"); % reading period
-        verbose = configurables('verbose'); % flag to print msgs
-
-        returnHomeAtEndEpisode = false; % check!
-        % % now returns to home if prerecorded.
-        %returnHomeAtEndEpisode = configurables('returnHomeAtEndEpisode');
-
-        % saves episode data
-        flagSaveTraining = configurables("flagSaveTraining");
-        episode_save_freq = configurables("episode_save_freq"); % every ith
-        plotEpisodeOnTest = configurables("plotEpisodeOnTest");
-
-        % NOTE: used only to initialize buffers
-        maxNumberStepsInEpisodes=configurables("maxNumberStepsInEpisodes");
-
-        % ---  property as method set in Configurables!
-        % raw EMG -> NN input
-        featureCalculator = configurables('fGetFeatures');
-
-        % Scales raw encoder to glove range
-        encoderNormCalculator = configurables("encoder2state_scale");
-        
-        % Scales flex data to [0 1]
-        flexJoined_scaler = configurables("flexJoined_scale");
-
-        % reward function
-        reward_function = configurables("reward_function");
-
-        % running simulator
-        simMotors = configurables("simMotors");
-        quantizeCommandsForSimulation = ...
-            configurables("quantizeCommandsForSimulation");
-        actionCommandActivationThreshold = ...
-            configurables("actionCommandActivationThreshold");
-        actionCommandLevels = configurables("actionCommandLevels");
-        enableDetailedActionDiagnostics = ...
-            configurables("enableDetailedActionDiagnostics");
-        savePerMotorMetrics = configurables("savePerMotorMetrics");
-
-        % clip actions
-        rf_modify_actions = configurables("rf_modify_actions");
     end
 
     %% only in constructor
     properties (SetAccess=immutable)
         % --- using prerecorded
         usePrerecorded = true;
+        % Per-instance so a safety override cannot be masked by class cache.
+        simMotors (1, 1) logical = true;
+        % Per-instance to avoid stale values after configurables overrides.
+        referenceSource (1, 1) string = "glove";
+        % Per-instance so a source switch cannot retain a glove-only reward.
+        reward_function;
+        % Configurables are per-instance so experiment overrides remain exact.
+        unifyActions;
+        episodeDuration;
+        speeds;
+        period;
+        verbose;
+        returnHomeAtEndEpisode = false; % preserve historical behavior
+        flagSaveTraining;
+        episode_save_freq;
+        plotEpisodeOnTest;
+        maxNumberStepsInEpisodes;
+        featureCalculator;
+        encoderNormCalculator;
+        flexJoined_scaler;
+        quantizeCommandsForSimulation;
+        actionCommandActivationThreshold;
+        actionCommandLevels;
+        enableDetailedActionDiagnostics;
+        savePerMotorMetrics;
+        rf_modify_actions;
         emgSet = {}; % when using prerecordings
         gloveSet = {};
         sizeDataset = 0; % number of samples in dataset
@@ -124,6 +103,13 @@ classdef Env < rl.env.MATLABEnvironment
         % buffers aux vars
         flexConverted;
         adjustEnc;
+        referenceTarget = zeros(4, 1);
+        trackingPrediction = zeros(4, 1);
+        intentTarget = zeros(4, 1);
+        intentVelocity = zeros(4, 1);
+        referenceHistory = nan(0, 4);
+        referenceHistoryCount = 0;
+        trackingPredictionHistory = nan(0, 4);
 
         % --- logs: for saving episode recording data
         % timestamp of init of episode with and without home [reset]
@@ -147,6 +133,7 @@ classdef Env < rl.env.MATLABEnvironment
         saturationFractionLog = [];
         saturationPenaltyLog = [];
         rewardIndividualLog = {};
+        rewardInfoLog = {};
         flexConvertedLog = {};
         prevAction = zeros(4,1); % previous effective action for reward
         prevTrackingMse = NaN;
@@ -171,6 +158,32 @@ classdef Env < rl.env.MATLABEnvironment
                 gloveDatas (:, :) cell = {};
             end
 
+            configs = configurables();
+            referenceSource = string(configs.referenceSource);
+            if referenceSource == "emgIntent" && ~usePrerecorded
+                error("Env:EmgIntentRequiresPrerecorded", ...
+                    "ETAPA 1 only permits emgIntent with prerecorded EMG. " + ...
+                    "Live Myo access is not authorized.");
+            end
+            if referenceSource == "emgIntent" && ~configs.simMotors
+                error("Env:EmgIntentRequiresSimulation", ...
+                    "ETAPA 1 does not permit physical prosthesis control.");
+            end
+            if referenceSource == "emgIntent" && ...
+                    string(configs.rewardType) ~= "trackingMseActionRateReward"
+                error("Env:UnsupportedEmgIntentReward", ...
+                    "ETAPA 1 supports emgIntent only with " + ...
+                    "trackingMseActionRateReward.");
+            end
+            if usePrerecorded && (isempty(emgs) || size(emgs, 2) < 2)
+                error("Env:InvalidPrerecordedEmg", ...
+                    "Prerecorded EMG must be a nonempty N-by-2 cell array.");
+            end
+            if usePrerecorded && referenceSource == "glove" && isempty(gloveDatas)
+                error("Env:MissingGloveData", ...
+                    "The historical glove source requires prerecorded glove data.");
+            end
+
             % ------------ Initialize Observation settings
             ObservationInfo = Env.defineObservationInfo();
 
@@ -182,10 +195,33 @@ classdef Env < rl.env.MATLABEnvironment
             this = this@rl.env.MATLABEnvironment(...
                 ObservationInfo, ActionInfo);
 
-            this.log("Defined observation and action space");
-
             % --- inmutable properties
             this.episode_folder = agent_dir;
+            this.referenceSource = referenceSource;
+            this.simMotors = logical(configs.simMotors);
+            this.reward_function = configs.reward_function;
+            this.unifyActions = configs.unifyActions;
+            this.episodeDuration = configs.episodeDuration;
+            this.speeds = configs.speeds;
+            this.period = configs.period;
+            this.verbose = configs.verbose;
+            this.flagSaveTraining = configs.flagSaveTraining;
+            this.episode_save_freq = configs.episode_save_freq;
+            this.plotEpisodeOnTest = configs.plotEpisodeOnTest;
+            this.maxNumberStepsInEpisodes = configs.maxNumberStepsInEpisodes;
+            this.featureCalculator = configs.fGetFeatures;
+            this.encoderNormCalculator = configs.encoder2state_scale;
+            this.flexJoined_scaler = configs.flexJoined_scale;
+            this.quantizeCommandsForSimulation = ...
+                configs.quantizeCommandsForSimulation;
+            this.actionCommandActivationThreshold = ...
+                configs.actionCommandActivationThreshold;
+            this.actionCommandLevels = configs.actionCommandLevels;
+            this.enableDetailedActionDiagnostics = ...
+                configs.enableDetailedActionDiagnostics;
+            this.savePerMotorMetrics = configs.savePerMotorMetrics;
+            this.rf_modify_actions = configs.rf_modify_actions;
+            this.log("Defined observation and action space");
 
             % --- hardware
             this.usePrerecorded = usePrerecorded;
@@ -193,23 +229,27 @@ classdef Env < rl.env.MATLABEnvironment
             if usePrerecorded
                 this.log("Using prerecorded data");
                 this.emgSet = emgs;
-                this.gloveSet = gloveDatas;
                 this.sizeDataset = size(emgs, 1);
 
                 % loading with a random episode (i.e. 1)
                 this.myo = RecordedMyo(emgs{1});
-                this.glove = RecordedGlove(gloveDatas{1});
+                if this.referenceSource == "glove"
+                    this.gloveSet = gloveDatas;
+                    this.glove = RecordedGlove(gloveDatas{1});
+                end
             else
                 this.log("Connecting to devices");
 
                 this.myo = Myo();
 
-                if configurables('connect_glove')
-                    % real glove
-                    this.glove = Glove(configurables("comGlove"));
-                else
-                    % overload glove
-                    this.glove = FakeGlove();
+                if this.referenceSource == "glove"
+                    if configurables('connect_glove')
+                        % real glove
+                        this.glove = Glove(configurables("comGlove"));
+                    else
+                        % overload glove
+                        this.glove = FakeGlove();
+                    end
                 end
 
                 this.log("Created devices");

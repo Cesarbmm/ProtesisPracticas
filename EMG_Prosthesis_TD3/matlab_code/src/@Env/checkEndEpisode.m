@@ -11,7 +11,11 @@ function isDone = checkEndEpisode(this)
 % when prerecorded
 if this.usePrerecorded
     % ignores episode duration when using prerecorded
-    isDone = this.myo.exhausted || this.glove.exhausted;
+    if this.referenceSource == "glove"
+        isDone = this.myo.exhausted || this.glove.exhausted;
+    else
+        isDone = this.myo.exhausted;
+    end
 else
     isDone = this.episodeTic.elapsed_time >= this.episodeDuration;
 end

@@ -123,7 +123,8 @@ end
 if configs.usePrerecorded
     % --- load prerecorded EMGs
     % when ``usePrerecorded`` is false this line does not have effect
-    [emg, glove] = getDataset(configs.dataset, configs.dataset_folder);
+    [emg, glove] = getDataset( ...
+        configs.dataset, configs.dataset_folder, configs.referenceSource);
 
     env = Env(agent_dir, true, emg, glove);
 
@@ -135,6 +136,7 @@ if configs.usePrerecorded
         dataset = configs.dataset;
     end
     env.log(sprintf("Loading datasets: %s", dataset));
+    env.log(sprintf("Reference source: %s", configs.referenceSource));
 else
     env = Env(agent_dir);
 end
