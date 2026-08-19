@@ -51,6 +51,8 @@ comparisonFigurePath = fullfile(summaryFiguresDir, char(options.comparisonFigure
 createCampaignTrainingFigure(perSeedTable, trainingFigurePath, mode);
 createWinnerEpisodeFigure(perSeedTable, summary, winnerFigurePath, mode);
 createReferenceComparisonFigure(referenceTable, comparisonFigurePath, mode);
+selectedVisualFigurePath = promoteCampaignSelectedVisualFigure( ...
+    perSeedTable, summary, summaryFiguresDir);
 
 results = struct();
 results.mode = mode;
@@ -66,7 +68,16 @@ results.seedResults = seedResults;
 results.figurePaths = struct( ...
     "training", string(trainingFigurePath), ...
     "winnerEpisodes", string(winnerFigurePath), ...
-    "comparison", string(comparisonFigurePath));
+    "comparison", string(comparisonFigurePath), ...
+    "selectedVisual", string(selectedVisualFigurePath));
+
+if logical(options.generateReport)
+    results.docsFigurePaths = copyCampaignFiguresToDocs(results.figurePaths, docsRoot);
+end
+
+figureIndexPath = fullfile(options.resultsRoot, "residual_lift_stopband_" + mode + "_figures.md");
+writeTextFile(figureIndexPath, buildFigureIndexMarkdown(results));
+results.figureIndexPath = string(figureIndexPath);
 
 summaryBaseName = "residual_lift_stopband_" + mode + "_summary";
 writetable(perSeedTable, fullfile(options.resultsRoot, summaryBaseName + ".csv"));
@@ -86,6 +97,10 @@ end
 end
 
 function options = normalizeCampaignOptions(mode, options)
+if isfield(options, "plotEpisodeOnTest") && ~isfield(options, "selectedCheckpointPlotEpisodes")
+    options.selectedCheckpointPlotEpisodes = options.plotEpisodeOnTest;
+end
+
 commonDefaults = struct( ...
     "baseCheckpointPath", getAgent7250CheckpointPath(), ...
     "baseLabel", "Agent7250", ...
@@ -102,6 +117,8 @@ commonDefaults = struct( ...
     "auditTopK", 5, ...
     "comparisonSimulations", 50, ...
     "comparisonPlotEpisodes", false, ...
+    "selectedCheckpointPlotEpisodes", true, ...
+    "copyLatestImagenesVisual", true, ...
     "roundToEpisode", 250, ...
     "stopBandFallbackEpisode", 2000, ...
     "stopBandClampRange", [1750 3000], ...
@@ -125,8 +142,8 @@ else
         "trainingEpisodes", NaN, ...
         "trainingSaveEvery", 100, ...
         "episodeSaveFreq", 100, ...
-        "stopBandEpisode", NaN, ...
-        "stopBandWindow", [], ...
+        "stopBandEpisode", 2000, ...
+        "stopBandWindow", [1750 2250], ...
         "discoveryResultsPath", "");
 end
 
@@ -142,6 +159,8 @@ options.seeds = double(options.seeds(:))';
 options.auditFastSimulations = max(2, double(options.auditFastSimulations));
 options.auditFullSimulations = max(2, double(options.auditFullSimulations));
 options.comparisonSimulations = max(2, double(options.comparisonSimulations));
+options.selectedCheckpointPlotEpisodes = logical(options.selectedCheckpointPlotEpisodes);
+options.copyLatestImagenesVisual = logical(options.copyLatestImagenesVisual);
 
 if mode == "confirmation"
     [stopBandEpisode, stopBandWindow, discoveryResultsPath] = resolveConfirmationStopBand(options);
@@ -177,6 +196,7 @@ seedRoot = fullfile(options.resultsRoot, seedLabel);
 ensureDirectoryExists(seedRoot);
 seedFigureDir = fullfile(seedRoot, "figures");
 ensureDirectoryExists(seedFigureDir);
+phaseBIncludePolicy = resolvePhaseBIncludePolicyForMode(mode, options);
 
 pilotOptions = struct( ...
     "baseCheckpointPath", options.baseCheckpointPath, ...
@@ -197,6 +217,7 @@ pilotOptions = struct( ...
     "auditFullSimulations", options.auditFullSimulations, ...
     "auditTopK", options.auditTopK, ...
     "auditSamplingPolicy", struct("mode", "all"), ...
+    "auditPhaseBIncludePolicy", phaseBIncludePolicy, ...
     "alwaysRunVisualTest", false, ...
     "resultsRoot", string(seedRoot));
 
@@ -207,16 +228,31 @@ trainingAnalysis = analyzeExperimentRun(string(pilotResults.trainingRunDir), str
 auditFigurePath = fullfile(seedFigureDir, "checkpoint_evolution.png");
 createSeedAuditFigure(pilotResults.auditResults.phaseATable, benchmark, auditFigurePath);
 
-    [selectedAuditRow, selectionMeta] = selectAuditRow(mode, pilotResults.auditResults.phaseBTable, options);
-    visualTestRoot = fullfile(seedRoot, "selected_checkpoint_test");
-    runCheckpointTest(string(selectedAuditRow.checkpointPath), ...
-        options.comparisonSimulations, logical(options.comparisonPlotEpisodes), struct( ...
-        "resultsRoot", visualTestRoot));
-    visualTestRunDir = findNewestSubdir(visualTestRoot);
-    visualAnalysis = analyzeExperimentRun(string(visualTestRunDir));
-    visualDecision = classifyBenchmarkAcceptance(visualAnalysis.episodeSummary, benchmark);
+[selectedAuditRow, selectionMeta] = selectAuditRow(mode, pilotResults.auditResults.phaseBTable, options);
+visualTestRoot = fullfile(seedRoot, "selected_checkpoint_test");
+imageCopyStartedAt = now;
+runCheckpointTest(string(selectedAuditRow.checkpointPath), ...
+    options.comparisonSimulations, options.selectedCheckpointPlotEpisodes, struct( ...
+    "resultsRoot", visualTestRoot));
+visualTestRunDir = findNewestSubdir(visualTestRoot);
+selectedVisualName = sprintf("%s_selected_checkpoint_episode_%04d_visual_test.png", ...
+    seedLabel, round(double(selectedAuditRow.checkpointEpisode)));
+selectedRawVisualName = sprintf("%s_selected_checkpoint_episode_%04d_visual_test_raw.png", ...
+    seedLabel, round(double(selectedAuditRow.checkpointEpisode)));
+selectedVisualFigurePath = createRepresentativeEpisodeFigure( ...
+    string(visualTestRunDir), fullfile(seedFigureDir, selectedVisualName));
+selectedRawVisualFigurePath = "";
+if options.copyLatestImagenesVisual && options.selectedCheckpointPlotEpisodes
+    selectedRawVisualFigurePath = copyLatestImagenesFigure( ...
+        fullfile(seedFigureDir, selectedRawVisualName), imageCopyStartedAt);
+end
+if strlength(selectedVisualFigurePath) == 0 && strlength(selectedRawVisualFigurePath) > 0
+    selectedVisualFigurePath = selectedRawVisualFigurePath;
+end
+visualAnalysis = analyzeExperimentRun(string(visualTestRunDir));
+visualDecision = classifyBenchmarkAcceptance(visualAnalysis.episodeSummary, benchmark);
 
-    seedRow = struct( ...
+seedRow = struct( ...
         "seed", double(seedValue), ...
         "seedLabel", string(seedLabel), ...
         "trainingRunDir", string(pilotResults.trainingRunDir), ...
@@ -232,6 +268,8 @@ createSeedAuditFigure(pilotResults.auditResults.phaseATable, benchmark, auditFig
         "windowReferenceEpisode", double(selectionMeta.windowReferenceEpisode), ...
         "windowReferencePath", string(selectionMeta.windowReferencePath), ...
         "visualTestRunDir", string(visualTestRunDir), ...
+        "selectedVisualFigurePath", string(selectedVisualFigurePath), ...
+        "selectedRawVisualFigurePath", string(selectedRawVisualFigurePath), ...
         "finalStatus", string(visualDecision.status), ...
         "finalTrackingMse", double(visualAnalysis.episodeSummary.trackingMseMean), ...
         "finalTrackingMae", double(visualAnalysis.episodeSummary.trackingMaeMean), ...
@@ -251,13 +289,15 @@ createSeedAuditFigure(pilotResults.auditResults.phaseATable, benchmark, auditFig
         "bestAverageRewardEpisode", double(trainingAnalysis.trainingSummary.bestAverageRewardEpisode), ...
         "totalAgentStepsFinal", double(trainingAnalysis.trainingSummary.totalAgentStepsFinal));
 
-    seedResult = struct( ...
+seedResult = struct( ...
         "pilotResults", pilotResults, ...
         "trainingAnalysis", trainingAnalysis, ...
         "selectedAuditRow", selectedAuditRow, ...
         "selectionMeta", selectionMeta, ...
         "visualAnalysis", visualAnalysis, ...
         "visualDecision", visualDecision, ...
+        "selectedVisualFigurePath", string(selectedVisualFigurePath), ...
+        "selectedRawVisualFigurePath", string(selectedRawVisualFigurePath), ...
         "summaryFiguresDir", string(summaryFiguresDir));
 end
 
@@ -326,6 +366,18 @@ else
     selectedAuditRow = windowReferenceRow;
     selectionMeta.reason = "fallback_to_best_phaseB_checkpoint_inside_stopband_window";
     selectionMeta.selectedInStopBandWindow = true;
+end
+end
+
+function phaseBIncludePolicy = resolvePhaseBIncludePolicyForMode(mode, options)
+phaseBIncludePolicy = struct();
+if mode ~= "confirmation"
+    return;
+end
+
+windowValue = double(options.stopBandWindow);
+if numel(windowValue) == 2 && all(isfinite(windowValue))
+    phaseBIncludePolicy = struct("mode", "episode_window", "window", windowValue);
 end
 end
 
@@ -408,11 +460,7 @@ if strlength(options.docsRoot) > 0
 else
     docsRoot = fullfile(projectRoot, "docs", "td3_training_report");
 end
-if logical(options.generateReport)
-    summaryFiguresDir = fullfile(docsRoot, "figures");
-else
-    summaryFiguresDir = fullfile(options.resultsRoot, "figures");
-end
+summaryFiguresDir = fullfile(options.resultsRoot, "figures");
 if ~exist(docsRoot, "dir")
     ensureDirectoryExists(docsRoot);
 end
@@ -627,6 +675,187 @@ exportgraphics(f, figurePath, "Resolution", 220);
 close(f);
 end
 
+function selectedVisualFigurePath = promoteCampaignSelectedVisualFigure(perSeedTable, summary, summaryFiguresDir)
+selectedVisualFigurePath = "";
+idx = find(double(perSeedTable.seed) == double(summary.bestSeed), 1, "first");
+if isempty(idx)
+    return;
+end
+
+sourcePath = string(perSeedTable.selectedVisualFigurePath(idx));
+if strlength(sourcePath) == 0 || ~isfile(sourcePath)
+    return;
+end
+
+ensureDirectoryExists(summaryFiguresDir);
+[~, sourceName, sourceExt] = fileparts(char(sourcePath));
+targetPath = fullfile(summaryFiguresDir, [sourceName sourceExt]);
+copyfile(char(sourcePath), targetPath);
+selectedVisualFigurePath = string(targetPath);
+end
+
+function docsFigurePaths = copyCampaignFiguresToDocs(figurePaths, docsRoot)
+docsFiguresDir = fullfile(docsRoot, "figures");
+ensureDirectoryExists(docsFiguresDir);
+
+docsFigurePaths = struct();
+names = string(fieldnames(figurePaths));
+for i = 1:numel(names)
+    fieldName = char(names(i));
+    sourcePath = string(figurePaths.(fieldName));
+    docsFigurePaths.(fieldName) = "";
+    if strlength(sourcePath) == 0 || ~isfile(sourcePath)
+        continue;
+    end
+    [~, sourceName, sourceExt] = fileparts(char(sourcePath));
+    targetPath = fullfile(docsFiguresDir, [sourceName sourceExt]);
+    copyfile(char(sourcePath), targetPath);
+    docsFigurePaths.(fieldName) = string(targetPath);
+end
+end
+
+function figurePath = createRepresentativeEpisodeFigure(runDir, targetPath)
+figurePath = "";
+preferredEpisodeFiles = ["episode00049.mat", "episode00050.mat"];
+episodeFile = "";
+
+for i = 1:numel(preferredEpisodeFiles)
+    candidatePath = fullfile(runDir, preferredEpisodeFiles(i));
+    if isfile(candidatePath)
+        episodeFile = candidatePath;
+        break;
+    end
+end
+
+if strlength(episodeFile) == 0
+    episodeFiles = dir(fullfile(runDir, "episode*.mat"));
+    if isempty(episodeFiles)
+        return;
+    end
+    [~, idx] = max([episodeFiles.datenum]);
+    episodeFile = fullfile(episodeFiles(idx).folder, episodeFiles(idx).name);
+end
+
+data = load(episodeFile);
+if ~isfield(data, "encoderAdjustedLog") || ~isfield(data, "flexConvertedLog")
+    return;
+end
+
+prosthesisPosition = cat(1, data.encoderAdjustedLog{:});
+glovePosition = cat(1, data.flexConvertedLog{:});
+actions = [];
+if isfield(data, "effectiveActionLog")
+    actions = data.effectiveActionLog;
+elseif isfield(data, "actionSatLog")
+    actions = data.actionSatLog;
+elseif isfield(data, "actionLog")
+    actions = data.actionLog;
+end
+
+nGlove = size(glovePosition, 1);
+nProsthesis = size(prosthesisPosition, 1);
+if nProsthesis ~= nGlove
+    xProsthesis = linspace(1, nGlove, nProsthesis);
+    xGlove = 1:nGlove;
+    prosthesisInterp = interp1(xProsthesis, prosthesisPosition, xGlove);
+else
+    prosthesisInterp = prosthesisPosition;
+end
+
+[targetDir, ~, ~] = fileparts(targetPath);
+if strlength(string(targetDir)) > 0
+    ensureDirectoryExists(targetDir);
+end
+
+f = figure("Visible", "off", "Color", "w", "Position", [100 100 1300 900]);
+tiledlayout(f, 2, 2, "TileSpacing", "compact", "Padding", "compact");
+motorNames = ["Pulgar", "Indice", "Medio", "Pulgar rotacion"];
+
+for i = 1:4
+    nexttile;
+    plot(prosthesisInterp(:, i), "-", "LineWidth", 2.0, "Color", [0.00 0.45 0.74]);
+    hold on
+    plot(glovePosition(:, i), "--", "LineWidth", 2.0, "Color", [0.85 0.33 0.10]);
+    if ~isempty(actions)
+        actionIdx = linspace(1, size(glovePosition, 1), size(actions, 1));
+        scatter(actionIdx, prosthesisInterp(round(actionIdx), i), 24, actions(:, i), "filled");
+        colormap(gca, parula);
+    end
+    hold off
+    grid on
+    title(string(motorNames(i)))
+    xlabel("Step")
+    ylabel("Normalized position")
+end
+
+exportgraphics(f, targetPath, "Resolution", 220);
+close(f);
+figurePath = string(targetPath);
+end
+
+function copiedFigurePath = copyLatestImagenesFigure(targetPath, startDatenum)
+copiedFigurePath = "";
+paths = resolveMatlabCodePaths(string(mfilename("fullpath")));
+imageRoot = fullfile(char(paths.workspaceRoot), "Imagenes");
+if ~isfolder(imageRoot)
+    return;
+end
+
+imageInfo = dir(fullfile(imageRoot, "episode_*.png"));
+if isempty(imageInfo)
+    return;
+end
+
+imageInfo = imageInfo([imageInfo.datenum] >= (double(startDatenum) - 1 / 86400));
+if isempty(imageInfo)
+    return;
+end
+
+[~, idx] = max([imageInfo.datenum]);
+sourcePath = fullfile(imageInfo(idx).folder, imageInfo(idx).name);
+[targetDir, ~, ~] = fileparts(targetPath);
+if strlength(string(targetDir)) > 0
+    ensureDirectoryExists(targetDir);
+end
+copyfile(sourcePath, targetPath);
+copiedFigurePath = string(targetPath);
+end
+
+function markdownText = buildFigureIndexMarkdown(results)
+lines = strings(0, 1);
+lines(end+1) = "# Residual stop-band figures";
+lines(end+1) = "";
+lines(end+1) = sprintf("- Mode: `%s`", string(results.mode));
+lines(end+1) = sprintf("- Results root: `%s`", string(results.resultsRoot));
+lines(end+1) = sprintf("- Base checkpoint: `%s`", string(results.options.baseCheckpointPath));
+lines(end+1) = "- Scope: software/simulation only; no hardware ports are touched.";
+lines(end+1) = "";
+lines(end+1) = "## Campaign figures";
+lines(end+1) = "";
+lines(end+1) = "| Figure | Path |";
+lines(end+1) = "| --- | --- |";
+lines(end+1) = sprintf("| Training overview | `%s` |", string(results.figurePaths.training));
+lines(end+1) = sprintf("| Winner episodes / stop-band | `%s` |", string(results.figurePaths.winnerEpisodes));
+lines(end+1) = sprintf("| Reference comparison | `%s` |", string(results.figurePaths.comparison));
+if isfield(results.figurePaths, "selectedVisual") && strlength(string(results.figurePaths.selectedVisual)) > 0
+    lines(end+1) = sprintf("| Selected checkpoint visual test | `%s` |", string(results.figurePaths.selectedVisual));
+end
+lines(end+1) = "";
+lines(end+1) = "## Per-seed selected checkpoint visuals";
+lines(end+1) = "";
+lines(end+1) = "| Seed | Episode | Visual test | Raw Env copy |";
+lines(end+1) = "| --- | ---: | --- | --- |";
+for i = 1:height(results.perSeedTable)
+    lines(end+1) = sprintf("| %d | %d | `%s` | `%s` |", ...
+        results.perSeedTable.seed(i), ...
+        results.perSeedTable.selectedCheckpointEpisode(i), ...
+        string(results.perSeedTable.selectedVisualFigurePath(i)), ...
+        string(results.perSeedTable.selectedRawVisualFigurePath(i)));
+end
+
+markdownText = strjoin(lines, newline);
+end
+
 function summaryText = buildCampaignSummaryText(results)
 summary = results.summary;
 lines = strings(0, 1);
@@ -789,6 +1018,17 @@ lines(end+1) = "\includegraphics[width=\linewidth]{figures/" + texEscape(string(
 lines(end+1) = "\caption{Comparacion entre la campana, \texttt{Agent7250}, \texttt{seed 22} y \texttt{Agent1850}.}";
 lines(end+1) = "\end{figure}";
 lines(end+1) = "";
+if isfield(results.figurePaths, "selectedVisual") && strlength(string(results.figurePaths.selectedVisual)) > 0
+    [~, selectedVisualName, selectedVisualExt] = fileparts(char(results.figurePaths.selectedVisual));
+    selectedVisualFile = string([selectedVisualName selectedVisualExt]);
+    lines(end+1) = "\section*{Test visual del checkpoint seleccionado}";
+    lines(end+1) = "\begin{figure}[H]";
+    lines(end+1) = "\centering";
+    lines(end+1) = "\includegraphics[width=\linewidth]{figures/" + texEscape(selectedVisualFile) + "}";
+    lines(end+1) = "\caption{Episodio representativo del checkpoint seleccionado de la mejor seed de la campana.}";
+    lines(end+1) = "\end{figure}";
+    lines(end+1) = "";
+end
 lines(end+1) = "\begin{table}[H]";
 lines(end+1) = "\centering";
 lines(end+1) = "\caption{Comparacion de candidatos y resumen agregado}";

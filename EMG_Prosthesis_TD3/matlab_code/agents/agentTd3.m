@@ -7,13 +7,21 @@ function [agent, name] = agentTd3(observationInfo, actionInfo)
 % rlQValueFunction so that SequenceLength can be used by TD3.
 
 name = 'td3_agent';
-td3 = configurables('td3');
+configs = configurables();
+td3 = configs.td3;
 
 if isfield(td3, "useRecurrent") && td3.useRecurrent
     [actor, critics] = buildRecurrentTd3Networks(observationInfo, actionInfo, td3);
 else
     [actor, critics] = buildFeedforwardTd3Networks(observationInfo, actionInfo, td3);
 end
+
+useGpu = false;
+if isfield(configs, "useGpu")
+    useGpu = logical(configs.useGpu);
+end
+gpuInfo = configureGpuForTraining(useGpu);
+setappdata(0, "last_training_gpu_info", gpuInfo);
 
 agentOptions = buildTd3AgentOptions(td3);
 agent = rlTD3Agent(actor, critics, agentOptions);

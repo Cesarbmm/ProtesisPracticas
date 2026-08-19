@@ -62,6 +62,7 @@ params.trainingSaveAgentEvery = 100;
 params.trainingPlots = "training-progress";
 params.plotEpisodeOnTest = false;
 params.randomSeed = NaN; % use a numeric value for reproducible multi-seed studies
+params.useGpu = false; % launchers may opt in; training falls back to CPU safely
 
 % --- NOTE: removed
 % when true, calls goHomePostion(...) at the end of every episode
@@ -207,6 +208,9 @@ params.rewardSmoothnessWeight = 0.05;
 params.rewardDeltaActionWeight = 0.05;
 params.rewardSaturationThreshold = 0.90;
 params.rewardSaturationWeight = 0.02;
+params.rewardMotorWeights = [1.0 2.0 1.0 1.0];
+params.rewardActionMotorWeights = [1.0 1.0 1.0 1.0];
+params.rewardDeltaActionMotorWeights = [1.0 1.0 1.0 1.0];
 
 params.reward_function = @(env, action, observation) ...
     rewardFunctionSelector(env, params.rewardType, action, observation);
@@ -222,9 +226,33 @@ params.speeds = 255* [1, 1, 1, 1]; % little, idx, thumb, mid
 params.quantizeCommandsForSimulation = true;
 params.actionCommandActivationThreshold = 0.05;
 params.actionCommandLevels = [0 64 96 128 160 192 224 255];
+params.actionCommandLevelsByMotor = struct( ...
+    "m1", [0 64 96 128 160 192 224 255], ...
+    "m2", [0 128 160 192 224 255], ...
+    "m3", [0 64 96 128 160 192 224 255], ...
+    "m4", [0 64 96 128 160 192 224 255]);
 params.actionInterfaceVariant = "baselineQuantized";
 params.actionWarpDeadzone = 0.05;
 params.actionWarpOutputLevels = [64 96 128 160 192 224 255] / 255;
+
+% Experimental post-processing. The official path is "none". The
+% motor2OnlyHeuristicCorrection option is only for frozen Agent7250
+% diagnostics: it leaves motors 1, 3 and 4 unchanged and adds a small
+% correction to motor 2 based on the current normalized tracking error.
+params.actionPostprocessVariant = "none";
+params.motor2OnlyCorrectionGain = 0.50;
+params.motor2OnlyCorrectionMaxDelta = 0.20;
+params.motor2OnlyCorrectionMinBoost = 0.08;
+params.motor2OnlyCorrectionMinError = 0.08;
+params.motor2OnlyCorrectionFlatUpper = 0.18;
+
+% Experimental encoder-to-flex conversion. The baseline path is the official
+% behavior. motor2Calibrated only lowers the motor 2 gap threshold in
+% simulation diagnostics/ablations and must not be promoted without review.
+params.encoder2FlexVariant = "baseline";
+params.motor2Encoder2FlexGapOffset = -64;
+params.motor2Encoder2FlexBreakOffset = 0;
+params.motor2Encoder2FlexMinEffectiveEncoder = 0;
 
 % clipping
 % when true, the reward function can limit, modify or clip the action.
@@ -344,7 +372,7 @@ params = localApplyOverride(params, override);
 params = localFinalizeStateSettings(params, override);
 params = localFinalizeModeSettings(params, override);
 params = localFinalizeResumeSettings(params);
-params = localFinalizeRuntimeSettings(params);
+params = localFinalizeRuntimeSettings(params, override);
 params.reward_function = @(env, action, observation) ...
     rewardFunctionSelector(env, params.rewardType, action, observation);
 overrideKey = currentOverrideKey;
@@ -440,7 +468,7 @@ if ~isfield(params, "agentFile") || isempty(params.agentFile)
 end
 end
 
-function params = localFinalizeRuntimeSettings(params)
+function params = localFinalizeRuntimeSettings(params, override)
 if params.run_training
     params.RLtrainingOptions = rlTrainingOptions(...
         'MaxEpisodes', params.trainingMaxEpisodes, ...
@@ -451,11 +479,15 @@ if params.run_training
         'SaveAgentValue', params.trainingSaveAgentEvery, ...
         'Plots', params.trainingPlots);
 else
-    params.simOpts = rlSimulationOptions( ...
-        'MaxSteps', 500, ...
-        'NumSimulations', 50, ...
-        'StopOnError', 'on', ...
-        'UseParallel', false);
+    if isfield(override, "simOpts")
+        params.simOpts = override.simOpts;
+    else
+        params.simOpts = rlSimulationOptions( ...
+            'MaxSteps', 500, ...
+            'NumSimulations', 50, ...
+            'StopOnError', 'on', ...
+            'UseParallel', false);
+    end
 end
 end
 

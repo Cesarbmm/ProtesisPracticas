@@ -4,14 +4,17 @@ Proyecto MATLAB para entrenar y evaluar agentes TD3 en el control de una protesi
 
 ## Estado publicado
 
-La version actual del proyecto deja este punto fijo:
+La version actual del proyecto deja este punto fijo historico:
 
 - benchmark oficial: `Agent7250`
-- linea residual activa: `stop-band` confirmada alrededor de `2000` episodios
+- linea residual `stop-band` confirmada alrededor de `2000` episodios, ahora pausada
 - referencia residual reproducible historica previa: `seed 22`
 - mejor residual single-run historico: `Agent1850`
 
-La `stop-band` confirmada pasa a ser la nueva linea operativa para continuar la exploracion residual, pero `Agent7250` sigue siendo el benchmark oficial.
+La fase activa ya no promueve residual ni stop-band. El trabajo actual es
+`Benchmark TD3 seeded retrain + motor 2 diagnostic`, con una subfase de
+calibracion de respuesta del motor 2 antes de ajustar reward. `Agent7250`
+sigue siendo el benchmark historico.
 
 ## Requisitos
 
@@ -28,6 +31,7 @@ La `stop-band` confirmada pasa a ser la nueva linea operativa para continuar la 
 - `matlab_code/agents/`: definicion de agentes y rama residual
 - `matlab_code/checkpoints/canonical/`: benchmark y residual publicado
 - `docs/td3_training_report/`: documentacion final curada
+- `docs/benchmark_motor2_diagnostic/`: diagnostico actual de motor 2
 
 ## Flujos principales
 
@@ -39,7 +43,24 @@ addpath(genpath(pwd))
 clearConfigurablesOverride()
 ```
 
-### Flujo residual activo con stop-band
+### Diagnostico actual de motor 2
+
+```matlab
+results = run_motor_response_conversion_diagnostic();
+
+results = run_motor2_simulation_sanity_check_extended(struct( ...
+    'initialMode','all'));
+
+results = run_motor2_calibrated_action_ablation(struct( ...
+    'seeds', [11 55], ...
+    'trainingEpisodes', 500, ...
+    'finalTestEpisodes', 5, ...
+    'useGpu', true));
+```
+
+Todo este flujo es solo software/simulacion.
+
+### Flujo residual pausado con stop-band
 
 ```matlab
 results = run_residual_lift_stopband_confirmation();
@@ -50,6 +71,8 @@ Esto usa:
 - base congelada `Agent7250`
 - una banda de parada temprana ya confirmada
 - auditoria completa y retest final por seed
+
+No es la linea principal actual; se conserva como experimento futuro.
 
 ### Discovery de una nueva stop-band
 
@@ -95,3 +118,4 @@ Y solo si se usa hardware:
 
 - `matlab_code/README.md`: guia operativa detallada
 - `docs/td3_training_report/README.md`: documentos, figuras y compilacion manual
+- `docs/benchmark_motor2_diagnostic/motor2_calibration_report.pdf`: reporte corto de calibracion de motor 2

@@ -1,8 +1,17 @@
 /Agentes/
 /Imagenes/
-/codex_*.m
 /*.log
 /baseline_article.txt
+
+*.asv
+*.autosave
+*.tmp
+*.log
+.DS_Store
+Thumbs.db
+
+**/training_info.mat
+**/episode*.mat
 
 EMG_Prosthesis_TD3/matlab_code/trainedAgents/
 EMG_Prosthesis_TD3/docs/td3_training_report/report_*

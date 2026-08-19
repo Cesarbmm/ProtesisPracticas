@@ -1,20 +1,54 @@
 # Published Workflows
 
-Launchers vigentes y helpers de campana que no forman parte del core reusable de `src/`.
+Launchers activos de la fase actual:
 
-## Contenido
+**Frozen Agent7250 + motor 2 isolated correction**
 
-- `run_residual_lift_pilot.m`: piloto residual base sobre `Agent7250`
-- `run_residual_lift_multiseed.m`: reproducibilidad multi-seed
-- `run_residual_lift_longrun.m`: variante larga con guardado disperso
-- `run_residual_lift_stopband_discovery.m`: discovery de stop-band residual
-- `run_residual_lift_stopband_confirmation.m`: confirmacion de stop-band residual
-- `runResidualStopbandCampaignCore.m`: orquestacion comun de discovery y confirmation
-- `summarizeResidualStopbandCampaign.m`: agregacion de metricas de campana
-- `run_repo_smoke_validation.m`: validacion automatizada del repo migrado
+El alcance es solo software/simulacion. No se activa hardware, no se cambian
+puertos COM y no se entrena TD3 desde cero como propuesta principal.
+
+## Defaults oficiales
+
+Estos defaults siguen siendo la linea base historica y no se promueven cambios
+experimentales:
+
+- `actionInterfaceVariant = "baselineQuantized"`
+- `encoder2FlexVariant = "baseline"`
+- `actionPostprocessVariant = "none"`
+- `rewardType = "trackingMseActionRateReward"`
+- `observationVariant = "markov52"`
+
+## Contenido activo
+
+- `run_agent7250_frozen_conversion_evaluation.m`: evalua `Agent7250`
+  congelado con conversion baseline y variantes experimentales
+  `motor2Calibrated`, sin entrenamiento.
+- `run_motor2_only_correction_evaluation.m`: evalua una correccion
+  heuristica aislada de motor 2 sobre `Agent7250` congelado. M1, M3 y M4
+  deben quedar sin cambios de accion (`maxNonMotor2ActionDelta = 0`).
+- `run_all_motor_actuation_sanity_check_extended.m`: sanity all-motor sin
+  entrenamiento para M1-M4, posiciones `home/mid/closed` y variantes
+  `encoder2Flex` baseline/calibrada.
+- `run_compare_against_canonical_benchmark_all_motor.m`: compara `Agent7250`
+  contra corridas actuales con diagnostico y figuras M1-M4.
+- `run_motor2_flag_forensic_audit.m`: evalua solo `Agent7250` congelado
+  con conversion baseline/calibrada y correccion aislada de M2. No entrena;
+  separa por episodio los flags de M2, prueba sensibilidad de thresholds y
+  guarda figuras MATLAB solo de episodios con flags.
+
+## Experimentos pausados
+
+Los launchers que reentrenaban TD3 desde cero, probaban
+`motorCalibratedQuantized`, hacian ablations de reward/accion o revisiones
+visuales de corridas anteriores estan en:
+
+`../future_experiments/paused_motor2_training/`
+
+Siguen disponibles con `addpath(genpath(pwd))`, pero no son la linea activa.
 
 ## Regla
 
-- mantener aqui los puntos de entrada activos del proyecto
-- no mover runtime, evaluacion ni checkpoints reutilizables fuera de `src/`
-- no mezclar aqui launchers legacy; esos quedan en `../legacy/`
+- mantener aqui solo puntos de entrada activos;
+- no promover `motorCalibratedQuantized` ni `motor2Calibrated` como default;
+- no aceptar una mejora de M2 si M1, M3 o M4 retroceden;
+- no mover runtime, evaluacion ni checkpoints reutilizables fuera de `src/`.
