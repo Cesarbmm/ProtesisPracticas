@@ -23,6 +23,11 @@ Launchers vigentes y helpers de campana que no forman parte del core reusable de
   dimensiones 44/52/60/132, referencia causal y alineación acción-EMG; no
   carga agente, no entrena y no usa hardware
 
+- `run_no_glove_stage4_reward_validation.m`: validacion numerica de la
+  recompensa causal sin DTW y smoke completo EMG-only con `intentMarkov60`,
+  `baselineQuantized` y `SimController`; no carga agente, no entrena y no usa
+  hardware
+
 ## Regla
 
 - mantener aqui los puntos de entrada activos del proyecto

@@ -207,6 +207,14 @@ params.rewardSmoothnessWeight = 0.05;
 params.rewardDeltaActionWeight = 0.05;
 params.rewardSaturationThreshold = 0.90;
 params.rewardSaturationWeight = 0.02;
+% Causal no-glove reward. These defaults are inert unless the experiment
+% explicitly selects trackingIntentActionRateReward through an override.
+params.intentRewardPositionWeight = 1.00;
+params.intentRewardVelocityWeight = 0.00;
+params.intentRewardActionWeight = 0.01;
+params.intentRewardDeltaActionWeight = 0.05;
+params.intentRewardSaturationWeight = 0.02;
+params.intentRewardSoftActionLimit = 0.90;
 
 params.reward_function = @(env, action, observation) ...
     rewardFunctionSelector(env, params.rewardType, action, observation);
@@ -353,6 +361,7 @@ params.EMGFeaturesLimits = [-inf inf];
 params = localApplyOverride(params, override);
 params = localFinalizeReferenceSettings(params);
 params = localFinalizeStateSettings(params, override);
+params = localFinalizeIntentRewardSettings(params);
 params = localFinalizeModeSettings(params, override);
 params = localFinalizeResumeSettings(params);
 params = localFinalizeRuntimeSettings(params);
@@ -483,6 +492,43 @@ elseif ~isnumeric(params.stateLength) || ~isscalar(params.stateLength) || ...
     error("configurables:StateLengthMismatch", ...
         "stateLength=%g does not match %s (%d).", ...
         params.stateLength, observationVariant, expectedStateLength);
+end
+end
+
+function params = localFinalizeIntentRewardSettings(params)
+weightFields = [ ...
+    "intentRewardPositionWeight", ...
+    "intentRewardVelocityWeight", ...
+    "intentRewardActionWeight", ...
+    "intentRewardDeltaActionWeight", ...
+    "intentRewardSaturationWeight"];
+for fieldIdx = 1:numel(weightFields)
+    fieldName = weightFields(fieldIdx);
+    value = params.(fieldName);
+    if ~isnumeric(value) || ~isreal(value) || ~isscalar(value) || ...
+            ~isfinite(value) || value < 0
+        error("configurables:InvalidIntentRewardWeight", ...
+            "%s must be a finite nonnegative scalar.", fieldName);
+    end
+end
+uSoft = params.intentRewardSoftActionLimit;
+if ~isnumeric(uSoft) || ~isreal(uSoft) || ~isscalar(uSoft) || ...
+        ~isfinite(uSoft) || uSoft < 0 || uSoft > 1
+    error("configurables:InvalidIntentRewardSoftLimit", ...
+        "intentRewardSoftActionLimit must lie within [0,1].");
+end
+
+rewardType = string(params.rewardType);
+if ~isscalar(rewardType) || ismissing(rewardType) || strlength(rewardType) == 0
+    error("configurables:InvalidRewardType", ...
+        "rewardType must be a nonempty scalar string or character vector.");
+end
+if rewardType == "trackingIntentActionRateReward" && ...
+        (params.referenceSource ~= "emgIntent" || ...
+        params.observationVariant ~= "intentMarkov60")
+    error("configurables:IntentRewardRequiresIntentState", ...
+        "trackingIntentActionRateReward requires referenceSource='emgIntent' " + ...
+        "and observationVariant='intentMarkov60'.");
 end
 end
 

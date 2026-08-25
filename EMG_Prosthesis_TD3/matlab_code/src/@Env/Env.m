@@ -135,11 +135,13 @@ classdef Env < rl.env.MATLABEnvironment
         rewardVectorLog = [];
         trackingMseLog = [];
         trackingMaeLog = [];
+        velocityMseLog = [];
         actionL2Log = [];
         progressTermLog = [];
         smoothnessPenaltyLog = [];
         deltaActionL2Log = [];
         saturationFractionLog = [];
+        softSaturationPenaltyLog = [];
         saturationPenaltyLog = [];
         rewardIndividualLog = {};
         rewardInfoLog = {};
@@ -178,11 +180,14 @@ classdef Env < rl.env.MATLABEnvironment
                 error("Env:EmgIntentRequiresSimulation", ...
                     "The no-glove line does not permit physical prosthesis control.");
             end
+            allowedIntentRewards = [ ...
+                "trackingMseActionRateReward", ...
+                "trackingIntentActionRateReward"];
             if referenceSource == "emgIntent" && ...
-                    string(configs.rewardType) ~= "trackingMseActionRateReward"
+                    ~any(string(configs.rewardType) == allowedIntentRewards)
                 error("Env:UnsupportedEmgIntentReward", ...
                     "The current no-glove line supports emgIntent only with " + ...
-                    "trackingMseActionRateReward.");
+                    "an explicitly approved causal reward.");
             end
             if configs.intentDecoderEnabled
                 calibrationValidation = validateIntentCalibration( ...
