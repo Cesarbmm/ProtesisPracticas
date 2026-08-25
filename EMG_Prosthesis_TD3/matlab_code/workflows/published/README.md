@@ -19,6 +19,10 @@ Launchers vigentes y helpers de campana que no forman parte del core reusable de
   decodificación de dos sinergias y referencia viable; no construye `Env`, no
   usa simulador, agente, entrenamiento ni hardware
 
+- `run_no_glove_stage3_state_validation.m`: smoke simulado de `intentMarkov60`,
+  dimensiones 44/52/60/132, referencia causal y alineación acción-EMG; no
+  carga agente, no entrena y no usa hardware
+
 ## Regla
 
 - mantener aqui los puntos de entrada activos del proyecto

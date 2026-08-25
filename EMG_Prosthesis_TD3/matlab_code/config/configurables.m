@@ -329,6 +329,12 @@ params.td3Residual.logDiagnostics = true;
 % Source of the tracking reference. Keep "glove" as the historical default;
 % experiments must select "emgIntent" through setConfigurablesOverride.
 params.referenceSource = "glove";
+% The offline decoder is opt-in. Historical glove runs and the ETAPA 1
+% emgIntent hold scaffold remain unchanged unless an experiment profile
+% provides a validated calibration and selects intentMarkov60.
+params.intentDecoderEnabled = false;
+params.intentCalibration = struct();
+params.intentExpectedContext = struct();
 
 % Parameters that affect getObservationInfo()
 params.numEMGFeatures = 40;
@@ -415,22 +421,68 @@ if ~isfield(params, "emgHistoryLength") || isempty(params.emgHistoryLength)
     params.emgHistoryLength = 1;
 end
 
-if ~isfield(override, "stateLength")
-    if ~isfield(params, "observationVariant") || isempty(params.observationVariant)
+% Older checkpoints may store only stateLength. Infer their historical
+% layout before enforcing the explicit variant/length contract.
+if isfield(override, "stateLength") && ...
+        ~isfield(override, "observationVariant")
+    numMotors = numel(params.minAction);
+    if params.stateLength == params.numEMGFeatures + numMotors
+        params.observationVariant = "legacy44";
+    elseif params.stateLength == params.numEMGFeatures + 3 * numMotors
         params.observationVariant = "markov52";
+    elseif params.stateLength == ...
+            params.numEMGFeatures * params.emgHistoryLength + 3 * numMotors
+        params.observationVariant = "stackedEmg132";
     end
+end
 
-    switch string(params.observationVariant)
-        case "legacy44"
-            params.stateLength = params.numEMGFeatures + numel(params.minAction);
-        case "markov52"
-            params.stateLength = params.numEMGFeatures + 3 * numel(params.minAction);
-        case "stackedEmg132"
-            params.stateLength = params.numEMGFeatures * params.emgHistoryLength + ...
-                3 * numel(params.minAction);
-        otherwise
-            error("Unsupported observationVariant '%s'", string(params.observationVariant));
+observationVariant = string(params.observationVariant);
+if ~isscalar(observationVariant) || ~any(observationVariant == [ ...
+        "legacy44", "markov52", "stackedEmg132", "intentMarkov60"])
+    error("configurables:InvalidObservationVariant", ...
+        "Unsupported observationVariant '%s'.", observationVariant);
+end
+params.observationVariant = observationVariant;
+
+if ~islogical(params.intentDecoderEnabled) || ...
+        ~isscalar(params.intentDecoderEnabled)
+    error("configurables:InvalidIntentDecoderFlag", ...
+        "intentDecoderEnabled must be a scalar logical value.");
+end
+if observationVariant == "intentMarkov60"
+    if params.referenceSource ~= "emgIntent"
+        error("configurables:IntentStateRequiresEmgIntent", ...
+            "intentMarkov60 requires referenceSource='emgIntent'.");
     end
+    if ~params.intentDecoderEnabled
+        error("configurables:IntentStateRequiresDecoder", ...
+            "intentMarkov60 requires intentDecoderEnabled=true.");
+    end
+elseif params.intentDecoderEnabled
+    error("configurables:IntentDecoderRequiresState", ...
+        "The calibrated decoder requires observationVariant='intentMarkov60'.");
+end
+
+numMotors = numel(params.minAction);
+switch observationVariant
+    case "legacy44"
+        expectedStateLength = params.numEMGFeatures + numMotors;
+    case "markov52"
+        expectedStateLength = params.numEMGFeatures + 3 * numMotors;
+    case "stackedEmg132"
+        expectedStateLength = params.numEMGFeatures * params.emgHistoryLength + ...
+            3 * numMotors;
+    case "intentMarkov60"
+        expectedStateLength = params.numEMGFeatures + 5 * numMotors;
+end
+
+if ~isfield(override, "stateLength")
+    params.stateLength = expectedStateLength;
+elseif ~isnumeric(params.stateLength) || ~isscalar(params.stateLength) || ...
+        ~isfinite(params.stateLength) || params.stateLength ~= expectedStateLength
+    error("configurables:StateLengthMismatch", ...
+        "stateLength=%g does not match %s (%d).", ...
+        params.stateLength, observationVariant, expectedStateLength);
 end
 end
 

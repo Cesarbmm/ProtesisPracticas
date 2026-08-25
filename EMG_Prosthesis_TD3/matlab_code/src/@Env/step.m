@@ -126,23 +126,22 @@ else
         size(emg, 1), size(motorData, 1), this.referenceSource))
 end
 
-%% Update prosthesis states
-this.prevEffectiveActionForState = effectiveAction(:);
-[~] = this.updateEmgFeatureHistory(emg, false);
-[this.State, currentEncoderNorm] = this.calculateState(emg, motorData);
-observation = this.State;
-
 %% Reward and normalized tracking data
 if this.referenceSource == "glove"
     % Historical glove path: preserve conversion, sampling and reward inputs.
+    this.prevEffectiveActionForState = effectiveAction(:);
+    [~] = this.updateEmgFeatureHistory(emg, false);
+    [this.State, currentEncoderNorm] = this.calculateState(emg, motorData);
+    observation = this.State;
     this.flexConverted = this.flexJoined_scaler(reduceFlexDimension(this.flexData));
     this.adjustEnc = this.flexJoined_scaler(encoder2Flex(this.motorData));
     this.referenceTarget = this.flexConverted(end, :)';
     this.trackingPrediction = this.adjustEnc(end, :)';
     rewardContext = [];
 else
-    % ETAPA 1 scaffold: intentTarget is initialized at reset and held.
-    % No EMG decoder is introduced before ETAPA 2.
+    % action_t is evaluated against the reference already visible in
+    % state_t. The newly read EMG is reserved for state_(t+1).
+    currentEncoderNorm = this.encoderNormCalculator(motorData(end, :)');
     this.referenceTarget = this.intentTarget(:);
     this.trackingPrediction = currentEncoderNorm(:);
     rewardContext = struct( ...
@@ -162,12 +161,32 @@ rewardContextForContract = struct( ...
     "referenceSource", this.referenceSource);
 rewardInfo = normalizeRewardInfo(rewardInfo, rewardContextForContract);
 
+referenceUsedForReward = this.referenceTarget(:);
+predictionUsedForReward = this.trackingPrediction(:);
+
+if this.referenceSource == "emgIntent"
+    % Only after reward_t is fully validated may EMG_(t+1) update the
+    % dynamic reference and returned observation.
+    this.advanceIntentReference(emg);
+    this.prevEffectiveActionForState = effectiveAction(:);
+    [~] = this.updateEmgFeatureHistory(emg, false);
+    [this.State, observedEncoderNorm] = this.calculateState(emg, motorData);
+    encoderTolerance = 64 * eps(max(1, max(abs(currentEncoderNorm))));
+    if any(abs(observedEncoderNorm(:) - currentEncoderNorm(:)) > ...
+            encoderTolerance)
+        error("Env:EncoderAlignmentMismatch", ...
+            "Reward and next observation used different encoder samples.");
+    end
+    observation = this.State;
+end
+
 % Commit the generic tracking history only after the complete reward
 % boundary has been validated. A failing reward cannot advance the history.
 this.referenceHistoryCount = this.referenceHistoryCount + 1;
-this.referenceHistory(this.referenceHistoryCount, :) = this.referenceTarget(:)';
+this.referenceHistory(this.referenceHistoryCount, :) = ...
+    referenceUsedForReward(:)';
 this.trackingPredictionHistory(this.referenceHistoryCount, :) = ...
-    this.trackingPrediction(:)';
+    predictionUsedForReward(:)';
 
 %% logs
 this.emgLog{this.c} = emg;

@@ -36,6 +36,14 @@ numMotors = hardware.numMotors;
 
 stateLength = params.stateLength;
 emgHistoryLength = params.emgHistoryLength;
+observationVariant = string(params.observationVariant);
+layout = buildObservationLayout(observationVariant, ...
+    numEMGFeatures, emgHistoryLength, numMotors);
+if layout.totalLength ~= stateLength
+    error("Env:ObservationLayoutMismatch", ...
+        "stateLength=%d does not match %s (%d).", ...
+        stateLength, observationVariant, layout.totalLength);
+end
 
 farMinEncoderValue = params.encodersLimits(1);
 farMaxEncoderValue = params.encodersLimits(2);
@@ -50,7 +58,8 @@ obsInfo = rlNumericSpec([stateLength 1]); % col-wise
 
 
 %% limits
-if stateLength == numEMGFeatures + numMotors
+switch observationVariant
+case "legacy44"
     obsInfo.LowerLimit = [EMGFeaturesMin*ones(numEMGFeatures, 1);
         repmat(farMinEncoderValue, numMotors, 1)];
     obsInfo.UpperLimit = [EMGFeaturesMax*ones(numEMGFeatures, 1);
@@ -58,7 +67,7 @@ if stateLength == numEMGFeatures + numMotors
     obsInfo.Description = sprintf(...
         'State defined with %d EMG features and %d encoder positions',...
         numEMGFeatures, numMotors);
-elseif stateLength == numEMGFeatures + 3*numMotors
+case "markov52"
     deltaLower = -ones(numMotors, 1);
     deltaUpper = ones(numMotors, 1);
     prevActionLower = -ones(numMotors, 1);
@@ -76,7 +85,7 @@ elseif stateLength == numEMGFeatures + 3*numMotors
         ['State defined with %d EMG features, %d encoder positions, ' ...
         '%d encoder deltas and %d previous effective actions'],...
         numEMGFeatures, numMotors, numMotors, numMotors);
-elseif stateLength == numEMGFeatures*emgHistoryLength + 3*numMotors
+case "stackedEmg132"
     deltaLower = -ones(numMotors, 1);
     deltaUpper = ones(numMotors, 1);
     prevActionLower = -ones(numMotors, 1);
@@ -97,8 +106,44 @@ elseif stateLength == numEMGFeatures*emgHistoryLength + 3*numMotors
         '%d encoder positions, %d encoder deltas and %d previous ' ...
         'effective actions'],...
         emgHistoryLength, numEMGFeatures, numMotors, numMotors, numMotors);
-else
-    error('Unsupported stateLength=%d for %d motors', stateLength, numMotors);
+case "intentMarkov60"
+    calibrationValidation = validateIntentCalibration( ...
+        params.intentCalibration, params.intentExpectedContext);
+    if ~calibrationValidation.isValid
+        error("Env:InvalidIntentObservationCalibration", ...
+            "Cannot define intentMarkov60: %s", ...
+            strjoin(calibrationValidation.issues, "; "));
+    end
+    deltaLower = -ones(numMotors, 1);
+    deltaUpper = ones(numMotors, 1);
+    prevActionLower = -ones(numMotors, 1);
+    prevActionUpper = ones(numMotors, 1);
+    referenceLower = params.intentCalibration.limits.positionMin(:);
+    referenceUpper = params.intentCalibration.limits.positionMax(:);
+    velocityUpper = params.intentCalibration.limits.velocityMax(:);
+
+    obsInfo.LowerLimit = [EMGFeaturesMin*ones(numEMGFeatures, 1);
+        encoderLower;
+        deltaLower;
+        prevActionLower;
+        referenceLower;
+        -velocityUpper];
+    obsInfo.UpperLimit = [EMGFeaturesMax*ones(numEMGFeatures, 1);
+        encoderUpper;
+        deltaUpper;
+        prevActionUpper;
+        referenceUpper;
+        velocityUpper];
+    obsInfo.Description = sprintf(...
+        ['State defined with %d EMG features, %d encoder positions, ' ...
+        '%d encoder deltas, %d previous effective actions, %d causal ' ...
+        'reference positions and %d causal reference velocities'], ...
+        numEMGFeatures, numMotors, numMotors, numMotors, ...
+        numMotors, numMotors);
+
+otherwise
+    error("Env:UnsupportedObservationVariant", ...
+        "Unsupported observationVariant '%s'.", observationVariant);
 end
 
 obsInfo.Name = 'prosthesis_state';

@@ -51,6 +51,8 @@ this.referenceTarget = zeros(4, 1);
 this.trackingPrediction = zeros(4, 1);
 this.intentTarget = zeros(4, 1);
 this.intentVelocity = zeros(4, 1);
+this.intentGateState = struct( ...
+    "isActive", false, "onCount", 0, "offCount", 0);
 this.prevAction = zeros(4, 1);
 this.prevTrackingMse = NaN;
 this.hasPrevRewardState = false;
@@ -224,8 +226,18 @@ assert(~isempty(emg), "EMG empty in reset")
 initialEncoderNorm = this.encoderNormCalculator(motorData(end, :)');
 this.prevEncoderNorm = initialEncoderNorm;
 if this.referenceSource == "emgIntent"
-    % ETAPA 1 scaffold: hold the measured initial position. The EMG
-    % decoder and dynamic reference are intentionally deferred to ETAPA 2.
+    % Reset q_ref exactly at the measured encoder position. The first
+    % transition starts from zero reference velocity and a canonical rest
+    % gate, so no artificial integrated jump precedes InitialObservation.
+    if this.intentDecoderEnabled
+        qMin = this.intentCalibration.limits.positionMin(:);
+        qMax = this.intentCalibration.limits.positionMax(:);
+        if any(initialEncoderNorm(:) < qMin) || ...
+                any(initialEncoderNorm(:) > qMax)
+            error("Env:InitialReferenceOutOfRange", ...
+                "Initial normalized encoders lie outside intent position limits.");
+        end
+    end
     this.intentTarget = initialEncoderNorm(:);
     this.intentVelocity = zeros(4, 1);
     this.referenceTarget = this.intentTarget;

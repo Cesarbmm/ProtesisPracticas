@@ -30,7 +30,7 @@ classdef Env < rl.env.MATLABEnvironment
     %% Constants
     properties (Constant)
         % env
-        v = 2.4; % must be changed in env changes.
+        v = 2.5; % must be changed in env changes.
     end
 
     %% only in constructor
@@ -41,6 +41,13 @@ classdef Env < rl.env.MATLABEnvironment
         simMotors (1, 1) logical = true;
         % Per-instance to avoid stale values after configurables overrides.
         referenceSource (1, 1) string = "glove";
+        observationVariant (1, 1) string = "markov52";
+        stateLength (1, 1) double = 52;
+        numEMGFeatures (1, 1) double = 40;
+        emgHistoryLength (1, 1) double = 3;
+        intentDecoderEnabled (1, 1) logical = false;
+        intentCalibration = struct();
+        intentExpectedContext = struct();
         % Per-instance so a source switch cannot retain a glove-only reward.
         reward_function;
         % Configurables are per-instance so experiment overrides remain exact.
@@ -107,6 +114,8 @@ classdef Env < rl.env.MATLABEnvironment
         trackingPrediction = zeros(4, 1);
         intentTarget = zeros(4, 1);
         intentVelocity = zeros(4, 1);
+        intentGateState = struct( ...
+            "isActive", false, "onCount", 0, "offCount", 0);
         referenceHistory = nan(0, 4);
         referenceHistoryCount = 0;
         trackingPredictionHistory = nan(0, 4);
@@ -162,18 +171,33 @@ classdef Env < rl.env.MATLABEnvironment
             referenceSource = string(configs.referenceSource);
             if referenceSource == "emgIntent" && ~usePrerecorded
                 error("Env:EmgIntentRequiresPrerecorded", ...
-                    "ETAPA 1 only permits emgIntent with prerecorded EMG. " + ...
+                    "The no-glove line permits emgIntent only with prerecorded EMG. " + ...
                     "Live Myo access is not authorized.");
             end
             if referenceSource == "emgIntent" && ~configs.simMotors
                 error("Env:EmgIntentRequiresSimulation", ...
-                    "ETAPA 1 does not permit physical prosthesis control.");
+                    "The no-glove line does not permit physical prosthesis control.");
             end
             if referenceSource == "emgIntent" && ...
                     string(configs.rewardType) ~= "trackingMseActionRateReward"
                 error("Env:UnsupportedEmgIntentReward", ...
-                    "ETAPA 1 supports emgIntent only with " + ...
+                    "The current no-glove line supports emgIntent only with " + ...
                     "trackingMseActionRateReward.");
+            end
+            if configs.intentDecoderEnabled
+                calibrationValidation = validateIntentCalibration( ...
+                    configs.intentCalibration, configs.intentExpectedContext);
+                if ~calibrationValidation.isValid
+                    error("Env:InvalidIntentCalibration", ...
+                        "Runtime intent calibration is invalid: %s", ...
+                        strjoin(calibrationValidation.issues, "; "));
+                end
+                timingTolerance = 64 * eps(max(1, abs(configs.period)));
+                if abs(configs.intentCalibration.limits.deltaT - ...
+                        configs.period) > timingTolerance
+                    error("Env:IntentPeriodMismatch", ...
+                        "Environment period and intent calibration deltaT must match.");
+                end
             end
             if usePrerecorded && (isempty(emgs) || size(emgs, 2) < 2)
                 error("Env:InvalidPrerecordedEmg", ...
@@ -198,6 +222,13 @@ classdef Env < rl.env.MATLABEnvironment
             % --- inmutable properties
             this.episode_folder = agent_dir;
             this.referenceSource = referenceSource;
+            this.observationVariant = string(configs.observationVariant);
+            this.stateLength = double(configs.stateLength);
+            this.numEMGFeatures = double(configs.numEMGFeatures);
+            this.emgHistoryLength = double(configs.emgHistoryLength);
+            this.intentDecoderEnabled = logical(configs.intentDecoderEnabled);
+            this.intentCalibration = configs.intentCalibration;
+            this.intentExpectedContext = configs.intentExpectedContext;
             this.simMotors = logical(configs.simMotors);
             this.reward_function = configs.reward_function;
             this.unifyActions = configs.unifyActions;
@@ -323,6 +354,7 @@ classdef Env < rl.env.MATLABEnvironment
         InitialObservation = reset(this)
         [Observation,Reward,IsDone,LoggedSignals] = step(this, action)
         [state, enc] = calculateState(this, emg, motorData)
+        advanceIntentReference(this, emg)
         [effectiveAction, appliedPwm] = remapActionForActuator(this, action)
 
         isDone = checkEndEpisode(this)

@@ -8,7 +8,7 @@ arguments
 end
 
 currentFeatures = this.featureCalculator(emg);
-historyLength = configurables("emgHistoryLength");
+historyLength = this.emgHistoryLength;
 
 if historyLength <= 1
     this.emgFeatureHistory = currentFeatures(:);
