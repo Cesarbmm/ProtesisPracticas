@@ -40,6 +40,9 @@ Launchers vigentes y helpers de campana que no forman parte del core reusable de
   `[11,22,33]`; no es invocado automáticamente por el smoke
 - `run_no_glove_stage6_campaign.m`: campaña 12k multisemilla; exige un
   manifiesto de piloto con gate aprobado antes de comenzar
+- `run_no_glove_stage6b_boundary_diagnostic.m`: diagnóstico estrictamente
+  offline de un smoke 6A fallido; alinea estado, referencia, PWM y encoder
+  posterior, estratifica mecanismos por motor y no carga agente, simulador o DTW
 
 ## Regla
 
