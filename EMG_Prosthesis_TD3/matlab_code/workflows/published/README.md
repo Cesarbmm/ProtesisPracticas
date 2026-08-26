@@ -33,6 +33,14 @@ Launchers vigentes y helpers de campana que no forman parte del core reusable de
   por motor; mide retardo, ganancia, zona muerta, velocidad, saturación y
   conversión `encoder2Flex` sin modificar el simulador ni usar hardware
 
+- `run_no_glove_stage6_smoke.m`: entrenamiento desde cero de un TD3
+  feedforward `intentMarkov60`, limitado a 200 episodios y seed 11; usa un
+  corpus EMG sintético de la misma sesión sintética de calibración
+- `run_no_glove_stage6_pilot.m`: piloto separado de 2000 episodios con seeds
+  `[11,22,33]`; no es invocado automáticamente por el smoke
+- `run_no_glove_stage6_campaign.m`: campaña 12k multisemilla; exige un
+  manifiesto de piloto con gate aprobado antes de comenzar
+
 ## Regla
 
 - mantener aqui los puntos de entrada activos del proyecto
