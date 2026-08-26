@@ -28,6 +28,11 @@ Launchers vigentes y helpers de campana que no forman parte del core reusable de
   `baselineQuantized` y `SimController`; no carga agente, no entrena y no usa
   hardware
 
+- `run_no_glove_stage5_plant_diagnostic.m`: baseline P/PD cuantizado y
+  diagnóstico reproducible de la planta simulada mediante escalones y rampas
+  por motor; mide retardo, ganancia, zona muerta, velocidad, saturación y
+  conversión `encoder2Flex` sin modificar el simulador ni usar hardware
+
 ## Regla
 
 - mantener aqui los puntos de entrada activos del proyecto
