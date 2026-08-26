@@ -47,6 +47,11 @@ Launchers vigentes y helpers de campana que no forman parte del core reusable de
   trazas Agent200 con el controlador P validado en ETAPA 5; reutiliza exactamente
   `q_ref`, `v_ref` e inicio por episodio, simula solo la fuente convencional y no
   carga agente, entrena, calcula DTW ni usa hardware
+- `run_no_glove_stage7_offline_temporal_analysis.m`: evaluacion temporal
+  estrictamente offline de las trazas emparejadas de ETAPA 6C; calcula MSE sin
+  desplazamiento y con lags discretos, correlacion y una ruta DTW multivariable
+  compartida para los cuatro motores, preservando el error de extremo y sin
+  cargar agente, construir `Env`, invocar simulador/reward o usar hardware
 
 ## Regla
 
