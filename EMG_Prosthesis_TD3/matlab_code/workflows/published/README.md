@@ -43,6 +43,10 @@ Launchers vigentes y helpers de campana que no forman parte del core reusable de
 - `run_no_glove_stage6b_boundary_diagnostic.m`: diagnóstico estrictamente
   offline de un smoke 6A fallido; alinea estado, referencia, PWM y encoder
   posterior, estratifica mecanismos por motor y no carga agente, simulador o DTW
+- `run_no_glove_stage6c_matched_controller.m`: comparación emparejada de las
+  trazas Agent200 con el controlador P validado en ETAPA 5; reutiliza exactamente
+  `q_ref`, `v_ref` e inicio por episodio, simula solo la fuente convencional y no
+  carga agente, entrena, calcula DTW ni usa hardware
 
 ## Regla
 
