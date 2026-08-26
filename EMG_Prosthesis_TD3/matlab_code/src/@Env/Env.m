@@ -63,6 +63,7 @@ classdef Env < rl.env.MATLABEnvironment
         maxNumberStepsInEpisodes;
         featureCalculator;
         encoderNormCalculator;
+        simulationPositionSafety;
         flexJoined_scaler;
         quantizeCommandsForSimulation;
         actionCommandActivationThreshold;
@@ -146,6 +147,8 @@ classdef Env < rl.env.MATLABEnvironment
         rewardIndividualLog = {};
         rewardInfoLog = {};
         flexConvertedLog = {};
+        positionSafetyInterventionLog = [];
+        positionSafetyInterventionCountByMotor = zeros(1, 4);
         prevAction = zeros(4,1); % previous effective action for reward
         prevTrackingMse = NaN;
         hasPrevRewardState = false;
@@ -247,6 +250,7 @@ classdef Env < rl.env.MATLABEnvironment
             this.maxNumberStepsInEpisodes = configs.maxNumberStepsInEpisodes;
             this.featureCalculator = configs.fGetFeatures;
             this.encoderNormCalculator = configs.encoder2state_scale;
+            this.simulationPositionSafety = configs.simulationPositionSafety;
             this.flexJoined_scaler = configs.flexJoined_scale;
             this.quantizeCommandsForSimulation = ...
                 configs.quantizeCommandsForSimulation;
@@ -298,7 +302,8 @@ classdef Env < rl.env.MATLABEnvironment
                 this.episodeTic = Timing(false, this.period);
                 this.periodTic = Timing(false, this.period);
 
-                this.prosthesis = SimController(this.episodeTic);
+                this.prosthesis = SimController( ...
+                    this.episodeTic, this.simulationPositionSafety);
             else
                 % hardware
                 % when input true it is in real world hardware

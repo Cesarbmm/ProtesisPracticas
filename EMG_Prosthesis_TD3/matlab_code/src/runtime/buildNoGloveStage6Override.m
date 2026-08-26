@@ -97,4 +97,8 @@ override.simMotors = true;
 override.connect_glove = false;
 override.plotEpisodeOnTest = false;
 override.verbose = false;
+% Explicitly inert in the original ETAPA 6 profile. The corrective
+% position-safety smoke opts in without changing any other field.
+override.simulationPositionSafety = ...
+    buildNoGloveSimulationPositionSafety(calibration, false);
 end

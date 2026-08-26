@@ -29,6 +29,11 @@ classdef SimController < handle
         sampling_period = 0.14; % seconds
 
         c0 = 0; % counter of periods
+
+        % Simulation-only boundary adapter. It is disabled by default and
+        % never changes prosthesis_simulator.m or a physical Controller.
+        positionSafety = struct();
+        positionSafetyInterventionCountByMotor = zeros(1, 4);
     end
 
     properties (Hidden=true)
@@ -38,11 +43,23 @@ classdef SimController < handle
     methods
         %% Constructor
         % -----------------------------------------------------------------
-        function obj = SimController(timing)
+        function obj = SimController(timing, positionSafety)
             %SimController(...)
             %
 
-            % # ----
+            arguments
+                timing
+                positionSafety (1, 1) struct = struct( ...
+                    "enabled", false, ...
+                    "mode", "clipTrajectoryOutput", ...
+                    "positionMin", zeros(1, 4), ...
+                    "positionMax", ones(1, 4), ...
+                    "encoderScale", [26500, 11500, 8500, 9000])
+            end
+
+            % Validate once without changing any value.
+            limitSimulationPosition(zeros(0, 4), positionSafety);
+            obj.positionSafety = positionSafety;
             obj.isConnected = true;
 
             obj.timing = timing;
@@ -141,6 +158,24 @@ classdef SimController < handle
             data = obj.buffer;
             obj.resetBuffer(data(end, :));
         end
+
+        %%
+        % -----------------------------------------------------------------
+        function diagnostics = getPositionSafetyDiagnostics(obj)
+            diagnostics = struct( ...
+                "enabled", logical(obj.positionSafety.enabled), ...
+                "mode", string(obj.positionSafety.mode), ...
+                "interventionCountByMotor", ...
+                    obj.positionSafetyInterventionCountByMotor, ...
+                "interventionCount", ...
+                    sum(obj.positionSafetyInterventionCountByMotor));
+        end
+
+        %%
+        % -----------------------------------------------------------------
+        function resetPositionSafetyDiagnostics(obj)
+            obj.positionSafetyInterventionCountByMotor = zeros(1, 4);
+        end
     end
 
     methods (Access=protected)
@@ -171,6 +206,12 @@ classdef SimController < handle
             trajectory = SimController.prosthesis_simulator( ...
                 obj.buffer(end, :), obj.vels, duration, ...
                 obj.sampling_period);
+
+            [trajectory, safetyInfo] = limitSimulationPosition( ...
+                trajectory, obj.positionSafety);
+            obj.positionSafetyInterventionCountByMotor = ...
+                obj.positionSafetyInterventionCountByMotor + ...
+                safetyInfo.interventionCountByMotor;
 
             obj.buffer = [obj.buffer; trajectory];
         end

@@ -46,6 +46,9 @@ this.rewardIndividualLog = cell(this.maxNumberStepsInEpisodes, 1);
 this.rewardInfoLog = cell(this.maxNumberStepsInEpisodes, 1);
 this.emgLog = cell(this.maxNumberStepsInEpisodes, 1);
 this.flexConvertedLog = cell(this.maxNumberStepsInEpisodes, 1);
+this.positionSafetyInterventionLog = zeros( ...
+    this.maxNumberStepsInEpisodes, 4);
+this.positionSafetyInterventionCountByMotor = zeros(1, 4);
 this.referenceHistory = nan(this.maxNumberStepsInEpisodes, 4);
 this.referenceHistoryCount = 0;
 this.trackingPredictionHistory = nan(this.maxNumberStepsInEpisodes, 4);
@@ -250,6 +253,10 @@ this.prevEffectiveActionForState = zeros(size(this.prevEffectiveActionForState))
 [this.State, currentEncoderNorm] = this.calculateState(emg, motorData);
 this.prevEncoderNorm = currentEncoderNorm;
 InitialObservation = this.State;
+
+if this.simMotors
+    this.prosthesis.resetPositionSafetyDiagnostics();
+end
 
 % (optional) use notifyEnvUpdated to signal that the
 % environment has been updated (e.g. to update visualization)

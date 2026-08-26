@@ -275,6 +275,16 @@ params.fGetFeatures = @(x)getWmoosFeatures(x,params.norm.C, params.norm.S);
 params.encoder2state_scale = @(x) x./[26500 11500 8500 9000]'; % used to norm state
 % scale factor must be column vector
 
+% Deterministic simulation-only position adapter. Historical profiles are
+% exact because the default is disabled. Experimental launchers must opt in
+% through setConfigurablesOverride.
+params.simulationPositionSafety = struct( ...
+    "enabled", false, ...
+    "mode", "clipTrajectoryOutput", ...
+    "positionMin", zeros(1, 4), ...
+    "positionMax", ones(1, 4), ...
+    "encoderScale", [26500, 11500, 8500, 9000]);
+
 % Normalization of 
 %   * flexion after encoder converted
 %   * flexion of the reduced glove
@@ -362,6 +372,7 @@ params = localApplyOverride(params, override);
 params = localFinalizeReferenceSettings(params);
 params = localFinalizeStateSettings(params, override);
 params = localFinalizeIntentRewardSettings(params);
+params = localFinalizeSimulationPositionSafety(params);
 params = localFinalizeModeSettings(params, override);
 params = localFinalizeResumeSettings(params);
 params = localFinalizeRuntimeSettings(params);
@@ -530,6 +541,24 @@ if rewardType == "trackingIntentActionRateReward" && ...
         "trackingIntentActionRateReward requires referenceSource='emgIntent' " + ...
         "and observationVariant='intentMarkov60'.");
 end
+end
+
+function params = localFinalizeSimulationPositionSafety(params)
+config = params.simulationPositionSafety;
+required = ["enabled", "mode", "positionMin", "positionMax", ...
+    "encoderScale"];
+if ~isstruct(config) || ~isscalar(config) || ...
+        ~all(isfield(config, cellstr(required)))
+    error("configurables:InvalidSimulationPositionSafety", ...
+        "simulationPositionSafety is incomplete.");
+end
+% Use the same implementation validator as the controller boundary.
+limitSimulationPosition(zeros(0, 4), config);
+if config.enabled && ~params.simMotors
+    error("configurables:SimulationSafetyRequiresSimulator", ...
+        "Simulation position safety cannot be enabled for hardware.");
+end
+params.simulationPositionSafety = config;
 end
 
 function params = localFinalizeModeSettings(params, override)

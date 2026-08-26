@@ -84,6 +84,19 @@ end
 
 motorData = this.prosthesis.read();
 this.encoderLog{this.c} = motorData;
+if this.simMotors
+    safetyDiagnostics = this.prosthesis.getPositionSafetyDiagnostics();
+    cumulativeSafetyCount = ...
+        safetyDiagnostics.interventionCountByMotor;
+    stepSafetyCount = cumulativeSafetyCount - ...
+        this.positionSafetyInterventionCountByMotor;
+    if any(stepSafetyCount < 0)
+        error("Env:InvalidPositionSafetyDiagnostics", ...
+            "Simulation position-safety counts must be monotonic.");
+    end
+    this.positionSafetyInterventionLog(this.c, :) = stepSafetyCount;
+    this.positionSafetyInterventionCountByMotor = cumulativeSafetyCount;
+end
 
 if isempty(emg)
     emg = this.emg;

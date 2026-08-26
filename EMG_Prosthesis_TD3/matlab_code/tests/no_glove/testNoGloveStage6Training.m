@@ -77,6 +77,64 @@ testCase.verifyFalse(configs.td3Residual.enabled);
 testCase.verifyEqual(string(configs.td3Residual.baseCheckpointPath), "");
 testCase.verifyTrue(configs.simMotors);
 testCase.verifyFalse(configs.connect_glove);
+testCase.verifyFalse(configs.simulationPositionSafety.enabled);
+end
+
+function testCorrectiveProfileChangesOnlyPositionSafety(testCase)
+corpus = testCase.TestData.corpus;
+baseline = buildNoGloveStage6Override( ...
+    corpus.calibration, corpus.expectedContext, 11, 200, 50, ...
+    testCase.TestData.datasetPath, testCase.TestData.tempDir);
+corrective = baseline;
+corrective.simulationPositionSafety = ...
+    buildNoGloveSimulationPositionSafety(corpus.calibration, true);
+
+baselineSafety = baseline.simulationPositionSafety;
+correctiveSafety = corrective.simulationPositionSafety;
+baseline = rmfield(baseline, "simulationPositionSafety");
+corrective = rmfield(corrective, "simulationPositionSafety");
+testCase.verifyEqual(corrective, baseline);
+testCase.verifyFalse(baselineSafety.enabled);
+testCase.verifyTrue(correctiveSafety.enabled);
+testCase.verifyEqual(correctiveSafety.mode, "clipTrajectoryOutput");
+testCase.verifyEqual(correctiveSafety.positionMin, ...
+    corpus.calibration.limits.positionMin);
+testCase.verifyEqual(correctiveSafety.positionMax, ...
+    corpus.calibration.limits.positionMax);
+end
+
+function testCorrectiveEnvClipsAndPersistsInterventions(testCase)
+corpus = testCase.TestData.corpus;
+episodeDir = fullfile(testCase.TestData.tempDir, "safety_episode");
+mkdir(episodeDir);
+profile = buildNoGloveStage6Override( ...
+    corpus.calibration, corpus.expectedContext, 11, 200, 50, ...
+    testCase.TestData.datasetPath, testCase.TestData.tempDir);
+profile.simulationPositionSafety = ...
+    buildNoGloveSimulationPositionSafety(corpus.calibration, true);
+setConfigurablesOverride(profile);
+env = Env(episodeDir, true, corpus.trainingEmgs, {});
+reset(env);
+
+encoderScale = profile.simulationPositionSafety.encoderScale;
+env.prosthesis.resetBuffer([-1, encoderScale(2) + 1, ...
+    encoderScale(3) + 1, -1]);
+[observation, reward] = step(env, zeros(4, 1));
+layout = buildObservationLayout("intentMarkov60", 40, 3, 4);
+testCase.verifyEqual(observation(layout.encoder)', [0, 1, 1, 0], ...
+    "AbsTol", 1e-12);
+testCase.verifyTrue(isfinite(reward));
+testCase.verifyEqual(env.positionSafetyInterventionLog(1, :), ...
+    ones(1, 4));
+
+env.saveEpisode();
+saved = load(fullfile(episodeDir, "episode00001.mat"), ...
+    "simulationPositionSafety", "positionSafetyInterventionLog", ...
+    "positionSafetyInterventionCountByMotor");
+testCase.verifyTrue(saved.simulationPositionSafety.enabled);
+testCase.verifyEqual(saved.positionSafetyInterventionLog, ones(1, 4));
+testCase.verifyEqual(saved.positionSafetyInterventionCountByMotor, ...
+    ones(1, 4));
 end
 
 function testFreshAgentFactoryBuildsSixtyInputTd3(testCase)
