@@ -60,6 +60,11 @@ Launchers vigentes y helpers de campana que no forman parte del core reusable de
   evaluacion emparejada de 16 perfiles temporales EMG-intencion disenados con
   Agent200 congelado y el P validado; usa solo simulacion, no entrena, no carga
   Agent7250 y no ejecuta compensacion, filtro, DTW ni hardware
+- `run_no_glove_stage7c_rest_attribution.m`: atribucion offline de los comandos
+  de Agent200 en las ocho ventanas de reposo pre-registradas de ETAPA 7B;
+  reproduce el actor congelado, usa donors locales del mismo episodio y no
+  construye `Env`, invoca simulador/reward, entrena, cambia conducta, calcula
+  DTW ni usa hardware
 
 ## Regla
 
