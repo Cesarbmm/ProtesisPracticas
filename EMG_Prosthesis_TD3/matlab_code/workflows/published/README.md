@@ -56,6 +56,10 @@ Launchers vigentes y helpers de campana que no forman parte del core reusable de
   con `repetitionId` held-out y soporte interior identico para todos los lags;
   termina en el gate y no ejecuta compensacion, filtro, DTW, agente, `Env`,
   simulador, reward, entrenamiento ni hardware
+- `run_no_glove_stage7b_designed_excitation.m`: smoke de dos episodios y
+  evaluacion emparejada de 16 perfiles temporales EMG-intencion disenados con
+  Agent200 congelado y el P validado; usa solo simulacion, no entrena, no carga
+  Agent7250 y no ejecuta compensacion, filtro, DTW ni hardware
 
 ## Regla
 
