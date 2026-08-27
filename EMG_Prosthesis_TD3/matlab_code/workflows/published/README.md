@@ -65,6 +65,12 @@ Launchers vigentes y helpers de campana que no forman parte del core reusable de
   reproduce el actor congelado, usa donors locales del mismo episodio y no
   construye `Env`, invoca simulador/reward, entrena, cambia conducta, calcula
   DTW ni usa hardware
+- `run_no_glove_stage7d_training_support.m`: auditoria offline del soporte de
+  los 128 estados de reposo de ETAPA 7B frente a estados reales publicados en
+  los 200 episodios de entrenamiento de Agent200; registra el replay buffer
+  vacio del checkpoint, mide vecinos entre episodios y realiza una ablacion
+  matematica de biases sin crear estados hibridos, simular, entrenar o usar
+  hardware
 
 ## Regla
 
