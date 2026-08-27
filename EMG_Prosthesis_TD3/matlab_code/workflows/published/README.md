@@ -52,6 +52,10 @@ Launchers vigentes y helpers de campana que no forman parte del core reusable de
   desplazamiento y con lags discretos, correlacion y una ruta DTW multivariable
   compartida para los cuatro motores, preservando el error de extremo y sin
   cargar agente, construir `Env`, invocar simulador/reward o usar hardware
+- `run_no_glove_stage7a_lag_confirmation.m`: confirmacion offline de retardos
+  con `repetitionId` held-out y soporte interior identico para todos los lags;
+  termina en el gate y no ejecuta compensacion, filtro, DTW, agente, `Env`,
+  simulador, reward, entrenamiento ni hardware
 
 ## Regla
 
