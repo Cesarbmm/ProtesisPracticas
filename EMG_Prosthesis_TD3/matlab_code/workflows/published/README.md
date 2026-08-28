@@ -76,6 +76,11 @@ Launchers vigentes y helpers de campana que no forman parte del core reusable de
   entrenamiento; separa las acciones historicas con exploracion, audita los
   terminos de reward registrados y no calcula contrafactuales, entrena, simula,
   cambia conducta, usa DTW o hardware
+- `run_no_glove_stage7f_action_weight_ablation.m`: ablacion emparejada de un
+  unico parametro de reward (`intentRewardActionWeight=0.01` frente a `0.05`);
+  crea dos TD3 desde cero con seed 11, limita cada entrenamiento a 200
+  episodios, conserva seguridad/estado/target/cuantizacion/simulador y se
+  detiene antes de piloto, DTW o hardware
 
 ## Regla
 
