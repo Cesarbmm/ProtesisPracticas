@@ -89,6 +89,16 @@ testCase.verifyError(@() analyzeNoGloveStage7fActionWeightAblation( ...
     "analyzeNoGloveStage7fActionWeightAblation:InvalidVariant");
 end
 
+function testIncompleteResumeFailsClosed(testCase)
+testFile = string(mfilename("fullpath"));
+matlabRoot = fileparts(fileparts(fileparts(testFile)));
+addpath(fullfile(matlabRoot, "workflows", "published"));
+testCase.verifyError(@() ...
+    run_no_glove_stage7f_action_weight_ablation(struct( ...
+    "completedControlRunRoot", testCase.TestData.tempDir)), ...
+    "run_no_glove_stage7f_action_weight_ablation:IncompleteResume");
+end
+
 function testRewardProfilesDifferOnlyByActionWeight(testCase)
 corpus = buildNoGloveStage6SyntheticCorpus(11);
 datasetPath = fullfile(testCase.TestData.tempDir, "training.mat");

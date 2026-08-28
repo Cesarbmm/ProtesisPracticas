@@ -53,8 +53,15 @@ candidateOptions = fixed;
 candidateOptions.resultsRoot = fullfile(runRoot, "candidate_wu_0p05");
 candidateOptions.intentRewardActionWeight = 0.05;
 
-controlReport = run_no_glove_stage6_training(controlOptions);
-candidateReport = run_no_glove_stage6_training(candidateOptions);
+reuseCompletedRuns = strlength(options.completedControlRunRoot) > 0;
+if reuseCompletedRuns
+    controlReport = loadCompletedStage6Run(options.completedControlRunRoot);
+    candidateReport = loadCompletedStage6Run( ...
+        options.completedCandidateRunRoot);
+else
+    controlReport = run_no_glove_stage6_training(controlOptions);
+    candidateReport = run_no_glove_stage6_training(candidateOptions);
+end
 assertBoundedFreshSmoke(controlReport, 0.01);
 assertBoundedFreshSmoke(candidateReport, 0.05);
 
@@ -105,6 +112,7 @@ manifest = struct( ...
     "seed", 11, "checkpointCadence", 50, ...
     "controlRunRoot", controlReport.outputPath, ...
     "candidateRunRoot", candidateReport.outputPath, ...
+    "reusedCompletedChildRuns", reuseCompletedRuns, ...
     "controlManifestSha256", fileSha256(fullfile( ...
         controlReport.outputPath, "manifest.json")), ...
     "candidateManifestSha256", fileSha256(fullfile( ...
@@ -166,7 +174,9 @@ if ~isstruct(options) || ~isscalar(options)
         "options must be a scalar struct.");
 end
 defaults = struct("resultsRoot", "", ...
-    "historicalControlCheckpoint", "");
+    "historicalControlCheckpoint", "", ...
+    "completedControlRunRoot", "", ...
+    "completedCandidateRunRoot", "");
 unknown = setdiff(string(fieldnames(options)), string(fieldnames(defaults)));
 if ~isempty(unknown)
     error("run_no_glove_stage7f_action_weight_ablation:UnknownOption", ...
@@ -182,12 +192,47 @@ end
 options.resultsRoot = string(options.resultsRoot);
 options.historicalControlCheckpoint = ...
     string(options.historicalControlCheckpoint);
+options.completedControlRunRoot = string(options.completedControlRunRoot);
+options.completedCandidateRunRoot = string(options.completedCandidateRunRoot);
 if strlength(options.historicalControlCheckpoint) > 0 && ...
         ~isfile(options.historicalControlCheckpoint)
     error("run_no_glove_stage7f_action_weight_ablation:MissingHistoricalControl", ...
         "Historical control checkpoint not found: %s", ...
         options.historicalControlCheckpoint);
 end
+hasControl = strlength(options.completedControlRunRoot) > 0;
+hasCandidate = strlength(options.completedCandidateRunRoot) > 0;
+if xor(hasControl, hasCandidate)
+    error("run_no_glove_stage7f_action_weight_ablation:IncompleteResume", ...
+        "Both completed child run roots are required for offline resume.");
+end
+if hasControl
+    assertCompletedRunRoot(options.completedControlRunRoot);
+    assertCompletedRunRoot(options.completedCandidateRunRoot);
+end
+end
+
+function assertCompletedRunRoot(runRoot)
+required = ["manifest.json", "stage6_results.mat", ...
+    fullfile("seed_11", "effective_training_profile.mat")];
+for idx = 1:numel(required)
+    if ~isfile(fullfile(runRoot, required(idx)))
+        error("run_no_glove_stage7f_action_weight_ablation:InvalidResumeRun", ...
+            "Completed child run is missing %s under %s.", ...
+            required(idx), runRoot);
+    end
+end
+end
+
+function report = loadCompletedStage6Run(runRoot)
+data = load(fullfile(runRoot, "stage6_results.mat"), ...
+    "manifest", "seedResults", "seedTable", "checkpointTable");
+report = struct("result", string(data.manifest.result), ...
+    "phase", string(data.manifest.phase), ...
+    "phaseGatePassed", logical(data.manifest.phaseGatePassed), ...
+    "outputPath", string(runRoot), "manifest", data.manifest, ...
+    "seedTable", data.seedTable, "checkpointTable", data.checkpointTable, ...
+    "seedResults", {data.seedResults});
 end
 
 function assertBoundedFreshSmoke(report, expectedWeight)
@@ -279,8 +324,8 @@ else
     errors = zeros(numel(paramsA), 1);
     counts = zeros(numel(paramsA), 1);
     for idx = 1:numel(paramsA)
-        a = double(extractdata(paramsA{idx}));
-        b = double(extractdata(paramsB{idx}));
+        a = numericParameter(paramsA{idx});
+        b = numericParameter(paramsB{idx});
         errors(idx) = max(abs(a-b), [], "all");
         counts(idx) = numel(a);
     end
@@ -292,6 +337,17 @@ audit = struct("randomSeed", double(control.randomSeed), ...
     "actorLearnableParameterCount", parameterCount, ...
     "maximumActorInitializationError", maxError, ...
     "actorLearnablesExactlyEqual", maxError == 0);
+end
+
+function value = numericParameter(value)
+if isa(value, "dlarray")
+    value = extractdata(value);
+end
+if ~isnumeric(value)
+    error("run_no_glove_stage7f_action_weight_ablation:LearnableType", ...
+        "Actor learnables must be numeric or dlarray values.");
+end
+value = double(value);
 end
 
 function audit = compareDatasets(control, candidate)
@@ -407,10 +463,17 @@ if strlength(options.historicalControlCheckpoint) > 0
     historical = sprintf(", 'historicalControlCheckpoint','%s'", ...
         escapeQuote(options.historicalControlCheckpoint));
 end
+resume = "";
+if strlength(options.completedControlRunRoot) > 0
+    resume = sprintf(", 'completedControlRunRoot','%s'," + ...
+        "'completedCandidateRunRoot','%s'", ...
+        escapeQuote(options.completedControlRunRoot), ...
+        escapeQuote(options.completedCandidateRunRoot));
+end
 command = sprintf("cd('%s'); addpath(genpath(pwd)); " + ...
     "run_no_glove_stage7f_action_weight_ablation(struct(" + ...
-    "'resultsRoot','%s'%s))", escapeQuote(matlabRoot), ...
-    escapeQuote(root), historical);
+    "'resultsRoot','%s'%s%s))", escapeQuote(matlabRoot), ...
+    escapeQuote(root), historical, resume);
 end
 
 function value = buildOfflineReport(manifest)
