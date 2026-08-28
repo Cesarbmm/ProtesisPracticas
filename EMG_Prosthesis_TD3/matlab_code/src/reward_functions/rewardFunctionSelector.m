@@ -34,6 +34,11 @@ Matlab 9.11.0.1837725 (R2021b) Update 2.
 
 %%
 switch rewardType
+    case 'trackingIntentHoldActionReward'
+        [reward, rewardVector, rewardInfo] = ...
+            trackingIntentHoldActionReward(this, action, user_data);
+        return;
+
     case 'trackingIntentActionRateReward'
         [reward, rewardVector, rewardInfo] = ...
             trackingIntentActionRateReward(this, action, user_data);

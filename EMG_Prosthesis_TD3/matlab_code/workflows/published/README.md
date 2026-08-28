@@ -85,6 +85,10 @@ Launchers vigentes y helpers de campana que no forman parte del core reusable de
   offline de separabilidad entre reposo y movimiento usando los logs congelados
   de 7F; barre umbrales hipoteticos sobre `abs(u_raw)` sin aplicarlos, cambiar
   conducta, simular, entrenar, calcular DTW ni usar hardware
+- `run_no_glove_stage7h_hold_reward_ablation.m`: ablacion emparejada del unico
+  parametro `intentHoldActionWeight=0` frente a `0.20`; usa una condicion causal
+  de hold reconstruible desde `state_t`, crea dos TD3 desde cero con seed 11 y
+  200 episodios por variante, y se detiene antes de piloto, DTW o hardware
 
 ## Regla
 
