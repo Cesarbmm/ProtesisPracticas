@@ -89,6 +89,11 @@ Launchers vigentes y helpers de campana que no forman parte del core reusable de
   parametro `intentHoldActionWeight=0` frente a `0.20`; usa una condicion causal
   de hold reconstruible desde `state_t`, crea dos TD3 desde cero con seed 11 y
   200 episodios por variante, y se detiene antes de piloto, DTW o hardware
+- `run_no_glove_stage7i_hold_support_audit.m`: auditoria estrictamente offline
+  de los 548 episodios congelados de 7H; reconstruye la condicion causal de
+  hold, mide cobertura de reposo frente a exposicion de correccion lejana y
+  transiciones temporales de salida sin cargar agente, crear `Env`, invocar
+  simulador/reward, entrenar, calcular DTW, cambiar conducta ni usar hardware
 
 ## Regla
 
