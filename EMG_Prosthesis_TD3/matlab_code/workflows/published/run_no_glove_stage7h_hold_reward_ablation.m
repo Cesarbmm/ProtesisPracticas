@@ -438,7 +438,7 @@ context = struct( ...
 end
 
 function variant = buildVariant(label, holdWeight, childReport)
-seed = childReport.seedResults{1};
+seed = unwrapSingleSeedResult(childReport.seedResults);
 settings = struct("actionWeight", holdWeight, ...
     "velocityTolerance", 1e-12, ...
     "positionMseTolerance", 1e-4);
@@ -463,6 +463,21 @@ variant = struct("label", label, "holdWeight", holdWeight, ...
     "decodedRestFalseActivationFraction", ...
         childReport.manifest.restFalseActivationFraction, ...
     "checkpointSha256", string(finalRow.checkpointSha256));
+end
+
+function seed = unwrapSingleSeedResult(seedResults)
+if iscell(seedResults) && isscalar(seedResults)
+    seed = seedResults{1};
+elseif isstruct(seedResults) && isscalar(seedResults)
+    seed = seedResults;
+else
+    error("run_no_glove_stage7h_hold_reward_ablation:SeedResultContract", ...
+        "A 7H child smoke must contain exactly one seed result.");
+end
+if ~isstruct(seed) || ~isscalar(seed)
+    error("run_no_glove_stage7h_hold_reward_ablation:SeedResultContract", ...
+        "The single seed result must be a scalar struct.");
+end
 end
 
 function target = mergeHoldSummary(target, source)
