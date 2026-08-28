@@ -71,6 +71,11 @@ Launchers vigentes y helpers de campana que no forman parte del core reusable de
   vacio del checkpoint, mide vecinos entre episodios y realiza una ablacion
   matematica de biases sin crear estados hibridos, simular, entrenar o usar
   hardware
+- `run_no_glove_stage7e_checkpoint_evolution.m`: replay offline de
+  Agent50/100/150/200 sobre los mismos 2200 estados reales de reposo previo de
+  entrenamiento; separa las acciones historicas con exploracion, audita los
+  terminos de reward registrados y no calcula contrafactuales, entrena, simula,
+  cambia conducta, usa DTW o hardware
 
 ## Regla
 
