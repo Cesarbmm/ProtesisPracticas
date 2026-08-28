@@ -81,6 +81,10 @@ Launchers vigentes y helpers de campana que no forman parte del core reusable de
   crea dos TD3 desde cero con seed 11, limita cada entrenamiento a 200
   episodios, conserva seguridad/estado/target/cuantizacion/simulador y se
   detiene antes de piloto, DTW o hardware
+- `run_no_glove_stage7g_action_margin_analysis.m`: diagnostico estrictamente
+  offline de separabilidad entre reposo y movimiento usando los logs congelados
+  de 7F; barre umbrales hipoteticos sobre `abs(u_raw)` sin aplicarlos, cambiar
+  conducta, simular, entrenar, calcular DTW ni usar hardware
 
 ## Regla
 
