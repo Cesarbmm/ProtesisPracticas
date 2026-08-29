@@ -147,6 +147,8 @@ testCase.verifyEqual(gloveEnv.referenceHistory(1, :), ...
 testCase.verifyTrue(all(cellfun(@(x) ...
     isstruct(x) && x.referenceSource == "glove" && x.schemaVersion == 1, ...
     gloveEnv.rewardInfoLog(1:gloveSteps))));
+testCase.verifyTrue(all(cellfun(@isempty, ...
+    gloveEnv.intentProvenanceLog(1:gloveSteps))));
 
 intentProfile = buildNoGloveStage1Override(11);
 setConfigurablesOverride(intentProfile);
@@ -189,12 +191,16 @@ testCase.verifyTrue(isfile(episodePath));
 saved = load(episodePath, ...
     "referenceSource", "referenceHistory", "referenceHistoryCount", ...
     "trackingPredictionHistory", "intentTarget", "intentVelocity", ...
-    "rewardInfoLog", "rewardInfoSchemaVersion", "flexConvertedLog");
+    "rewardInfoLog", "rewardInfoSchemaVersion", "flexConvertedLog", ...
+    "intentProvenanceLog");
 testCase.verifyEqual(saved.referenceSource, "emgIntent");
 testCase.verifyEqual(saved.referenceHistoryCount, intentSteps);
 testCase.verifyEqual(saved.referenceHistory, expectedHistory, "AbsTol", 1e-12);
 testCase.verifyEqual(saved.rewardInfoSchemaVersion, 1);
 testCase.verifyTrue(all(cellfun(@isempty, saved.flexConvertedLog)));
+testCase.verifyEqual(numel(saved.intentProvenanceLog), intentSteps);
+testCase.verifyFalse(intentEnv.intentDecoderEnabled);
+testCase.verifyTrue(all(cellfun(@isempty, saved.intentProvenanceLog)));
 
 summary = summarizeEpisodeDirectory(tempDir);
 testCase.verifyEqual(summary.numEpisodes, 1);

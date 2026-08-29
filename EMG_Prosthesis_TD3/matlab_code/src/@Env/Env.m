@@ -146,6 +146,7 @@ classdef Env < rl.env.MATLABEnvironment
         saturationPenaltyLog = [];
         rewardIndividualLog = {};
         rewardInfoLog = {};
+        intentProvenanceLog = {};
         flexConvertedLog = {};
         positionSafetyInterventionLog = [];
         positionSafetyInterventionCountByMotor = zeros(1, 4);
@@ -365,7 +366,7 @@ classdef Env < rl.env.MATLABEnvironment
         InitialObservation = reset(this)
         [Observation,Reward,IsDone,LoggedSignals] = step(this, action)
         [state, enc] = calculateState(this, emg, motorData)
-        advanceIntentReference(this, emg)
+        provenance = advanceIntentReference(this, emg)
         [effectiveAction, appliedPwm] = remapActionForActuator(this, action)
 
         isDone = checkEndEpisode(this)

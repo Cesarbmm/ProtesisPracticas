@@ -99,6 +99,11 @@ Launchers vigentes y helpers de campana que no forman parte del core reusable de
   7I; audita cobertura, exposicion lejana, segmentos, memoria y equivalencia por
   prefijos sin implementar el estado propuesto, cambiar conducta, cargar agente,
   crear `Env`, simular, invocar reward, entrenar, calcular DTW o usar hardware
+- `run_no_glove_stage7k_intent_provenance_audit.m`: replay causal offline de
+  `emgLog` mediante el decodificador y generador publicados para atribuir cada
+  `v_ref=0`; verifica la alineacion `emg_i -> state_(i+1)` y el logging aditivo
+  futuro sin cargar agentes, entrenar, cambiar estado/reward/referencia/accion,
+  calcular DTW ni usar hardware
 
 ## Regla
 

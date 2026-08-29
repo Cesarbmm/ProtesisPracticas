@@ -44,6 +44,7 @@ this.softSaturationPenaltyLog = nan(this.maxNumberStepsInEpisodes, 1);
 this.saturationPenaltyLog = nan(this.maxNumberStepsInEpisodes, 1);
 this.rewardIndividualLog = cell(this.maxNumberStepsInEpisodes, 1);
 this.rewardInfoLog = cell(this.maxNumberStepsInEpisodes, 1);
+this.intentProvenanceLog = cell(this.maxNumberStepsInEpisodes, 1);
 this.emgLog = cell(this.maxNumberStepsInEpisodes, 1);
 this.flexConvertedLog = cell(this.maxNumberStepsInEpisodes, 1);
 this.positionSafetyInterventionLog = zeros( ...

@@ -196,7 +196,8 @@ predictionUsedForReward = this.trackingPrediction(:);
 if this.referenceSource == "emgIntent"
     % Only after reward_t is fully validated may EMG_(t+1) update the
     % dynamic reference and returned observation.
-    this.advanceIntentReference(emg);
+    this.intentProvenanceLog{this.c} = ...
+        this.advanceIntentReference(emg);
     this.prevEffectiveActionForState = effectiveAction(:);
     [~] = this.updateEmgFeatureHistory(emg, false);
     [this.State, observedEncoderNorm] = this.calculateState(emg, motorData);
