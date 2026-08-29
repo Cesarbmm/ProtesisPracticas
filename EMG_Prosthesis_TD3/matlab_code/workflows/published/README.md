@@ -110,6 +110,11 @@ Launchers vigentes y helpers de campana que no forman parte del core reusable de
   el countdown activo, exige liberacion inmediata y cero activacion antes de
   converger en segmentos `farStarted`, sin implementar estado, cambiar
   conducta, cargar agentes, simular, entrenar, calcular DTW o usar hardware
+- `run_no_glove_stage7m_observable_hold_state.m`: valida en simulacion la
+  variante opt-in `intentDeclaredRestHoldMarkov62=[intentMarkov60,R_t,L_t]`;
+  compara su prefijo, reward, referencia, actuador y seguridad contra el estado
+  60 y audita el replay causal de ambos bits sin cargar agentes, entrenar,
+  calcular DTW ni usar hardware
 
 ## Regla
 

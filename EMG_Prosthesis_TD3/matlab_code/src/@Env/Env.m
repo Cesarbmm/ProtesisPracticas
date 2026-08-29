@@ -30,7 +30,7 @@ classdef Env < rl.env.MATLABEnvironment
     %% Constants
     properties (Constant)
         % env
-        v = 2.5; % must be changed in env changes.
+        v = 2.6; % ETAPA 7M adds the opt-in observable semantic hold state.
     end
 
     %% only in constructor
@@ -48,6 +48,7 @@ classdef Env < rl.env.MATLABEnvironment
         intentDecoderEnabled (1, 1) logical = false;
         intentCalibration = struct();
         intentExpectedContext = struct();
+        intentDeclaredRestHoldPositionMseTolerance (1, 1) double = 1e-4;
         % Per-instance so a source switch cannot retain a glove-only reward.
         reward_function;
         % Configurables are per-instance so experiment overrides remain exact.
@@ -117,6 +118,9 @@ classdef Env < rl.env.MATLABEnvironment
         intentVelocity = zeros(4, 1);
         intentGateState = struct( ...
             "isActive", false, "onCount", 0, "offCount", 0);
+        intentDeclaredRest (1, 1) logical = false;
+        intentHoldLatch (1, 1) logical = false;
+        intentHoldPositionMse (1, 1) double = NaN;
         referenceHistory = nan(0, 4);
         referenceHistoryCount = 0;
         trackingPredictionHistory = nan(0, 4);
@@ -239,6 +243,8 @@ classdef Env < rl.env.MATLABEnvironment
             this.intentDecoderEnabled = logical(configs.intentDecoderEnabled);
             this.intentCalibration = configs.intentCalibration;
             this.intentExpectedContext = configs.intentExpectedContext;
+            this.intentDeclaredRestHoldPositionMseTolerance = double( ...
+                configs.intentDeclaredRestHoldPositionMseTolerance);
             this.simMotors = logical(configs.simMotors);
             this.reward_function = configs.reward_function;
             this.unifyActions = configs.unifyActions;
@@ -366,7 +372,7 @@ classdef Env < rl.env.MATLABEnvironment
         InitialObservation = reset(this)
         [Observation,Reward,IsDone,LoggedSignals] = step(this, action)
         [state, enc] = calculateState(this, emg, motorData)
-        provenance = advanceIntentReference(this, emg)
+        provenance = advanceIntentReference(this, emg, currentEncoderNorm)
         [effectiveAction, appliedPwm] = remapActionForActuator(this, action)
 
         isDone = checkEndEpisode(this)
@@ -396,7 +402,7 @@ classdef Env < rl.env.MATLABEnvironment
         % (optional) update visualization everytime the environment is
         % updated
         % (notifyEnvUpdated is called)
-        function envUpdatedCallback(this)
+        function envUpdatedCallback(~)
         end
     end
 

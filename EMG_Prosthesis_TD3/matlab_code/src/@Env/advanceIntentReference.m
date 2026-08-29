@@ -1,4 +1,4 @@
-function provenance = advanceIntentReference(this, emg)
+function provenance = advanceIntentReference(this, emg, currentEncoderNorm)
 %advanceIntentReference builds the next causal reference from the new EMG.
 %
 % This method is called only after reward_t has been evaluated against the
@@ -13,6 +13,9 @@ end
 gateStateBefore = this.intentGateState;
 referencePositionBefore = this.intentTarget(:)';
 referenceVelocityBefore = this.intentVelocity(:)';
+declaredRestBefore = this.intentDeclaredRest;
+holdLatchBefore = this.intentHoldLatch;
+holdPositionMseBefore = this.intentHoldPositionMse;
 [desiredVelocity, ~, nextGateState, decoderDetails] = ...
     mapEmgToIntentVelocity(emg, this.intentCalibration, ...
     this.intentExpectedContext, this.intentGateState);
@@ -32,6 +35,15 @@ this.intentTarget = referencePosition(end, :)';
 this.intentVelocity = referenceVelocity(end, :)';
 this.intentGateState = nextGateState;
 this.referenceTarget = this.intentTarget;
+holdDetails = [];
+if this.observationVariant == "intentDeclaredRestHoldMarkov62"
+    this.intentDeclaredRest = logical(decoderDetails.isRest(end));
+    [this.intentHoldLatch, holdDetails] = ...
+        updateIntentDeclaredRestHoldState(this.intentHoldLatch, ...
+        this.intentDeclaredRest, currentEncoderNorm, this.intentTarget, ...
+        this.intentDeclaredRestHoldPositionMseTolerance);
+    this.intentHoldPositionMse = holdDetails.positionMse;
+end
 zeroReferenceReason = classifyIntentZeroReferenceReason( ...
     referenceVelocity(end, :), desiredVelocity(end, :), ...
     decoderDetails, referenceDiagnostics, 1e-12);
@@ -59,4 +71,17 @@ provenance = struct( ...
     "accelerationLimited", ...
         logical(referenceDiagnostics.accelerationLimited(end, :)), ...
     "zeroReferenceReason", zeroReferenceReason);
+if this.observationVariant == "intentDeclaredRestHoldMarkov62"
+    provenance.schemaVersion = 2;
+    provenance.declaredRestHoldContractVersion = 1;
+    provenance.declaredRestBefore = declaredRestBefore;
+    provenance.holdLatchBefore = holdLatchBefore;
+    provenance.holdPositionMseBefore = holdPositionMseBefore;
+    provenance.declaredRestAfter = this.intentDeclaredRest;
+    provenance.holdLatchAfter = this.intentHoldLatch;
+    provenance.holdPositionMseAfter = holdDetails.positionMse;
+    provenance.nearTargetAfter = holdDetails.nearTarget;
+    provenance.holdPositionMseTolerance = ...
+        this.intentDeclaredRestHoldPositionMseTolerance;
+end
 end

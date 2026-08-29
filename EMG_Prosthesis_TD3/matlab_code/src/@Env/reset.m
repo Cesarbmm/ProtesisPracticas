@@ -59,6 +59,9 @@ this.intentTarget = zeros(4, 1);
 this.intentVelocity = zeros(4, 1);
 this.intentGateState = struct( ...
     "isActive", false, "onCount", 0, "offCount", 0);
+this.intentDeclaredRest = false;
+this.intentHoldLatch = false;
+this.intentHoldPositionMse = NaN;
 this.prevAction = zeros(4, 1);
 this.prevTrackingMse = NaN;
 this.hasPrevRewardState = false;
@@ -248,6 +251,14 @@ if this.referenceSource == "emgIntent"
     this.intentVelocity = zeros(4, 1);
     this.referenceTarget = this.intentTarget;
     this.trackingPrediction = initialEncoderNorm(:);
+    if this.observationVariant == "intentDeclaredRestHoldMarkov62"
+        this.intentDeclaredRest = true;
+        [this.intentHoldLatch, holdDetails] = ...
+            updateIntentDeclaredRestHoldState(false, true, ...
+            initialEncoderNorm, this.intentTarget, ...
+            this.intentDeclaredRestHoldPositionMseTolerance);
+        this.intentHoldPositionMse = holdDetails.positionMse;
+    end
 end
 this.prevEffectiveActionForState = zeros(size(this.prevEffectiveActionForState));
 [~] = this.updateEmgFeatureHistory(emg, true);

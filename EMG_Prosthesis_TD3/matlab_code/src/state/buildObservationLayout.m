@@ -17,6 +17,8 @@ layout = struct( ...
     "previousEffectiveAction", [], ...
     "referencePosition", [], ...
     "referenceVelocity", [], ...
+    "declaredRest", [], ...
+    "holdLatch", [], ...
     "totalLength", 0);
 
 switch observationVariant
@@ -36,12 +38,14 @@ switch observationVariant
 
     case "intentMarkov60"
         emgCount = numEmgFeatures;
-        layout = appendMarkovFields(layout, emgCount, numMotors);
-        nextIndex = layout.totalLength + 1;
-        layout.referencePosition = nextIndex:(nextIndex + numMotors - 1);
-        nextIndex = nextIndex + numMotors;
-        layout.referenceVelocity = nextIndex:(nextIndex + numMotors - 1);
-        layout.totalLength = nextIndex + numMotors - 1;
+        layout = appendIntentFields(layout, emgCount, numMotors);
+
+    case "intentDeclaredRestHoldMarkov62"
+        emgCount = numEmgFeatures;
+        layout = appendIntentFields(layout, emgCount, numMotors);
+        layout.declaredRest = layout.totalLength + 1;
+        layout.holdLatch = layout.totalLength + 2;
+        layout.totalLength = layout.totalLength + 2;
 
     otherwise
         error("buildObservationLayout:UnsupportedVariant", ...
@@ -57,5 +61,14 @@ nextIndex = nextIndex + numMotors;
 layout.deltaEncoder = nextIndex:(nextIndex + numMotors - 1);
 nextIndex = nextIndex + numMotors;
 layout.previousEffectiveAction = nextIndex:(nextIndex + numMotors - 1);
+layout.totalLength = nextIndex + numMotors - 1;
+end
+
+function layout = appendIntentFields(layout, emgCount, numMotors)
+layout = appendMarkovFields(layout, emgCount, numMotors);
+nextIndex = layout.totalLength + 1;
+layout.referencePosition = nextIndex:(nextIndex + numMotors - 1);
+nextIndex = nextIndex + numMotors;
+layout.referenceVelocity = nextIndex:(nextIndex + numMotors - 1);
 layout.totalLength = nextIndex + numMotors - 1;
 end

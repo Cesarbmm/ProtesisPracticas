@@ -197,7 +197,7 @@ if this.referenceSource == "emgIntent"
     % Only after reward_t is fully validated may EMG_(t+1) update the
     % dynamic reference and returned observation.
     this.intentProvenanceLog{this.c} = ...
-        this.advanceIntentReference(emg);
+        this.advanceIntentReference(emg, currentEncoderNorm);
     this.prevEffectiveActionForState = effectiveAction(:);
     [~] = this.updateEmgFeatureHistory(emg, false);
     [this.State, observedEncoderNorm] = this.calculateState(emg, motorData);

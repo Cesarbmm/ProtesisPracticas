@@ -144,7 +144,7 @@ end
 
 
 %% Hardware and devices
-if params.run_training
+if params.run_training %#ok<IFBDUP>
     % --- only applicable in training
 
     % when ``usePrerecorded`` true, loads a dataset (EMG and glove).
@@ -220,6 +220,9 @@ params.intentRewardSoftActionLimit = 0.90;
 params.intentHoldActionWeight = 0.00;
 params.intentHoldVelocityTolerance = 1e-12;
 params.intentHoldPositionMseTolerance = 1e-4;
+% ETAPA 7M observation-only semantic hold memory. It is independent from
+% reward configuration and inert unless the 62-value state is selected.
+params.intentDeclaredRestHoldPositionMseTolerance = 1e-4;
 
 params.reward_function = @(env, action, observation) ...
     rewardFunctionSelector(env, params.rewardType, action, observation);
@@ -354,7 +357,7 @@ params.td3Residual.logDiagnostics = true;
 params.referenceSource = "glove";
 % The offline decoder is opt-in. Historical glove runs and the ETAPA 1
 % emgIntent hold scaffold remain unchanged unless an experiment profile
-% provides a validated calibration and selects intentMarkov60.
+% provides a validated calibration and selects an explicit intent state.
 params.intentDecoderEnabled = false;
 params.intentCalibration = struct();
 params.intentExpectedContext = struct();
@@ -463,7 +466,8 @@ end
 
 observationVariant = string(params.observationVariant);
 if ~isscalar(observationVariant) || ~any(observationVariant == [ ...
-        "legacy44", "markov52", "stackedEmg132", "intentMarkov60"])
+        "legacy44", "markov52", "stackedEmg132", "intentMarkov60", ...
+        "intentDeclaredRestHoldMarkov62"])
     error("configurables:InvalidObservationVariant", ...
         "Unsupported observationVariant '%s'.", observationVariant);
 end
@@ -474,18 +478,30 @@ if ~islogical(params.intentDecoderEnabled) || ...
     error("configurables:InvalidIntentDecoderFlag", ...
         "intentDecoderEnabled must be a scalar logical value.");
 end
-if observationVariant == "intentMarkov60"
+intentVariants = ["intentMarkov60", ...
+    "intentDeclaredRestHoldMarkov62"];
+if any(observationVariant == intentVariants)
     if params.referenceSource ~= "emgIntent"
         error("configurables:IntentStateRequiresEmgIntent", ...
-            "intentMarkov60 requires referenceSource='emgIntent'.");
+            "%s requires referenceSource='emgIntent'.", ...
+            observationVariant);
     end
     if ~params.intentDecoderEnabled
         error("configurables:IntentStateRequiresDecoder", ...
-            "intentMarkov60 requires intentDecoderEnabled=true.");
+            "%s requires intentDecoderEnabled=true.", observationVariant);
     end
 elseif params.intentDecoderEnabled
     error("configurables:IntentDecoderRequiresState", ...
-        "The calibrated decoder requires observationVariant='intentMarkov60'.");
+        "The calibrated decoder requires an explicit intent state variant.");
+end
+
+holdTolerance = params.intentDeclaredRestHoldPositionMseTolerance;
+if ~isnumeric(holdTolerance) || ~isreal(holdTolerance) || ...
+        ~isscalar(holdTolerance) || ~isfinite(holdTolerance) || ...
+        holdTolerance < 0
+    error("configurables:InvalidIntentDeclaredRestHoldTolerance", ...
+        "intentDeclaredRestHoldPositionMseTolerance must be a finite " + ...
+        "nonnegative scalar.");
 end
 
 numMotors = numel(params.minAction);
@@ -499,6 +515,8 @@ switch observationVariant
             3 * numMotors;
     case "intentMarkov60"
         expectedStateLength = params.numEMGFeatures + 5 * numMotors;
+    case "intentDeclaredRestHoldMarkov62"
+        expectedStateLength = params.numEMGFeatures + 5 * numMotors + 2;
 end
 
 if ~isfield(override, "stateLength")
@@ -555,10 +573,11 @@ end
 if any(rewardType == ["trackingIntentActionRateReward", ...
         "trackingIntentHoldActionReward"]) && ...
         (params.referenceSource ~= "emgIntent" || ...
-        params.observationVariant ~= "intentMarkov60")
+        ~any(params.observationVariant == ["intentMarkov60", ...
+        "intentDeclaredRestHoldMarkov62"]))
     error("configurables:IntentRewardRequiresIntentState", ...
         "trackingIntentActionRateReward requires referenceSource='emgIntent' " + ...
-        "and observationVariant='intentMarkov60'.");
+        "and an explicit intent observation variant.");
 end
 end
 
