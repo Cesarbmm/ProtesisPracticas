@@ -682,8 +682,8 @@ end
 
 function audit = buildRunAudit(control, candidate, profileAudit, ...
         datasetAudit, initializationAudit, checkpointSummary)
-controlSeed = control.seedResults{1};
-candidateSeed = candidate.seedResults{1};
+controlSeed = firstSeedResult(control.seedResults);
+candidateSeed = firstSeedResult(candidate.seedResults);
 audit = struct( ...
     "trainingEpisodeCountControl", max(control.checkpointTable.episode), ...
     "trainingEpisodeCountCandidate", max(candidate.checkpointTable.episode), ...
@@ -714,6 +714,23 @@ audit = struct( ...
         initializationAudit.initializationReproducible, ...
     "profileMatched", profileAudit.profileMatched, ...
     "datasetContentsMatched", datasetAudit.allDatasetContentsEqual);
+end
+
+function result = firstSeedResult(seedResults)
+% Direct child execution stores the scalar struct, whereas loading a saved
+% child preserves the historical cell wrapper. Normalize both routes.
+if iscell(seedResults)
+    if numel(seedResults) ~= 1
+        error("run_no_glove_stage7n_state_ablation:SeedResultCount", ...
+            "ETAPA 7N requires exactly one seed result.");
+    end
+    result = seedResults{1};
+elseif isstruct(seedResults) && isscalar(seedResults)
+    result = seedResults;
+else
+    error("run_no_glove_stage7n_state_ablation:SeedResultType", ...
+        "ETAPA 7N received an invalid seed-result container.");
+end
 end
 
 function newestDir = findNewestSubdir(parentDir)
