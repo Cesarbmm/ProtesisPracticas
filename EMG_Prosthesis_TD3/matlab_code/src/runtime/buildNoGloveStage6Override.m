@@ -1,7 +1,8 @@
 function override = buildNoGloveStage6Override( ...
         calibration, expectedContext, randomSeed, trainingEpisodes, ...
-        trainingSaveEvery, datasetPath, trainingBaseDirectory)
-%buildNoGloveStage6Override creates a new intentMarkov60 TD3 profile.
+        trainingSaveEvery, datasetPath, trainingBaseDirectory, ...
+        observationVariant)
+%buildNoGloveStage6Override creates a new no-glove TD3 profile.
 
 arguments
     calibration (1, 1) struct
@@ -11,6 +12,14 @@ arguments
     trainingSaveEvery (1, 1) double {mustBeInteger, mustBePositive}
     datasetPath (1, 1) string
     trainingBaseDirectory (1, 1) string
+    observationVariant (1, 1) string = "intentMarkov60"
+end
+
+if ~any(observationVariant == ["intentMarkov60", ...
+        "intentDeclaredRestHoldMarkov62"])
+    error("buildNoGloveStage6Override:InvalidObservationVariant", ...
+        "Unsupported no-glove observation variant %s.", ...
+        observationVariant);
 end
 
 validation = validateIntentCalibration(calibration, expectedContext);
@@ -87,7 +96,10 @@ override.td3Residual = struct( ...
     "logDiagnostics", false);
 
 override.referenceSource = "emgIntent";
-override.observationVariant = "intentMarkov60";
+override.observationVariant = observationVariant;
+% Keep the semantic tolerance explicit and matched in both profiles. It is
+% inert for intentMarkov60 and observable only in the 62-value variant.
+override.intentDeclaredRestHoldPositionMseTolerance = 1e-4;
 override.rewardType = "trackingIntentActionRateReward";
 override.actionInterfaceVariant = "baselineQuantized";
 override.quantizeCommandsForSimulation = true;

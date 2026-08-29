@@ -1,0 +1,174 @@
+function tests = testNoGloveStage7nStateAblation
+%testNoGloveStage7nStateAblation deterministic ETAPA 7N tests.
+tests = functiontests(localfunctions);
+end
+
+function setupOnce(testCase)
+clearConfigurablesOverride();
+testCase.TestData.corpus = buildNoGloveStage6SyntheticCorpus(11);
+testCase.TestData.tempDir = string(tempname);
+mkdir(testCase.TestData.tempDir);
+emgs = testCase.TestData.corpus.trainingEmgs;
+metadata = testCase.TestData.corpus.trainingMetadata;
+testCase.TestData.datasetPath = fullfile( ...
+    testCase.TestData.tempDir, "stage7n_training_emg_only.mat");
+save(testCase.TestData.datasetPath, "emgs", "metadata");
+end
+
+function teardownOnce(testCase)
+clearConfigurablesOverride();
+if isfolder(testCase.TestData.tempDir) && ...
+        startsWith(testCase.TestData.tempDir, string(tempdir))
+    rmdir(testCase.TestData.tempDir, "s");
+end
+end
+
+function setup(~)
+clearConfigurablesOverride();
+end
+
+function teardown(~)
+clearConfigurablesOverride();
+end
+
+function testStage6BuilderDefaultRemainsIntent60(testCase)
+profile = buildProfile(testCase, "intentMarkov60", false);
+setConfigurablesOverride(profile);
+configs = configurables();
+testCase.verifyEqual(configs.observationVariant, "intentMarkov60");
+testCase.verifyEqual(configs.stateLength, 60);
+testCase.verifyEqual(Env.defineObservationInfo().Dimension, [60, 1]);
+end
+
+function testStage6BuilderAndFactorySupportFreshIntent62(testCase)
+profile = buildProfile(testCase, ...
+    "intentDeclaredRestHoldMarkov62", true);
+setConfigurablesOverride(profile);
+configs = configurables();
+observationInfo = Env.defineObservationInfo();
+agent = agentNoGloveIntentTd3( ...
+    observationInfo, Env.defineActionInfo());
+testCase.verifyEqual(configs.observationVariant, ...
+    "intentDeclaredRestHoldMarkov62");
+testCase.verifyEqual(configs.stateLength, 62);
+testCase.verifyEqual(observationInfo.Dimension, [62, 1]);
+testCase.verifyClass(agent, "rl.agent.rlTD3Agent");
+testCase.verifyEqual(configs.intentDeclaredRestHoldPositionMseTolerance, ...
+    1e-4);
+end
+
+function testState62SummaryReplaysBitsAndFarStart(testCase)
+episodeDir = fullfile(testCase.TestData.tempDir, "state62_summary");
+mkdir(episodeDir);
+layout = buildObservationLayout( ...
+    "intentDeclaredRestHoldMarkov62", 40, 3, 4);
+stateLog = zeros(3, 62);
+stateLog(:, layout.declaredRest) = [1; 0; 1];
+stateLog(:, layout.holdLatch) = [1; 0; 0];
+stateLog(3, layout.encoder) = 0.2.*ones(1, 4);
+actionSatLog = zeros(3, 4);
+actionPwmLog = zeros(3, 4);
+intentProvenanceLog = {makeProvenance(false, false, 0), ...
+    makeProvenance(true, false, 0.04), ...
+    makeProvenance(true, false, 0.04)};
+referenceSource = "emgIntent";
+observationVariant = "intentDeclaredRestHoldMarkov62";
+stateLength = 62;
+save(fullfile(episodeDir, "episode00001.mat"), ...
+    "stateLog", "actionSatLog", "actionPwmLog", ...
+    "intentProvenanceLog", "referenceSource", ...
+    "observationVariant", "stateLength");
+
+summary = summarizeNoGloveStage7nEpisodes( ...
+    episodeDir, observationVariant);
+testCase.verifyEqual(summary.declaredRestReplayMismatchCount, 0);
+testCase.verifyEqual(summary.holdLatchReplayMismatchCount, 0);
+testCase.verifyEqual(summary.farStartedCount, 1);
+testCase.verifyEqual(summary.farStartedLatchCount, 0);
+testCase.verifyEqual(summary.prematureHoldLatchCount, 0);
+testCase.verifyEqual(summary.declaredRestCount, 2);
+testCase.verifyEqual(summary.holdLatchCount, 1);
+testCase.verifyEqual(summary.windowAnyCommandFraction, 0);
+end
+
+function testPreRegisteredGatePassesNominalMatchedSmoke(testCase)
+[summary, audit] = nominalGateInputs();
+analysis = analyzeNoGloveStage7nStateAblation(summary, audit);
+testCase.verifyTrue(analysis.gatePassed);
+testCase.verifyEqual(analysis.classification, ...
+    "state62BehavioralSmokeSupported");
+testCase.verifyEqual(height(analysis.perCheckpointComparison), 4);
+testCase.verifyTrue(all(analysis.gateChecks.passed));
+end
+
+function testTrackingRegressionCannotBeHiddenByEarlierCheckpoint(testCase)
+[summary, audit] = nominalGateInputs();
+mask = summary.variant == "candidate62" & summary.episode == 200;
+summary.trackingMse(mask) = 0.0106;
+analysis = analyzeNoGloveStage7nStateAblation(summary, audit);
+testCase.verifyFalse(analysis.gatePassed);
+testCase.verifyFalse(analysis.checks.trackingNoninferiority);
+testCase.verifyEqual(analysis.classification, ...
+    "trackingNoninferiorityFailed");
+end
+
+function profile = buildProfile(testCase, variant, safetyEnabled)
+corpus = testCase.TestData.corpus;
+profile = buildNoGloveStage6Override( ...
+    corpus.calibration, corpus.expectedContext, 11, 200, 50, ...
+    testCase.TestData.datasetPath, testCase.TestData.tempDir, variant);
+profile.simulationPositionSafety = ...
+    buildNoGloveSimulationPositionSafety( ...
+        corpus.calibration, safetyEnabled);
+end
+
+function value = makeProvenance(declaredRest, holdLatch, positionMse)
+value = struct("schemaVersion", 2, ...
+    "declaredRestAfter", logical(declaredRest), ...
+    "holdLatchAfter", logical(holdLatch), ...
+    "holdPositionMseAfter", positionMse);
+end
+
+function [summary, audit] = nominalGateInputs()
+episodes = [50; 100; 150; 200];
+base = struct( ...
+    "variant", "", "episode", 0, ...
+    "acceptanceAllFinite", true, "restAllFinite", true, ...
+    "acceptancePositionViolations", 0, ...
+    "restPositionViolations", 0, ...
+    "trackingMse", 0.01, "trackingMae", 0.05, ...
+    "actionL2", 0.10, "deltaActionL2", 0.10, ...
+    "saturationFraction", 0.10, ...
+    "restWindowAnyCommandFraction", 0, ...
+    "restSaturationFraction", 0, ...
+    "restFalseActivationFraction", 0, ...
+    "motor2FunctionalFlagCount", 0, ...
+    "otherMotorFunctionalFlagCount", 0, ...
+    "acceptanceSafetyInterventions", 0, ...
+    "restSafetyInterventions", 0, ...
+    "declaredRestReplayMismatchCount", 0, ...
+    "holdLatchReplayMismatchCount", 0, ...
+    "farStartedLatchCount", 0, ...
+    "prematureHoldLatchCount", 0);
+rows = repmat(base, 8, 1);
+for idx = 1:4
+    rows(idx).variant = "control60";
+    rows(idx).episode = episodes(idx);
+    rows(idx+4).variant = "candidate62";
+    rows(idx+4).episode = episodes(idx);
+end
+summary = struct2table(rows);
+audit = struct( ...
+    "trainingEpisodeCountControl", 200, ...
+    "trainingEpisodeCountCandidate", 200, ...
+    "checkpointCountControl", 4, "checkpointCountCandidate", 4, ...
+    "allCheckpointsEvaluated", true, "freshPolicies", true, ...
+    "historicalAgentLoaded", false, "hardwareUsed", false, ...
+    "trainingAllFinite", true, ...
+    "trainingPositionViolationCountControl", 0, ...
+    "trainingPositionViolationCountCandidate", 0, ...
+    "trainingSafetyInterventionCountControl", 0, ...
+    "trainingSafetyInterventionCountCandidate", 0, ...
+    "initializationReproducible", true, "profileMatched", true, ...
+    "datasetContentsMatched", true);
+end
