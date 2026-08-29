@@ -104,6 +104,12 @@ Launchers vigentes y helpers de campana que no forman parte del core reusable de
   `v_ref=0`; verifica la alineacion `emg_i -> state_(i+1)` y el logging aditivo
   futuro sin cargar agentes, entrenar, cambiar estado/reward/referencia/accion,
   calcular DTW ni usar hardware
+- `run_no_glove_stage7l_declared_rest_eligibility_audit.m`: combina las
+  etiquetas causales congeladas de 7K con el error de referencia de 7I y audita
+  una memoria elegible solo durante inicializacion o reposo declarado; excluye
+  el countdown activo, exige liberacion inmediata y cero activacion antes de
+  converger en segmentos `farStarted`, sin implementar estado, cambiar
+  conducta, cargar agentes, simular, entrenar, calcular DTW o usar hardware
 
 ## Regla
 
