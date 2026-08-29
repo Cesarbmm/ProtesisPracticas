@@ -62,13 +62,15 @@ episodeDir = fullfile(testCase.TestData.tempDir, "state62_summary");
 mkdir(episodeDir);
 layout = buildObservationLayout( ...
     "intentDeclaredRestHoldMarkov62", 40, 3, 4);
-stateLog = zeros(3, 62);
-stateLog(:, layout.declaredRest) = [1; 0; 1];
-stateLog(:, layout.holdLatch) = [1; 0; 0];
-stateLog(3, layout.encoder) = 0.2.*ones(1, 4);
-actionSatLog = zeros(3, 4);
-actionPwmLog = zeros(3, 4);
-intentProvenanceLog = {makeProvenance(false, false, 0), ...
+stateLog = zeros(5, 62);
+stateLog(:, layout.declaredRest) = [1; 1; 0; 1; 1];
+stateLog(:, layout.holdLatch) = [1; 1; 0; 0; 0];
+stateLog(2:5, layout.encoder) = 0.2.*ones(4, 4);
+actionSatLog = zeros(5, 4);
+actionPwmLog = zeros(5, 4);
+intentProvenanceLog = {makeProvenance(true, true, 0.04), ...
+    makeProvenance(false, false, 0.04), ...
+    makeProvenance(true, false, 0.04), ...
     makeProvenance(true, false, 0.04), ...
     makeProvenance(true, false, 0.04)};
 referenceSource = "emgIntent";
@@ -86,8 +88,9 @@ testCase.verifyEqual(summary.holdLatchReplayMismatchCount, 0);
 testCase.verifyEqual(summary.farStartedCount, 1);
 testCase.verifyEqual(summary.farStartedLatchCount, 0);
 testCase.verifyEqual(summary.prematureHoldLatchCount, 0);
-testCase.verifyEqual(summary.declaredRestCount, 2);
-testCase.verifyEqual(summary.holdLatchCount, 1);
+testCase.verifyEqual(summary.holdLatchFarFromTargetCount, 1);
+testCase.verifyEqual(summary.declaredRestCount, 4);
+testCase.verifyEqual(summary.holdLatchCount, 2);
 testCase.verifyEqual(summary.windowAnyCommandFraction, 0);
 end
 

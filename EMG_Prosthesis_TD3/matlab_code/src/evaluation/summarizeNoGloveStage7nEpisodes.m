@@ -30,6 +30,7 @@ declaredParts = cell(numel(files), 1);
 latchParts = cell(numel(files), 1);
 farStartedParts = cell(numel(files), 1);
 prematureParts = cell(numel(files), 1);
+farLatchParts = cell(numel(files), 1);
 declaredMismatchCount = 0;
 latchMismatchCount = 0;
 allFinite = true;
@@ -108,17 +109,23 @@ for fileIdx = 1:numel(files)
         rising = declared & [true; ~declared(1:end-1)];
         farStarted = rising & positionMse > ...
             options.holdPositionMseTolerance + options.numericTolerance;
-        premature = latch & (~declared | positionMse > ...
-            options.holdPositionMseTolerance + options.numericTolerance);
+        % The 7M recurrence intentionally keeps an already active latch
+        % while declared rest continues, even if position later drifts.
+        % Premature means activation at a far-start transition only.
+        farLatch = latch & positionMse > ...
+            options.holdPositionMseTolerance + options.numericTolerance;
+        premature = farStarted & latch;
         declaredParts{fileIdx} = declared;
         latchParts{fileIdx} = latch;
         farStartedParts{fileIdx} = farStarted;
         prematureParts{fileIdx} = premature;
+        farLatchParts{fileIdx} = farLatch;
     else
         declaredParts{fileIdx} = false(count, 1);
         latchParts{fileIdx} = false(count, 1);
         farStartedParts{fileIdx} = false(count, 1);
         prematureParts{fileIdx} = false(count, 1);
+        farLatchParts{fileIdx} = false(count, 1);
     end
 end
 
@@ -128,6 +135,7 @@ declared = vertcat(declaredParts{:});
 latch = vertcat(latchParts{:});
 farStarted = vertcat(farStartedParts{:});
 premature = vertcat(prematureParts{:});
+farLatch = vertcat(farLatchParts{:});
 componentCommand = abs(pwm) > options.numericTolerance;
 windowCommand = any(componentCommand, 2);
 isState62 = observationVariant == "intentDeclaredRestHoldMarkov62";
@@ -155,6 +163,8 @@ summary = struct( ...
         sum(farStarted & latch)), ...
     "prematureHoldLatchCount", conditionalValue(isState62, ...
         sum(premature)), ...
+    "holdLatchFarFromTargetCount", conditionalValue(isState62, ...
+        sum(farLatch)), ...
     "latchActiveWindowAnyCommandFraction", conditionalMean( ...
         windowCommand, latch, isState62), ...
     "latchInactiveWindowAnyCommandFraction", conditionalMean( ...
