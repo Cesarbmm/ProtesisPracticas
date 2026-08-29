@@ -94,6 +94,11 @@ Launchers vigentes y helpers de campana que no forman parte del core reusable de
   hold, mide cobertura de reposo frente a exposicion de correccion lejana y
   transiciones temporales de salida sin cargar agente, crear `Env`, invocar
   simulador/reward, entrenar, calcular DTW, cambiar conducta ni usar hardware
+- `run_no_glove_stage7j_causal_hold_latch_audit.m`: replay estrictamente
+  offline de una maquina causal de hold enclavado sobre el corpus congelado de
+  7I; audita cobertura, exposicion lejana, segmentos, memoria y equivalencia por
+  prefijos sin implementar el estado propuesto, cambiar conducta, cargar agente,
+  crear `Env`, simular, invocar reward, entrenar, calcular DTW o usar hardware
 
 ## Regla
 
