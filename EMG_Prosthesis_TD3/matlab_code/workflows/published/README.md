@@ -115,6 +115,11 @@ Launchers vigentes y helpers de campana que no forman parte del core reusable de
   compara su prefijo, reward, referencia, actuador y seguridad contra el estado
   60 y audita el replay causal de ambos bits sin cargar agentes, entrenar,
   calcular DTW ni usar hardware
+- `run_no_glove_stage7p_interface_diagnostic.m`: selecciona de nuevo
+  `intentMarkov60` tras la auditoria 7O y diagnostica offline, por capas
+  separadas, la discontinuidad `0<->64`, la asociacion con el gate comun y las
+  intervenciones de seguridad de Agent200 congelado; no cambia conducta,
+  construye `Env`, simula, entrena, calcula DTW ni usa hardware
 
 ## Regla
 
