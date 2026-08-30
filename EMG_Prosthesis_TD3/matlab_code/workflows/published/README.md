@@ -120,6 +120,17 @@ Launchers vigentes y helpers de campana que no forman parte del core reusable de
   separadas, la discontinuidad `0<->64`, la asociacion con el gate comun y las
   intervenciones de seguridad de Agent200 congelado; no cambia conducta,
   construye `Env`, simula, entrena, calcula DTW ni usa hardware
+- `run_no_glove_stage7q_command_attribution.m`: mantiene congelados los
+  checkpoints 50/100/150/200 de `intentMarkov60` y separa sensibilidad local
+  del actor, asociacion entre estados reales y contribuciones sobre transiciones
+  reales para los comandos con demanda cero y hacia fuera de limites; no crea
+  estados hibridos, entrena, construye `Env`, simula, calcula DTW ni usa hardware
+
+- `run_no_glove_stage7q_command_attribution.m`: mantiene congelados los
+  checkpoints 50/100/150/200 de `intentMarkov60` y separa sensibilidad local
+  del actor, asociacion entre estados reales y contribuciones sobre transiciones
+  reales para los comandos con demanda cero y hacia fuera de limites; no crea
+  estados hibridos, entrena, construye `Env`, simula, calcula DTW ni usa hardware
 
 ## Regla
 
