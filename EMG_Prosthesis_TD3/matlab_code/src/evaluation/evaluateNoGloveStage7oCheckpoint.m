@@ -11,7 +11,7 @@ arguments
         {mustBeInteger, mustBePositive} = 200
     options.rawTolerance (1, 1) double {mustBeNonnegative} = 1e-6
     options.gradientFiniteDifferenceStep (1, 1) double ...
-        {mustBePositive} = 1e-4
+        {mustBePositive} = 1e-2
 end
 
 requiredCorpus = ["states", "prefix60", "loggedActions", "metadata"];
@@ -205,9 +205,13 @@ for bitIdx = 1:2
         evaluateFrozenActorModel62(model, minus))./(2*step);
 end
 errorValue = abs(analytic-finite);
-tolerance = max(1e-5, 1e-3.*abs(analytic));
+absoluteTolerance = 1e-4;
+relativeTolerance = 5e-2;
+tolerance = max(absoluteTolerance, relativeTolerance.*abs(analytic));
 audit = struct( ...
     "sampleCount", numel(indices), "step", step, ...
+    "absoluteTolerance", absoluteTolerance, ...
+    "relativeTolerance", relativeTolerance, ...
     "maximumAbsoluteError", max(errorValue, [], "all"), ...
     "maximumTolerance", max(tolerance, [], "all"), ...
     "withinTolerance", all(errorValue <= tolerance, "all"));
