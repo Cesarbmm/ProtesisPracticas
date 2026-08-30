@@ -49,3 +49,23 @@ Los gradientes publicados siguen siendo los analíticos de `dlgradient`; la
 diferencia central solo verifica su implementación. La clasificación continúa
 usando el umbral preinscrito `abs(gradiente)>1e-6`. No se seleccionó `h` para
 mejorar ningún resultado de PWM ni de beneficio, que permanecían sin observar.
+
+## Segunda detención: equivalencia serial/batch
+
+La siguiente ejecución también se detuvo antes de clasificar:
+
+```text
+C:\Users\Cesarbmm\ProtesisPracticas_no_glove_stage7o_artifacts\stage7o_final\2026-08-29_22-15-30-187
+```
+
+El replay serial de Agent200 reprodujo `actionLog` exactamente
+(`maxAbsError=0`). La evaluación por lotes del mismo modelo difirió de la serial
+en `1.50501728057861e-6`, sin ningún cambio de PWM en 725 filas. El gate inicial
+de `1e-6` confundía esa diferencia de redondeo de precisión simple con una
+discrepancia conductual.
+
+Se conserva el requisito exacto serial-versus-log (`<=1e-12`) y cero diferencias
+de PWM. Solo la equivalencia numérica batch-versus-serial pasa a `<=1e-5`. Esta
+enmienda no cambia las acciones seriales guardadas, la cuantización ni las
+métricas contrafactuales. Ninguna tabla de efectos ni clasificación había sido
+escrita o mostrada al hacer la enmienda.
