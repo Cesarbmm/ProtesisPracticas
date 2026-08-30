@@ -148,18 +148,14 @@ if ~isfile(filePath)
     error("loadNoGloveStage7qCheckpointSet:MissingFile", ...
         "Missing file: %s", filePath);
 end
-stream = java.io.FileInputStream(char(filePath));
-cleanup = onCleanup(@() stream.close());
-digest = java.security.MessageDigest.getInstance("SHA-256");
-buffer = zeros(1, 8192, "int8");
-while true
-    count = stream.read(buffer, 0, numel(buffer));
-    if count < 0
-        break;
-    end
-    digest.update(buffer(1:count));
+escaped = strrep(char(filePath), "'", "''");
+command = sprintf([ ...
+    'powershell -NoProfile -Command "(Get-FileHash -Algorithm SHA256 ' ...
+    '-LiteralPath ''%s'').Hash"'], escaped);
+[status, output] = system(command);
+if status ~= 0
+    error("loadNoGloveStage7qCheckpointSet:HashFailed", ...
+        "Could not hash %s.", filePath);
 end
-bytes = typecast(digest.digest(), "uint8");
-hash = upper(string(reshape(dec2hex(bytes, 2)', 1, [])));
-clear cleanup
+hash = string(strtrim(output));
 end
