@@ -80,6 +80,8 @@ rows = result.componentTable(result.componentTable.safetyIntervened, :);
 testCase.verifyTrue(any(rows.safetyAttribution == "outwardBoundary"));
 testCase.verifyTrue(any(rows.safetyAttribution == "boundaryOther"));
 testCase.verifyTrue(any(rows.safetyAttribution == "interior"));
+testCase.verifyTrue(istable(result.safetyContextSummary));
+testCase.verifyGreaterThan(height(result.safetyContextSummary), 0);
 testCase.verifyFalse(result.safetyChanged);
 testCase.verifyFalse(result.quantizationChanged);
 testCase.verifyFalse(result.gateChanged);
