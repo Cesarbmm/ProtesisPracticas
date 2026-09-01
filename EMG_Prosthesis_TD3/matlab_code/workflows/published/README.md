@@ -132,6 +132,12 @@ Launchers vigentes y helpers de campana que no forman parte del core reusable de
   reales para los comandos con demanda cero y hacia fuera de limites; no crea
   estados hibridos, entrena, construye `Env`, simula, calcula DTW ni usa hardware
 
+- `run_no_glove_stage7r_real_state_emg_attribution.m`: empareja estados
+  completos reales de reposo por contexto mecanico, conserva diferencias EMG y
+  compara modelos incrementales por familia/canal WMoos y checkpoint; no crea
+  estados hibridos, carga agentes, entrena, construye `Env`, simula, calcula DTW
+  ni usa hardware
+
 ## Regla
 
 - mantener aqui los puntos de entrada activos del proyecto
