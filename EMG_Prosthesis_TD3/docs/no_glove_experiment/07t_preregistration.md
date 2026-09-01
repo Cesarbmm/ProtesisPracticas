@@ -232,3 +232,34 @@ reporte offline e informe `07t_gate_stress_consequence_audit.md`.
 ETAPA 7T se detendrá tras el informe y commits. No autoriza cambiar el gate,
 completar retrospectivamente los 100 pares, entrenar, ejecutar smoke/piloto/
 campaña, DTW, Myo, guante o hardware. No se hará push sin orden explícita.
+
+## 9. Enmienda de contrato antes de la corrida canónica
+
+Durante una ejecución exploratoria de integración posterior al commit de esta
+preinscripción se comprobó que la frase «los 80 estados `firstStep` comienzan en
+home» era demasiado restrictiva. `Env.reset` coloca en el límite inferior los
+episodios que parten relajados, pero cierra la mano antes de los episodios de
+apertura; esos episodios comienzan en el límite superior. Este comportamiento
+ya estaba congelado en 7S y no fue introducido por 7T.
+
+Antes de generar el artefacto canónico se reemplaza únicamente ese invariante
+operativo por el contrato mecánicamente correcto:
+
+```text
+q_t pertenece al límite inferior o superior calibrado;
+q_ref,t = q_t;
+Deltaq_t = 0;
+u_eff,t-1 = 0;
+v_ref,t = 0;
+zeroControlDemand = true.
+```
+
+`homeAtDecision` conserva su definición original `abs(q_t-q_min)<=1e-4` y se
+reportará por separado de `upperEndpointAtDecision`. Se añade una
+estratificación explícita `lowerEndpoint | upperEndpoint | interior`.
+
+Esta enmienda no cambia la cohorte, los umbrales de PWM, el número de canales o
+motores exigido, la regla de seguridad, el matching, las escalas ni las
+clasificaciones científicas. Se registra después de observar la geometría
+inicial, por lo que la proporción lower/upper será descriptiva y no se tratará
+como resultado preinscrito ciego.
