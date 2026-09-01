@@ -78,6 +78,25 @@ testCase.verifyError(@() buildNoGloveStage7rRealPairs(corpus, ...
     "buildNoGloveStage7rRealPairs:InvalidScaleOverride");
 end
 
+function testGlobalFoldCoverageIsFivePerRepresentedSource(testCase)
+corpus = twoSourcePairingFixture();
+pairs = buildNoGloveStage7rRealPairs(corpus, ...
+    "expectedPrimaryComponentCount", 160, ...
+    "emgScaleOverride", ones(1, 40), ...
+    "contextScaleOverride", ones(1, 20), ...
+    "minimumPairCount", 1, "minimumUniqueEpisodes", 1, ...
+    "maximumDonorReuseFraction", 1);
+row = pairs.supportSummary( ...
+    pairs.supportSummary.source == "ALL" & ...
+    pairs.supportSummary.motor == 1 & ...
+    pairs.supportSummary.pairMode == "crossEpisode", :);
+testCase.verifyEqual(row.representedSourceCount, 2);
+testCase.verifyEqual(row.observedFoldCount, 10);
+testCase.verifyEqual(row.expectedSourceFoldCount, 10);
+testCase.verifyTrue(row.foldCoveragePassed);
+testCase.verifyTrue(row.supportPassed);
+end
+
 function testSupportGatePassesOnlyCompleteProspectiveEvidence(testCase)
 support = passingSupport();
 acquisition = passingAcquisition();
@@ -189,6 +208,39 @@ source = repmat("acceptance", count, 1);
 episode = repelem((1:5)', 4);
 step = repmat((1:4)', 5, 1);
 gateContext = repmat("initialRest", count, 1);
+metadata = table(windowIndex, rowId, source, episode, step, gateContext);
+corpus = struct("states", states, ...
+    "zeroControlDemand", zeroControlDemand, "metadata", metadata);
+end
+
+function corpus = twoSourcePairingFixture()
+sourceNames = ["acceptance", "steadyRest"];
+count = 40;
+states = zeros(count, 60);
+zeroControlDemand = true(count, 4);
+windowIndex = (1:count)';
+rowId = strings(count, 1);
+source = strings(count, 1);
+episode = zeros(count, 1);
+step = zeros(count, 1);
+gateContext = repmat("initialRest", count, 1);
+cursor = 0;
+for sourceIdx = 1:2
+    for episodeIdx = 1:10
+        for stepIdx = 1:2
+            cursor = cursor+1;
+            source(cursor) = sourceNames(sourceIdx);
+            episode(cursor) = episodeIdx;
+            step(cursor) = stepIdx;
+            rowId(cursor) = source(cursor)+":"+episodeIdx+":"+stepIdx;
+            signValue = 2*mod(episodeIdx, 2)-1;
+            if stepIdx == 2
+                signValue = -signValue;
+            end
+            states(cursor, 1:40) = 2*signValue;
+        end
+    end
+end
 metadata = table(windowIndex, rowId, source, episode, step, gateContext);
 corpus = struct("states", states, ...
     "zeroControlDemand", zeroControlDemand, "metadata", metadata);
