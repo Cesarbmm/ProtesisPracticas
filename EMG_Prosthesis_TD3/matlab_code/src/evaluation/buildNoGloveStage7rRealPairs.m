@@ -20,6 +20,8 @@ arguments
         {mustBeInteger, mustBePositive} = 20
     options.maximumDonorReuseFraction (1, 1) double ...
         {mustBeInRange(options.maximumDonorReuseFraction, 0, 1)} = 0.10
+    options.emgScaleOverride double = []
+    options.contextScaleOverride double = []
 end
 
 required = ["states", "zeroControlDemand", "metadata"];
@@ -49,10 +51,8 @@ if sum(primaryMask, "all") ~= options.expectedPrimaryComponentCount
         "The preregistered primary component count changed.");
 end
 metadata.fold = assignEpisodeFolds(metadata, options.foldCount);
-emgScale = std(states(:, 1:40), 0, 1);
-contextScale = std(states(:, 41:60), 0, 1);
-emgScale(emgScale < options.scaleFloor) = options.scaleFloor;
-contextScale(contextScale < options.scaleFloor) = options.scaleFloor;
+[emgScale, contextScale, scaleSource] = resolveScales( ...
+    states, options);
 
 [pairTable, deltaContext, deltaEmg] = matchPairs(states, metadata, ...
     primaryMask, contextScale, emgScale, ...
@@ -96,9 +96,38 @@ pairSet = struct( ...
     "contextMaximumThreshold", options.contextMaximumThreshold, ...
     "minimumEmgDistance", options.minimumEmgDistance, ...
     "foldCount", options.foldCount, ...
+    "scaleSource", scaleSource, ...
     "statesEvaluated", states, ...
     "stateCounterfactualUsed", false, "hybridStateUsed", false, ...
     "futureLeakageUsed", false);
+end
+
+function [emgScale, contextScale, source] = resolveScales(states, options)
+emgOverride = options.emgScaleOverride;
+contextOverride = options.contextScaleOverride;
+if isempty(emgOverride) ~= isempty(contextOverride)
+    error("buildNoGloveStage7rRealPairs:IncompleteScaleOverride", ...
+        "EMG and context scale overrides must be provided together.");
+end
+if isempty(emgOverride)
+    emgScale = std(states(:, 1:40), 0, 1);
+    contextScale = std(states(:, 41:60), 0, 1);
+    emgScale(emgScale < options.scaleFloor) = options.scaleFloor;
+    contextScale(contextScale < options.scaleFloor) = options.scaleFloor;
+    source = "corpusStandardDeviation";
+    return;
+end
+emgScale = double(emgOverride(:)');
+contextScale = double(contextOverride(:)');
+if ~isequal(size(emgScale), [1, 40]) || ...
+        ~isequal(size(contextScale), [1, 20]) || ...
+        ~isreal(emgScale) || ~isreal(contextScale) || ...
+        any(~isfinite([emgScale, contextScale])) || ...
+        any([emgScale, contextScale] <= 0)
+    error("buildNoGloveStage7rRealPairs:InvalidScaleOverride", ...
+        "Frozen scales must be finite positive 1-by-40 and 1-by-20 rows.");
+end
+source = "frozenOverride";
 end
 
 function fold = assignEpisodeFolds(metadata, foldCount)
@@ -192,7 +221,8 @@ rows = rows(1:cursor);
 deltaContext = deltaContext(1:cursor, :);
 deltaEmg = deltaEmg(1:cursor, :);
 if isempty(rows)
-    pairs = struct2table(repmat(emptyPairRow(), 0, 1));
+    pairs = struct2table(emptyPairRow());
+    pairs(1, :) = [];
 else
     pairs = struct2table(rows);
 end

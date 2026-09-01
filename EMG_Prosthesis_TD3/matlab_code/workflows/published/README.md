@@ -138,6 +138,12 @@ Launchers vigentes y helpers de campana que no forman parte del core reusable de
   estados hibridos, carga agentes, entrena, construye `Env`, simula, calcula DTW
   ni usa hardware
 
+- `run_no_glove_stage7s_prospective_rest_support.m`: genera un desafio
+  sintetico prospectivo del gate de reposo, adquiere 80 episodios causales con
+  Agent200 y `simMotors=true`, bloquea el corpus y solo carga los otros
+  checkpoints si pasa primero el gate de soporte; no entrena, no cambia reward,
+  TD3, cuantizacion, simulador, gate o seguridad y no usa hardware
+
 ## Regla
 
 - mantener aqui los puntos de entrada activos del proyecto
