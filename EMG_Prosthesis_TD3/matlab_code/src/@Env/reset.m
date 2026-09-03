@@ -28,6 +28,7 @@ this.encoderAdjustedLog = cell(this.maxNumberStepsInEpisodes, 1);
 this.stateLog = nan(this.maxNumberStepsInEpisodes, stateDim);
 this.actionLog = nan(this.maxNumberStepsInEpisodes, 4);
 this.actionWarpLog = nan(this.maxNumberStepsInEpisodes, 4);
+this.motionPermissionLog = true(this.maxNumberStepsInEpisodes, 1);
 this.actionSatLog = nan(this.maxNumberStepsInEpisodes, 4);
 this.actionPwmLog = nan(this.maxNumberStepsInEpisodes, 4);
 this.rewardLog = nan(this.maxNumberStepsInEpisodes, 1);

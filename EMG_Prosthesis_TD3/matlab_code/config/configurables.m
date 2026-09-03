@@ -242,6 +242,11 @@ params.actionInterfaceVariant = "baselineQuantized";
 params.actionWarpDeadzone = 0.05;
 params.actionWarpOutputLevels = [64 96 128 160 192 224 255] / 255;
 
+% ETAPA 7U: opt-in external gate on the actor's raw output, applied before
+% quantization/safety. Disabled by default so every prior stage's behavior
+% is byte-identical. When enabled, requires referenceSource=="emgIntent".
+params.motionPermissionEnabled = false;
+
 % clipping
 % when true, the reward function can limit, modify or clip the action.
 % to achieve this, the reward function is calculated BEFORE applying the action.
@@ -578,6 +583,15 @@ if any(rewardType == ["trackingIntentActionRateReward", ...
     error("configurables:IntentRewardRequiresIntentState", ...
         "trackingIntentActionRateReward requires referenceSource='emgIntent' " + ...
         "and an explicit intent observation variant.");
+end
+if ~islogical(params.motionPermissionEnabled) || ...
+        ~isscalar(params.motionPermissionEnabled)
+    error("configurables:InvalidMotionPermissionEnabled", ...
+        "motionPermissionEnabled must be a scalar logical.");
+end
+if params.motionPermissionEnabled && params.referenceSource ~= "emgIntent"
+    error("configurables:MotionPermissionRequiresIntentState", ...
+        "motionPermissionEnabled requires referenceSource='emgIntent'.");
 end
 end
 

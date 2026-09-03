@@ -30,7 +30,7 @@ classdef Env < rl.env.MATLABEnvironment
     %% Constants
     properties (Constant)
         % env
-        v = 2.6; % ETAPA 7M adds the opt-in observable semantic hold state.
+        v = 2.7; % ETAPA 7U adds the opt-in external motionPermission gate.
     end
 
     %% only in constructor
@@ -49,6 +49,9 @@ classdef Env < rl.env.MATLABEnvironment
         intentCalibration = struct();
         intentExpectedContext = struct();
         intentDeclaredRestHoldPositionMseTolerance (1, 1) double = 1e-4;
+        % ETAPA 7U: opt-in external gate on u_actor_raw, applied before
+        % quantization/safety. Default false preserves every prior stage.
+        motionPermissionEnabled (1, 1) logical = false;
         % Per-instance so a source switch cannot retain a glove-only reward.
         reward_function;
         % Configurables are per-instance so experiment overrides remain exact.
@@ -134,6 +137,7 @@ classdef Env < rl.env.MATLABEnvironment
         stateLog = [];
         actionLog = [];%history of the actions per epidodes
         actionWarpLog = [];% aligned action before actuator remap
+        motionPermissionLog = [];% ETAPA 7U: permission applied per step
         actionSatLog = [];%history of the actions per epidodes
         actionPwmLog = [];% applied pwm commands per episode
         rewardLog = [];
@@ -245,6 +249,8 @@ classdef Env < rl.env.MATLABEnvironment
             this.intentExpectedContext = configs.intentExpectedContext;
             this.intentDeclaredRestHoldPositionMseTolerance = double( ...
                 configs.intentDeclaredRestHoldPositionMseTolerance);
+            this.motionPermissionEnabled = ...
+                logical(configs.motionPermissionEnabled);
             this.simMotors = logical(configs.simMotors);
             this.reward_function = configs.reward_function;
             this.unifyActions = configs.unifyActions;

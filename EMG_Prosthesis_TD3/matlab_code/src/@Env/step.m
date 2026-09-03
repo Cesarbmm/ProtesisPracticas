@@ -38,6 +38,20 @@ switch actionInterfaceVariant
 end
 
 this.actionLog(this.c, :) = rawAction.';
+
+% ETAPA 7U: external permission gate on the request, applied strictly
+% before quantization/safety, never after. u_actor_raw (rawAction, logged
+% above) is left untouched: this never claims the actor itself improved.
+% permission is read from the SAME causal gate state that already froze
+% q_ref/v_ref for the state that produced this action (7K/7L), so it can
+% only suppress a request when the reference itself demanded no motion.
+motionPermission = true;
+if this.motionPermissionEnabled
+    motionPermission = this.intentGateState.isActive;
+    warpedAction = double(motionPermission) * warpedAction;
+end
+this.motionPermissionLog(this.c) = motionPermission;
+
 this.actionWarpLog(this.c, :) = warpedAction.';
 [effectiveAction, appliedPwm] = this.remapActionForActuator(warpedAction);
 this.actionSatLog(this.c, :) = effectiveAction.';
