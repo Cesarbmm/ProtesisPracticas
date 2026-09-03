@@ -25,3 +25,17 @@ EMG_Prosthesis_TD3/docs/td3_training_report/presentacion_final*_recompilada*
 EMG_Prosthesis_TD3/docs/td3_training_reportbuild/
 EMG_Prosthesis_TD3/docs/td3_training_report/reporte_*_smoke.*
 EMG_Prosthesis_TD3/docs/td3_training_report/figures/*_smoke.png
+
+# ETAPA 7U consolidated LaTeX report: keep the source, PDF and figures;
+# ignore transient build artifacts from pdflatex.
+EMG_Prosthesis_TD3/docs/latex_report/*.aux
+EMG_Prosthesis_TD3/docs/latex_report/*.log
+EMG_Prosthesis_TD3/docs/latex_report/*.out
+EMG_Prosthesis_TD3/docs/latex_report/*.toc
+EMG_Prosthesis_TD3/docs/latex_report/*.fdb_latexmk
+EMG_Prosthesis_TD3/docs/latex_report/*.fls
+EMG_Prosthesis_TD3/docs/latex_report/*.synctex.gz
+EMG_Prosthesis_TD3/docs/latex_report/compile_log*.txt
+
+# Large archives should never be committed from this repo.
+EMG_Prosthesis_TD3/matlab_code.zip

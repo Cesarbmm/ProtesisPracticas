@@ -149,3 +149,11 @@ Launchers vigentes y helpers de campana que no forman parte del core reusable de
 - mantener aqui los puntos de entrada activos del proyecto
 - no mover runtime, evaluacion ni checkpoints reutilizables fuera de `src/`
 - no mezclar aqui launchers legacy; esos quedan en `../legacy/`
+### ETAPA 7T — auditoría offline de consecuencias del estrés del gate
+
+`run_no_glove_stage7t_gate_stress_consequence_audit` consume únicamente el
+corpus bloqueado de ETAPA 7S. Alinea cada estado causal con su ventana EMG
+sintética, separa el primer comando desde home de la trayectoria posterior y
+descompone el fallo de matching en `q`, `deltaQ`, acción efectiva anterior,
+`q_ref` y `v_ref`. No carga actores, no ejecuta `Env` ni simulador y no cambia
+gate, reward, cuantización o seguridad.
