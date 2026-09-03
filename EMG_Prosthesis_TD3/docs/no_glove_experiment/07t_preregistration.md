@@ -263,3 +263,70 @@ motores exigido, la regla de seguridad, el matching, las escalas ni las
 clasificaciones científicas. Se registra después de observar la geometría
 inicial, por lo que la proporción lower/upper será descriptiva y no se tratará
 como resultado preinscrito ciego.
+
+## 10. Enmienda 2 — el límite superior calibrado tampoco es el alcanzable (2026-09-02)
+
+La corrida canónica ejecutada tras la Enmienda 1 falló su propio gate
+operativo: `firstStepMechanicalInvariant=false`. La causa NO fue causal (los
+80 estados `firstStep` cumplen exactamente `q_ref=q`, `Deltaq=0`,
+`u_eff,t-1=0`, `v_ref=0`, `zeroControlDemand=true`), sino geométrica. Los 40
+episodios `firstStep` de tipo Opening (`side=2`) no llegan al límite superior
+calibrado `positionMax=1`; se estabilizan, de forma exactamente reproducible
+(desviación estándar entre episodios `~2e-16`, es decir ruido de punto
+flotante) en:
+
+```text
+q_openingPlateau = [0.421761006289, 0.579579710145, 0.883490196078, 0.69787037037]
+```
+
+Auditoría de causa raíz (código, no dato): `prosthesis_simulator.m`
+(`predict_1dim`) no integra una física de posición; reproduce una curva
+empírica ajustada (`fit_C2.mat` / `pattern_curve.mat`) e indexa esa curva con
+`idx = max(1, min(idx, ws_len))`. Una vez agotada la longitud de la curva
+grabada, la posición no puede avanzar más aunque `episodeTic.toc(10000)`
+mantenga PWM=255 indefinidamente: es un punto fijo genuino de ESTE simulador,
+no una foto de una trayectoria en curso. Además, `sat(pos, min_l, max_l)`
+dentro de la misma función usa límites `min_l`/`max_l` propios de la curva
+grabada (por motor), distintos de la convención idealizada
+`positionMin=0/positionMax=1` usada para normalización y para el clip de
+seguridad. `limitSimulationPosition` nunca interviene aquí porque la
+trayectoria jamás excede `positionMax·encoderScale`; simplemente no llega.
+
+Se evaluaron cuatro opciones:
+
+- **(A) tratar el valor observado como el endpoint alcanzable real** — sin
+  más, es una asunción no verificada por reproducibilidad;
+- **(B) recalibrar `positionMax`/`simulationPositionSafety`/`encoderScale`
+  globalmente** — se descarta: tocaría seguridad, reward y normalización de
+  TODAS las etapas 00-7S ya congeladas, sin necesidad, porque `positionMax`
+  nunca se excede en ningún otro punto del pipeline (el clip es inerte, no
+  incorrecto);
+- **(C) redefinir el invariante de 7T para que dependa de equilibrio
+  mecánico/referencia nula, no de proximidad literal a 0 o 1** — elegida;
+- (D) ninguna otra alternativa ofrece mejor trazabilidad.
+
+Se adopta **(C) con anclaje empírico**: el límite superior usado por el
+invariante y por la estratificación `lowerEndpoint|upperEndpoint|interior` ya
+no es `positionMax` idealizado. Se deriva directamente del propio corpus
+`firstStep` congelado (`deriveNoGloveStage7tReachableEndpoints.m`): las filas
+`firstStep` no coincidentes con `positionMin` deben coincidir entre sí
+(tolerancia `1e-4`, la misma de `homeTolerance`); si coinciden, ese valor
+certificado es el `qUpper` reproducible de este simulador. Si NO coincidieran,
+`upperEquilibriumConsistent=false` y el gate falla cerrado
+(`auditInvalid`) — no se promedia sobre una anomalía real.
+
+Esta enmienda:
+
+- no modifica ningún dato de 7S (frozen), ni `Env.reset`, ni
+  `prosthesis_simulator`, ni `positionMin/positionMax` globales, ni
+  seguridad, ni reward, ni cuantización, ni el estado, ni el gate de
+  intención;
+- no cambia la cohorte, los umbrales de PWM, el número de canales/motores
+  exigido, el matching ni las reglas de clasificación de la Sección 7;
+- sí cambia, exclusivamente dentro del script de auditoría offline de 7T,
+  qué valor cuenta como "límite superior" para `homeAtDecision`/
+  `upperEndpointAtDecision`/`initialPose` y para el invariante `firstStep`;
+- se registra ANTES de reintentar la corrida canónica, y el resultado de esa
+  corrida (PASS/INVALID y, si aplica, la clasificación) se documentará en
+  `07t_gate_stress_consequence_audit.md` sin alterar retroactivamente este
+  texto.
