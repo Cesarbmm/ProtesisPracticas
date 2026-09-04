@@ -53,3 +53,24 @@ Este archivo existe para que una idea buena no se convierta en una sub-etapa imp
 - **Hecho medido:** `hilbert` y `sgolayfilt` se aplican a lo largo de los 8 canales, no del tiempo.
 - **Estado:** cerrado. **No se corrige.** Cambiarlo invalidaria la comparabilidad con `Agent7250` y
   con todas las campanas historicas.
+
+### SUPERVISED_SUBJECT_CALIBRATION
+
+- **Origen:** E1B, veredicto `E1B_EMG_ONLY_CALIBRATION_FAIL`.
+- **Idea:** el usuario aporta unas pocas repeticiones **con guante** durante la calibracion inicial,
+  y el decoder se adapta con esos pares supervisados.
+- **Estado:** registrada, **sin implementar**.
+- **Advertencia que debe ir en el preregistro si se abre:** rompe
+  `NEW_USER_GLOVE_REQUIRED_FOR_CALIBRATION = NO` y cambia la promesa de la linea. El usuario
+  necesitaria el guante una vez, aunque no en operacion. Eso sigue siendo defendible
+  cientificamente, pero es una tesis distinta de "sin guante".
+
+### EMG_CHANNEL_ALIGNMENT
+
+- **Origen:** E1B, seccion 8.
+- **Idea:** si los momentos marginales no explican el fallo, el candidato es la relacion EMG->guante
+  en si: colocacion del Myo, rotacion del brazalete, orden de canales entre capturas. La ETAPA 2 de
+  la rama antigua ya documento que la metadata no garantiza colocacion ni orden de canales.
+- **Posible experimento:** buscar la rotacion ciclica de los 8 canales que maximiza la
+  transferencia, estimada **solo con EMG** del sujeto nuevo.
+- **Estado:** registrada, sin implementar.
