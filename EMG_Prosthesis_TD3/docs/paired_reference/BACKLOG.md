@@ -65,7 +65,7 @@ Este archivo existe para que una idea buena no se convierta en una sub-etapa imp
   necesitaria el guante una vez, aunque no en operacion. Eso sigue siendo defendible
   cientificamente, pero es una tesis distinta de "sin guante".
 
-### EMG_CHANNEL_ALIGNMENT
+### EMG_CHANNEL_ALIGNMENT  -- CERRADO por E1C, ver `08_RESULTADOS_E1C.md`
 
 - **Origen:** E1B, seccion 8.
 - **Idea:** si los momentos marginales no explican el fallo, el candidato es la relacion EMG->guante
@@ -74,3 +74,13 @@ Este archivo existe para que una idea buena no se convierta en una sub-etapa imp
 - **Posible experimento:** buscar la rotacion ciclica de los 8 canales que maximiza la
   transferencia, estimada **solo con EMG** del sujeto nuevo.
 - **Estado:** registrada, sin implementar.
+
+### PER_SUBJECT_CHANNEL_MIXING
+
+- **Origen:** E1C, seccion 5.
+- **Hecho medido:** existe un desplazamiento de canales reproducible por sujeto (transfiere entre
+  mitades, 41.9 % de sus episodios frente al 12.5 % del azar) que vale ~3 % de MSE, pero no coincide
+  entre gestos (2/10) ni entre motores (0/10).
+- **Lectura:** no es una rotacion del brazalete; se parece mas a que el modelo encuentra una
+  recombinacion de canales algo mejor para cada sujeto.
+- **Estado:** cerrado. Efecto real pero de orden equivocado. No justifica abrir etapa.
