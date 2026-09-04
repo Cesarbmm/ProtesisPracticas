@@ -112,18 +112,33 @@ if useCurveFallback
 end
 
 t = numel(curve);
+foundStart = false;
 for t_search = 1:numel(curve)
     if dir == "closing"
         if curve(t_search) >= y_sat
             t = t_search;
+            foundStart = true;
             break;
         end
     else
         if y_sat >= curve(t_search)
             t = t_search;
+            foundStart = true;
             break;
         end
     end
+end
+
+% --- ETAPA E0 (paired-reference): posicion fuera del recorrido de la curva.
+% Si la busqueda no encuentra punto, la posicion actual esta MAS ALLA del
+% extremo lejano de la curva en la direccion pedida y el motor no puede
+% avanzar mas. El valor por defecto t = numel(curve) hacia arrancar al FINAL
+% de la curva y producia un salto en direccion CONTRARIA al comando.
+% Medido en E0: 73 de 1176 casos del paso operativo (6.2%). Mantener la
+% posicion es la respuesta fisica y es el cambio minimo posible.
+if ~foundStart
+    t_i = repmat(pos, n_points, 1);
+    return
 end
 
 % --- clamp x_0

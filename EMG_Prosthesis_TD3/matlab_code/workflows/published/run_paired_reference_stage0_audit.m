@@ -128,11 +128,23 @@ dyn.speedsTxt = ["sp_zeroF" "sp_3F" "sp_5F" "sp_7F" "sp_9F" "sp_BF" "sp_DF" "sp_
 dyn.dirs = ["closing" "opening"];
 dyn.nMotors = 4;
 
+% ------------------------------------------------------ toolbox y ws
+% El archivo fit_C2.mat guarda params.(sp).(dir).(m).ws como objeto cfit
+% (Curve Fitting Toolbox). Si esa toolbox NO esta disponible, MATLAB no
+% puede instanciar la clase y carga ws como [] numerico. Entonces
+% numel(ws)==0, se activa el respaldo a pattern_curve y la planta se
+% comporta de forma DISTINTA que en una maquina con la toolbox.
+% Esto es un problema de reproducibilidad y hay que dejarlo registrado.
+dyn.hasCurveFittingToolbox = exist("cfit", "class") == 8;
+fprintf("Curve Fitting Toolbox disponible: %d\n", dyn.hasCurveFittingToolbox);
+
 rows = struct("speedTxt", {}, "speedValue", {}, "direction", {}, "motor", {}, ...
-    "wsClass", {}, "wsNumel", {}, "wsIsNumeric", {}, "simulatorWsLen", {}, ...
-    "idxAlwaysOne", {}, "useCurveFallback", {}, "valueAtOne", {}, ...
-    "curveLength", {}, "minLim", {}, "maxLim", {}, ...
-    "evalMin", {}, "evalMax", {}, "evalMonotone", {});
+    "wsClass", {}, "wsNumel", {}, "wsIsNumeric", {}, "useCurveFallback", {}, ...
+    "simulatorWsLen", {}, "idxAlwaysOne", {}, "curveLength", {}, ...
+    "curveIsMonotone", {}, "curveFirst", {}, "curveLast", {}, ...
+    "minLim", {}, "maxLim", {}, "strokeFractionPerStep", {});
+
+periodMs = configs.period * 1000;
 
 for iSp = 2:numel(dyn.simSpeeds)
     spTxt = dyn.speedsTxt(iSp);
@@ -146,36 +158,21 @@ for iSp = 2:numel(dyn.simSpeeds)
             entry = dyn.simParams.(spTxt).(dirName).(mTxt);
             ws = entry.ws;
             curve = dyn.patternCurve.(spTxt).(dirName).(mTxt).avg;
+            curve = curve(:);
 
             wsNumel = numel(ws);
-            wsIsNumeric = isnumeric(ws);
-
-            valueAtOne = NaN;
-            try
-                v = ws(1);
-                if isnumeric(v) && isscalar(v)
-                    valueAtOne = double(v);
-                end
-            catch
-                % ws(1) puede fallar si falta Curve Fitting Toolbox.
+            usesFallback = wsNumel == 0;
+            if usesFallback
+                simWsLen = numel(curve);   % el simulador hace ws = curve
+            else
+                simWsLen = wsNumel;
             end
 
-            % Diagnostico del arreglo propuesto: si ws se evaluara sobre el
-            % dominio de la curva de referencia en vez de sobre numel(ws),
-            % tendria rango util y direccion correcta?
-            evalMin = NaN; evalMax = NaN; evalMonotone = false;
-            try
-                domain = (1:numel(curve))';
-                yFit = double(ws(domain));
-                evalMin = min(yFit);
-                evalMax = max(yFit);
-                dy = diff(yFit);
-                if dirName == "closing"
-                    evalMonotone = all(dy >= -1e-9);
-                else
-                    evalMonotone = all(dy <= 1e-9);
-                end
-            catch
+            dy = diff(curve);
+            if dirName == "closing"
+                curveMonotone = all(dy >= -1e-9);
+            else
+                curveMonotone = all(dy <= 1e-9);
             end
 
             rows(end+1) = struct( ...
@@ -185,17 +182,17 @@ for iSp = 2:numel(dyn.simSpeeds)
                 "motor", m, ...
                 "wsClass", string(class(ws)), ...
                 "wsNumel", wsNumel, ...
-                "wsIsNumeric", wsIsNumeric, ...
-                "simulatorWsLen", wsNumel, ...
-                "idxAlwaysOne", wsNumel <= 1, ...
-                "useCurveFallback", wsNumel == 0, ...
-                "valueAtOne", valueAtOne, ...
+                "wsIsNumeric", isnumeric(ws), ...
+                "useCurveFallback", usesFallback, ...
+                "simulatorWsLen", simWsLen, ...
+                "idxAlwaysOne", simWsLen <= 1, ...
                 "curveLength", numel(curve), ...
+                "curveIsMonotone", curveMonotone, ...
+                "curveFirst", curve(1), ...
+                "curveLast", curve(end), ...
                 "minLim", entry.min_lim, ...
                 "maxLim", entry.max_lim, ...
-                "evalMin", evalMin, ...
-                "evalMax", evalMax, ...
-                "evalMonotone", evalMonotone); %#ok<AGROW>
+                "strokeFractionPerStep", periodMs / numel(curve)); %#ok<AGROW>
         end
     end
 end
@@ -205,36 +202,39 @@ dyn.nCombinations = height(dyn.map);
 dyn.nNumericWs = sum(dyn.map.wsIsNumeric);
 dyn.nCurveFallback = sum(dyn.map.useCurveFallback);
 dyn.nIdxCollapsed = sum(dyn.map.idxAlwaysOne);
+dyn.nCurveNonMonotone = sum(~dyn.map.curveIsMonotone);
 dyn.wsClasses = unique(dyn.map.wsClass);
 
 fprintf("Combinaciones (velocidad x direccion x motor): %d\n", dyn.nCombinations);
-fprintf("Clases de ws encontradas: %s\n", strjoin(dyn.wsClasses(:)', ", "));
-fprintf("ws numericos (vector muestreado)       : %d\n", dyn.nNumericWs);
-fprintf("ws vacios  -> fallback a pattern_curve : %d\n", dyn.nCurveFallback);
-fprintf("numel(ws) <= 1 -> idx colapsa a 1      : %d\n", dyn.nIdxCollapsed);
+fprintf("Clases de ws segun MATLAB: %s\n", strjoin(dyn.wsClasses(:)', ", "));
+fprintf("ws vacio -> respaldo a pattern_curve : %d de %d\n", ...
+    dyn.nCurveFallback, dyn.nCombinations);
+fprintf("ws_len efectivo <= 1 (idx colapsa)   : %d\n", dyn.nIdxCollapsed);
+fprintf("curvas de referencia NO monotonas    : %d\n", dyn.nCurveNonMonotone);
 
-dyn.trajectoryIsConstant = dyn.nIdxCollapsed == dyn.nCombinations;
-if dyn.trajectoryIsConstant
-    fprintf("\n*** HIPOTESIS CONFIRMADA A NIVEL ESTRUCTURAL ***\n");
-    fprintf("En las %d combinaciones, numel(ws) <= 1. El clamp\n", dyn.nCombinations);
-    fprintf("  idx = max(1, min(round(x_0 + delta_ms*t), ws_len))\n");
-    fprintf("fuerza idx = 1 siempre, asi que la trayectoria es CONSTANTE\n");
-    fprintf("e independiente de la posicion inicial y del tiempo.\n");
-    fprintf("El fallback a pattern_curve de las lineas 106-112 es codigo muerto.\n");
-    fprintf("E0.1 lo confirma ahora de forma empirica.\n");
-else
-    fprintf("\nHipotesis NO confirmada: hay ws con longitud util.\n");
+if dyn.nCurveFallback == dyn.nCombinations && ~dyn.hasCurveFittingToolbox
+    fprintf("\n*** AVISO DE REPRODUCIBILIDAD ***\n");
+    fprintf("Las 56 entradas cargan ws como vacio y esta MATLAB no tiene\n");
+    fprintf("Curve Fitting Toolbox. En una maquina que si la tenga, ws seria\n");
+    fprintf("un objeto cfit con numel(ws)=1, el respaldo NO se activaria y el\n");
+    fprintf("clamp min(idx, ws_len) dejaria la trayectoria constante.\n");
+    fprintf("La fisica de la planta depende de las toolboxes instaladas.\n");
+    fprintf("Registrar la configuracion de toolboxes junto a cada resultado.\n");
 end
 
-% Viabilidad del arreglo minimo: evaluar ws sobre el dominio de la curva.
-dyn.nEvalMonotone = sum(dyn.map.evalMonotone);
-dyn.evalRangeCoversLimits = all( ...
-    dyn.map.evalMax - dyn.map.evalMin > 0.5 * (dyn.map.maxLim - dyn.map.minLim));
-fprintf("\nViabilidad del arreglo minimo (evaluar ws sobre 1:numel(curve)):\n");
-fprintf("  combinaciones con recorrido monotono en la direccion correcta: %d de %d\n", ...
-    dyn.nEvalMonotone, dyn.nCombinations);
-fprintf("  el recorrido cubre mas de la mitad de [min_lim, max_lim] en todas: %d\n", ...
-    dyn.evalRangeCoversLimits);
+% ------------------------------------- resolucion del paso de control
+fprintf("\nFraccion del recorrido que cubre un paso de control (%.2f s):\n", configs.period);
+for dirName = dyn.dirs
+    sel = dyn.map.direction == dirName & dyn.map.motor == 1;
+    sub = sortrows(dyn.map(sel, ["speedValue" "curveLength" "strokeFractionPerStep"]), "speedValue");
+    for i = 1:height(sub)
+        fprintf("  %s PWM~%3d : curva %4d ms -> %5.1f %% del recorrido\n", ...
+            dirName, sub.speedValue(i), sub.curveLength(i), 100*sub.strokeFractionPerStep(i));
+    end
+end
+dyn.maxStrokeFractionPerStep = max(dyn.map.strokeFractionPerStep);
+fprintf("Peor caso: un solo paso cubre el %.1f %% del recorrido completo.\n", ...
+    100*dyn.maxStrokeFractionPerStep);
 end
 
 %% ########################################################################

@@ -1,5 +1,22 @@
 # Hallazgo de planta — `ws` es un objeto `cfit`, no un vector
 
+> ## REFUTADO — 2026-09-04
+>
+> E0 se ejecutó y la predicción de este documento falló en 2 de 4 puntos: MATLAB leyó las 56
+> entradas como **numéricas y vacías** (`nNumericWs = 56`, `nCurveFallback = 56`), no como objetos
+> `cfit`. El respaldo a `pattern_curve` **sí se activa** y no es código muerto.
+>
+> La causa: esta instalación de MATLAB no puede instanciar la clase `cfit`, así que carga `ws` como
+> `[]`. El archivo sí contiene objetos `cfit` — eso se verificó leyendo el binario — pero MATLAB no
+> los ve.
+>
+> El documento se conserva **sin editar** por debajo de esta nota, como registro de una hipótesis
+> que se registró antes de medir y que la medición tumbó. Lo que los datos sí dicen está en
+> `03_RESULTADOS_E0.md`, y el problema real que destapó — que la física de la planta depende de las
+> toolboxes instaladas — es más serio que el que este documento predijo.
+
+---
+
 **Estado:** hipótesis con evidencia estructural directa. **Pendiente de confirmación empírica**
 en MATLAB, que es exactamente lo que ejecuta E0.
 **Fecha:** 2026-09-04. **Rama afectada:** `main` (`6b213ba5`) y, por herencia, todas las demás.

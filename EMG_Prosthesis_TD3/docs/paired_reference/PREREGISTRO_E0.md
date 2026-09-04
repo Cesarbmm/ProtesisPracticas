@@ -142,8 +142,117 @@ Si la predicción falla, el hallazgo se retira y se documenta como refutado.
 
 ## 10. Resultado
 
-*(pendiente)*
+Ejecutado 2026-09-04. Detalle completo en `03_RESULTADOS_E0.md`.
+
+| Métrica | Valor | Umbral |
+|---|---|---|
+| `nSweep` | 2352 | — |
+| `nMonotonicityFailures` | **174** | 0 |
+| `nCrossTalk` | 0 | 0 |
+| `nJumpFlags` | **6** | 0 |
+| `nInvariantFinalPosition` | 76 de 112 | diagnóstico |
+| `nCurveFallback` | 56 de 56 | diagnóstico |
+| `nInexactLevels` | 1 (255 → 256) | diagnóstico |
+| `hasLabelledRest` | 0 | confirma H1b |
+| `nPairs` | 7420 | — |
+| `lag.kRange` | [−2, +2], mediana 0 | — |
+
+Predicciones de la Enmienda 1: 2 acertadas de 4. `nCurveFallback == 0` y
+`nInvariantFinalPosition == 112` fallaron. Conforme a la regla escrita, el hallazgo del `cfit`
+queda retirado y `02_HALLAZGO_PLANTA.md` marcado como refutado.
+
+Causa raíz identificada con correlación 1:1: 73 búsquedas de `x_0` sin punto encontrado = 73 fallos
+de monotonicidad en el paso operativo, con distribución idéntica por motor y signo.
 
 ## 11. Veredicto
 
-*(pendiente — SIGUE / PARA / VUELVE)*
+**PARA Y CORRIGE.**
+
+`nMonotonicityFailures = 174 > 0` y `nJumpFlags = 6 > 0`. El umbral de la sección 4 se aplica sin
+reinterpretación: se propuso el fix mínimo (mantener posición cuando la posición queda fuera del
+recorrido de la curva), se aplicó, y queda pendiente re-ejecutar el barrido completo.
+
+Efecto medido del fix por replicación validada: paso operativo de 73 fallos a 0.
+
+Queda abierta una decisión de alcance del gate (sección 8 de `03_RESULTADOS_E0.md`): restringirlo al
+régimen operativo mediante Enmienda 2, o mantenerlo global. No se toma sin autorización explícita.
+
+---
+
+## Enmienda 2 - 2026-09-04, **DESPUES de observar los datos**
+
+> Esta enmienda se decidio **despues** de ejecutar E0 y ver los resultados. No es una aclaracion de
+> lo que el preregistro "siempre quiso decir". El gate original evaluaba todo el barrido y **fallo**;
+> lo que se hace aqui es anadir un segundo gate, mas estrecho, y justificar por que es el relevante.
+> Ambos quedan registrados.
+
+**Autorizada por Cesar el 2026-09-04 (opcion A).**
+
+### Lo que NO se toca
+
+```
+GATE_GLOBAL_ORIGINAL              = FAIL
+monotonicityFailuresTotalAfterFix = 28
+```
+
+El gate global, tal como se registro antes de medir, fallo y sigue fallando despues del fix. Ese
+hecho no se borra ni se reescribe.
+
+### Lo que se anade
+
+```
+GATE_OPERATIVO                    = PASS
+monotonicityFailuresOperational   = 0
+```
+
+### Justificacion
+
+Los 28 fallos restantes ocurren **exclusivamente** en:
+
+- motor 3
+- direccion `closing`
+- duracion de estres de 3.0 s
+
+La duracion de 3.0 s **no la produce `Env` en operacion normal**: cada paso del entorno avanza
+`duration = params.period = 0.2 s`, que con `sampling_period = 0.14` da `n_points = 1`. La duracion
+larga fue un caso de estres anadido al disenar el barrido, no un regimen real.
+
+La causa de esos 28 casos es que la **propia curva de referencia** de motor 3 en cierre no es
+monotona. Es un defecto del dato de caracterizacion, no del codigo de control. Pasa a `BACKLOG.md`
+como `MOTOR3_LONG_HORIZON_NONMONOTONIC_CHARACTERIZATION`, **sin modificar todavia la curva
+experimental**.
+
+### Efecto sobre el criterio de cierre
+
+E0 cierra con `GATE_OPERATIVO = PASS`. El gate global queda registrado como FAIL y su resolucion
+queda pendiente en el backlog. Cualquier informe posterior que cite E0 debe citar los dos.
+
+---
+
+## Enmienda 3 - 2026-09-04, congelacion del split
+
+> Tambien posterior a los datos de E0, aunque **independiente de ellos**: no usa ningun resultado de
+> modelado.
+
+La regla de la seccion 6 decia elegir como test los 2 sujetos cuyo error LOSO quedara mas cerca de la
+mediana. Al ir a aplicarla aparecio un defecto: **esa regla selecciona el conjunto de test usando
+errores medidos sobre los propios sujetos de test**. Aunque evita el cherry-picking de extremos, no
+produce un test limpio.
+
+Se sustituye por una regla determinista e **independiente de los datos**, fijada antes de entrenar
+nada:
+
+> Ordenar los 12 sujetos alfabeticamente. Los 8 primeros son train, los 2 siguientes validation, los
+> 2 ultimos test.
+
+```
+TRAIN      : BLANCA, CECILIA, DENIS, EMILIA, GABI, GABRIEL, IVANNA, JOE
+VALIDATION : JONATHAN, KHAROL
+TEST       : MATEO, SANDRA
+```
+
+`k`, `lambda` y la seleccion de modelo se resuelven **solo** con train + validation. El test se
+ejecuta una vez, al final.
+
+Como analisis secundario de robustez se permite LOSO **restringido a los 10 sujetos de
+train+validation**; nunca sobre los de test, y nunca para seleccionar nada.
