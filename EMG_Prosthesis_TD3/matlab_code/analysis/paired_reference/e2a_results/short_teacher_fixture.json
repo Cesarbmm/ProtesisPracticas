@@ -1,0 +1,9 @@
+{
+  "teacherSteps": 2,
+  "gloveFreeSteps": 9,
+  "commonHorizon": 2,
+  "exact": true,
+  "teacherEmgExhausted": false,
+  "teacherGloveExhausted": true,
+  "absentEmgExhausted": true
+}

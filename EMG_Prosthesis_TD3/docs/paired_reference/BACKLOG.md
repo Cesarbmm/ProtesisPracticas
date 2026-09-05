@@ -3,6 +3,10 @@
 Hipótesis aparcadas. **No se abre etapa por ninguna de ellas sin discutirlo primero.**
 Este archivo existe para que una idea buena no se convierta en una sub-etapa improvisada.
 
+Estado actual: **E2A cerrada, PASS**, 37/37 tests. Se validó ejecución causal sin
+guante con política congelada. **E2B y cualquier entrenamiento RL siguen sin
+autorización.** E1–E1D continúan cerradas. Ver `11_RESULTADOS_E2A.md`.
+
 | # | Idea | Origen | Condición para reconsiderarla |
 |---|---|---|---|
 | 1 | Ablación de niveles de cuantización con TD3 (8 vs 4 vs 2 niveles) | alternativa correcta al pivote DQN de ETAPA 12 | sólo si reaparece aliasing de acción en E3 |
@@ -136,3 +140,16 @@ Este archivo existe para que una idea buena no se convierta en una sub-etapa imp
   Los seis coinciden con E0. No equivalen al caso de búsqueda fallida que activa HOLD.
 - **Estado:** datos intactos; defectos visibles mediante trayectorias completas y tests de
   caracterización. Monotonicidad operativa 0.2 s: cero fallos en ambas rejillas de 1176.
+
+### E2B_GLOVE_SUPERVISED_TRAINING — NO AUTORIZADA
+
+- **Origen:** E2A PASS: el actor congelado conserva estado, acción y posición al
+  retirar o invertir el guante; el reward sí depende del teacher.
+- **Cuestión reservada para discusión:** entrenamiento TD3 supervisado por guante
+  y validación/inferencia sin guante sobre planta canónica. E2A no demuestra calidad
+  de control y no cambia el protocolo histórico de entrenamiento.
+- **Límites pendientes:** fuente histórica de planta de Agent7250 desconocida;
+  concentración de endpoints de E0P; 582/760 comandos motor-paso de B con PWM >=128
+  en E2A. Este último número es sólo descriptivo, no evidencia de buen o mal control.
+- **Estado:** no iniciada. Requiere autorización explícita. No se cambian reward,
+  periodo, niveles PWM o action space como consecuencia automática de E2A.

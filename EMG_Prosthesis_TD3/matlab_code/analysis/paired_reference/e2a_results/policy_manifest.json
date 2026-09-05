@@ -1,0 +1,25 @@
+{
+  "label": "Agent7250",
+  "purpose": "FROZEN_CAUSAL_INSTRUMENT_ONLY",
+  "checkpointPath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\checkpoints\\canonical\\Agent7250_valid_baseline\\Agent7250_valid_baseline.mat",
+  "checkpointSHA256": "0e6b986b76fcaa63b067ea023809864d5da9db038b756c4726e02a59c106fd54",
+  "trainingPlantSource": "HISTORICAL_SOURCE_NOT_RECORDED",
+  "agentClass": "rl.agent.rlTD3Agent",
+  "actorClass": "rl.function.rlContinuousDeterministicActor",
+  "observationDimension": [
+    52,
+    1
+  ],
+  "actionDimension": [
+    4,
+    1
+  ],
+  "device": "cpu",
+  "inputNames": "observation",
+  "outputNames": "scaledAction",
+  "layerCount": 7,
+  "recurrentStatePresent": false,
+  "inferenceAPI": "getAction(actor, {state})",
+  "explorationUsed": false,
+  "trainingExecuted": false
+}
