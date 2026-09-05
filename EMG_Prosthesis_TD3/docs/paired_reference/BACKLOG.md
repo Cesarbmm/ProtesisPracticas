@@ -54,7 +54,7 @@ Este archivo existe para que una idea buena no se convierta en una sub-etapa imp
 - **Estado:** cerrado. **No se corrige.** Cambiarlo invalidaria la comparabilidad con `Agent7250` y
   con todas las campanas historicas.
 
-### SUPERVISED_SUBJECT_CALIBRATION
+### SUPERVISED_SUBJECT_CALIBRATION  -- CERRADO por E1D, ver `09_RESULTADOS_E1D.md`
 
 - **Origen:** E1B, veredicto `E1B_EMG_ONLY_CALIBRATION_FAIL`.
 - **Idea:** el usuario aporta unas pocas repeticiones **con guante** durante la calibracion inicial,
@@ -84,3 +84,17 @@ Este archivo existe para que una idea buena no se convierta en una sub-etapa imp
 - **Lectura:** no es una rotacion del brazalete; se parece mas a que el modelo encuentra una
   recombinacion de canales algo mejor para cada sujeto.
 - **Estado:** cerrado. Efecto real pero de orden equivocado. No justifica abrir etapa.
+
+### REPRESENTATION_AND_DATA
+
+- **Origen:** conclusion conjunta de E1, E1B, E1C y E1D.
+- **Hecho medido:** en las cuatro etapas, romper el emparejamiento EMG-target dentro del mismo gesto
+  y fase cuesta entre +0.3 % y +1.2 % de MSE. El oraculo gesto+fase es siempre el doble de bueno que
+  el mejor decoder.
+- **Lectura:** el limite no esta en el controlador ni en el algoritmo, sino en que las 40 features
+  WMoos sobre ventanas de 0.2 s del dataset Denis no contienen informacion de trayectoria mas alla
+  del gesto y su fase.
+- **Lo que abriria la linea de nuevo, y que NO se hace ahora:** datos nuevos con protocolo de
+  adquisicion controlado (colocacion, reposo etiquetado, calibracion por sesion), o una
+  representacion distinta de la EMG. Ambas cosas son proyectos propios, no etapas de esta linea.
+- **Estado:** cerrado.
