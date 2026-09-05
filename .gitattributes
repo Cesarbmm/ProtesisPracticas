@@ -1,0 +1,8 @@
+# ETAPA E0P: los artefactos canonicos de la planta se versionan sin conversion de
+# fin de linea, para que su hash sea identico en Windows y en Linux. El
+# manifiesto de cada corrida guarda ese hash.
+EMG_Prosthesis_TD3/matlab_code/src/@SimController/plant_limits_canonical.csv -text
+EMG_Prosthesis_TD3/matlab_code/analysis/paired_reference/plant_e0_regression_cases.csv -text
+# MATLAB exporta CRLF en Windows; se conservan y se reconocen como fin de linea.
+EMG_Prosthesis_TD3/matlab_code/analysis/paired_reference/e0p_results/*.csv -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+EMG_Prosthesis_TD3/matlab_code/analysis/paired_reference/e0p_results/*.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

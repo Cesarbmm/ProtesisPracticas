@@ -1,0 +1,388 @@
+{
+  "simPlantSource": "patternCurveCanonical",
+  "patternCurveSHA256": "a519555bcfcbbc7b140843d6fc1240118738cd3a6ca69f6f5517617372073590",
+  "absoluteTolerance": 1E-9,
+  "endpointGrouping": "sorted groups of diameter <= absoluteTolerance; no relative tolerance",
+  "samplingPeriod": 0.14,
+  "operationalPeriod": 0.2,
+  "stressDuration": 3,
+  "mainGrid": "globalPerMotor: 21 points over min(min_lim)..max(max_lim) for each motor",
+  "comparisonGrid": "perCombination: 21 points over each motor/PWM/direction limits",
+  "strokeFractionDefinition": "abs(q_final-q_initial)/(global_motor_max-global_motor_min)",
+  "monotonicityDefinition": "case fails if any commanded-sign * diff([q_initial; trajectory]) < -1e-9",
+  "fitC2Present": true,
+  "curveFittingToolboxPresent": true,
+  "globalPerMotor": {
+    "operationalCases": 1176,
+    "stressCases": 1176,
+    "operationalMonotonicityFailures": 0,
+    "stressMonotonicityFailures": 28,
+    "motor3ClosingStressFailures": 27,
+    "otherStressFailures": 1,
+    "outOfDomainCases": 194,
+    "outOfDomainHoldFailures": 0,
+    "PWM64": {
+      "groups": 8,
+      "minimumEndpoints": 11,
+      "medianEndpoints": 18,
+      "maximumEndpoints": 21,
+      "groupsWithExactlyTwoEndpoints": 0,
+      "minimumModalEndpointPercent": 4.7619047619047619,
+      "maximumModalEndpointPercent": 38.095238095238095,
+      "minimumGroupMeanAbsStrokeFraction": 0.078396777547229735,
+      "maximumGroupMeanAbsStrokeFraction": 0.33477831395537133
+    },
+    "PWM96": {
+      "groups": 8,
+      "minimumEndpoints": 5,
+      "medianEndpoints": 12.5,
+      "maximumEndpoints": 21,
+      "groupsWithExactlyTwoEndpoints": 0,
+      "minimumModalEndpointPercent": 4.7619047619047619,
+      "maximumModalEndpointPercent": 71.428571428571431,
+      "minimumGroupMeanAbsStrokeFraction": 0.14077306733167086,
+      "maximumGroupMeanAbsStrokeFraction": 0.43416656879249371
+    },
+    "PWM_HIGH": {
+      "groups": 40,
+      "minimumEndpoints": 2,
+      "medianEndpoints": 3.5,
+      "maximumEndpoints": 20,
+      "groupsWithExactlyTwoEndpoints": 18,
+      "minimumModalEndpointPercent": 9.5238095238095237,
+      "maximumModalEndpointPercent": 95.238095238095241,
+      "minimumGroupMeanAbsStrokeFraction": 0.32507668564886577,
+      "maximumGroupMeanAbsStrokeFraction": 0.49482354374105536,
+      "exactlyTwoEndpointGroups": [
+        {
+          "motor": 2,
+          "direction": "closing",
+          "pwm_magnitude": 192,
+          "n_unique_endpoints": 2,
+          "modal_endpoint_percent": 95.238095238095241
+        },
+        {
+          "motor": 2,
+          "direction": "closing",
+          "pwm_magnitude": 224,
+          "n_unique_endpoints": 2,
+          "modal_endpoint_percent": 95.238095238095241
+        },
+        {
+          "motor": 2,
+          "direction": "closing",
+          "pwm_magnitude": 255,
+          "n_unique_endpoints": 2,
+          "modal_endpoint_percent": 95.238095238095241
+        },
+        {
+          "motor": 2,
+          "direction": "opening",
+          "pwm_magnitude": 160,
+          "n_unique_endpoints": 2,
+          "modal_endpoint_percent": 95.238095238095241
+        },
+        {
+          "motor": 2,
+          "direction": "opening",
+          "pwm_magnitude": 192,
+          "n_unique_endpoints": 2,
+          "modal_endpoint_percent": 95.238095238095241
+        },
+        {
+          "motor": 2,
+          "direction": "opening",
+          "pwm_magnitude": 224,
+          "n_unique_endpoints": 2,
+          "modal_endpoint_percent": 95.238095238095241
+        },
+        {
+          "motor": 2,
+          "direction": "opening",
+          "pwm_magnitude": 255,
+          "n_unique_endpoints": 2,
+          "modal_endpoint_percent": 95.238095238095241
+        },
+        {
+          "motor": 3,
+          "direction": "opening",
+          "pwm_magnitude": 224,
+          "n_unique_endpoints": 2,
+          "modal_endpoint_percent": 95.238095238095241
+        },
+        {
+          "motor": 3,
+          "direction": "opening",
+          "pwm_magnitude": 255,
+          "n_unique_endpoints": 2,
+          "modal_endpoint_percent": 95.238095238095241
+        },
+        {
+          "motor": 4,
+          "direction": "closing",
+          "pwm_magnitude": 128,
+          "n_unique_endpoints": 2,
+          "modal_endpoint_percent": 95.238095238095241
+        },
+        {
+          "motor": 4,
+          "direction": "closing",
+          "pwm_magnitude": 160,
+          "n_unique_endpoints": 2,
+          "modal_endpoint_percent": 95.238095238095241
+        },
+        {
+          "motor": 4,
+          "direction": "closing",
+          "pwm_magnitude": 192,
+          "n_unique_endpoints": 2,
+          "modal_endpoint_percent": 95.238095238095241
+        },
+        {
+          "motor": 4,
+          "direction": "closing",
+          "pwm_magnitude": 224,
+          "n_unique_endpoints": 2,
+          "modal_endpoint_percent": 95.238095238095241
+        },
+        {
+          "motor": 4,
+          "direction": "closing",
+          "pwm_magnitude": 255,
+          "n_unique_endpoints": 2,
+          "modal_endpoint_percent": 95.238095238095241
+        },
+        {
+          "motor": 4,
+          "direction": "opening",
+          "pwm_magnitude": 160,
+          "n_unique_endpoints": 2,
+          "modal_endpoint_percent": 95.238095238095241
+        },
+        {
+          "motor": 4,
+          "direction": "opening",
+          "pwm_magnitude": 192,
+          "n_unique_endpoints": 2,
+          "modal_endpoint_percent": 95.238095238095241
+        },
+        {
+          "motor": 4,
+          "direction": "opening",
+          "pwm_magnitude": 224,
+          "n_unique_endpoints": 2,
+          "modal_endpoint_percent": 95.238095238095241
+        },
+        {
+          "motor": 4,
+          "direction": "opening",
+          "pwm_magnitude": 255,
+          "n_unique_endpoints": 2,
+          "modal_endpoint_percent": 95.238095238095241
+        }
+      ]
+    }
+  },
+  "perCombination": {
+    "operationalCases": 1176,
+    "stressCases": 1176,
+    "operationalMonotonicityFailures": 0,
+    "stressMonotonicityFailures": 28,
+    "motor3ClosingStressFailures": 28,
+    "otherStressFailures": 0,
+    "outOfDomainCases": 146,
+    "outOfDomainHoldFailures": 0,
+    "PWM64": {
+      "groups": 8,
+      "minimumEndpoints": 12,
+      "medianEndpoints": 18.5,
+      "maximumEndpoints": 21,
+      "groupsWithExactlyTwoEndpoints": 0,
+      "minimumModalEndpointPercent": 4.7619047619047619,
+      "maximumModalEndpointPercent": 33.333333333333336,
+      "minimumGroupMeanAbsStrokeFraction": 0.077609325451199945,
+      "maximumGroupMeanAbsStrokeFraction": 0.32791398077889083
+    },
+    "PWM96": {
+      "groups": 8,
+      "minimumEndpoints": 3,
+      "medianEndpoints": 12,
+      "maximumEndpoints": 21,
+      "groupsWithExactlyTwoEndpoints": 0,
+      "minimumModalEndpointPercent": 4.7619047619047619,
+      "maximumModalEndpointPercent": 85.714285714285708,
+      "minimumGroupMeanAbsStrokeFraction": 0.1317291187615377,
+      "maximumGroupMeanAbsStrokeFraction": 0.43306711558287331
+    },
+    "PWM_HIGH": {
+      "groups": 40,
+      "minimumEndpoints": 2,
+      "medianEndpoints": 2.5,
+      "maximumEndpoints": 21,
+      "groupsWithExactlyTwoEndpoints": 20,
+      "minimumModalEndpointPercent": 4.7619047619047619,
+      "maximumModalEndpointPercent": 95.238095238095241,
+      "minimumGroupMeanAbsStrokeFraction": 0.32087006675957669,
+      "maximumGroupMeanAbsStrokeFraction": 0.49482354374105536,
+      "exactlyTwoEndpointGroups": [
+        {
+          "motor": 2,
+          "direction": "closing",
+          "pwm_magnitude": 192,
+          "n_unique_endpoints": 2,
+          "modal_endpoint_percent": 95.238095238095241
+        },
+        {
+          "motor": 2,
+          "direction": "closing",
+          "pwm_magnitude": 224,
+          "n_unique_endpoints": 2,
+          "modal_endpoint_percent": 95.238095238095241
+        },
+        {
+          "motor": 2,
+          "direction": "closing",
+          "pwm_magnitude": 255,
+          "n_unique_endpoints": 2,
+          "modal_endpoint_percent": 95.238095238095241
+        },
+        {
+          "motor": 2,
+          "direction": "opening",
+          "pwm_magnitude": 160,
+          "n_unique_endpoints": 2,
+          "modal_endpoint_percent": 95.238095238095241
+        },
+        {
+          "motor": 2,
+          "direction": "opening",
+          "pwm_magnitude": 192,
+          "n_unique_endpoints": 2,
+          "modal_endpoint_percent": 95.238095238095241
+        },
+        {
+          "motor": 2,
+          "direction": "opening",
+          "pwm_magnitude": 224,
+          "n_unique_endpoints": 2,
+          "modal_endpoint_percent": 95.238095238095241
+        },
+        {
+          "motor": 2,
+          "direction": "opening",
+          "pwm_magnitude": 255,
+          "n_unique_endpoints": 2,
+          "modal_endpoint_percent": 95.238095238095241
+        },
+        {
+          "motor": 3,
+          "direction": "opening",
+          "pwm_magnitude": 192,
+          "n_unique_endpoints": 2,
+          "modal_endpoint_percent": 95.238095238095241
+        },
+        {
+          "motor": 3,
+          "direction": "opening",
+          "pwm_magnitude": 224,
+          "n_unique_endpoints": 2,
+          "modal_endpoint_percent": 95.238095238095241
+        },
+        {
+          "motor": 3,
+          "direction": "opening",
+          "pwm_magnitude": 255,
+          "n_unique_endpoints": 2,
+          "modal_endpoint_percent": 95.238095238095241
+        },
+        {
+          "motor": 4,
+          "direction": "closing",
+          "pwm_magnitude": 128,
+          "n_unique_endpoints": 2,
+          "modal_endpoint_percent": 95.238095238095241
+        },
+        {
+          "motor": 4,
+          "direction": "closing",
+          "pwm_magnitude": 160,
+          "n_unique_endpoints": 2,
+          "modal_endpoint_percent": 95.238095238095241
+        },
+        {
+          "motor": 4,
+          "direction": "closing",
+          "pwm_magnitude": 192,
+          "n_unique_endpoints": 2,
+          "modal_endpoint_percent": 95.238095238095241
+        },
+        {
+          "motor": 4,
+          "direction": "closing",
+          "pwm_magnitude": 224,
+          "n_unique_endpoints": 2,
+          "modal_endpoint_percent": 95.238095238095241
+        },
+        {
+          "motor": 4,
+          "direction": "closing",
+          "pwm_magnitude": 255,
+          "n_unique_endpoints": 2,
+          "modal_endpoint_percent": 95.238095238095241
+        },
+        {
+          "motor": 4,
+          "direction": "opening",
+          "pwm_magnitude": 128,
+          "n_unique_endpoints": 2,
+          "modal_endpoint_percent": 95.238095238095241
+        },
+        {
+          "motor": 4,
+          "direction": "opening",
+          "pwm_magnitude": 160,
+          "n_unique_endpoints": 2,
+          "modal_endpoint_percent": 95.238095238095241
+        },
+        {
+          "motor": 4,
+          "direction": "opening",
+          "pwm_magnitude": 192,
+          "n_unique_endpoints": 2,
+          "modal_endpoint_percent": 95.238095238095241
+        },
+        {
+          "motor": 4,
+          "direction": "opening",
+          "pwm_magnitude": 224,
+          "n_unique_endpoints": 2,
+          "modal_endpoint_percent": 95.238095238095241
+        },
+        {
+          "motor": 4,
+          "direction": "opening",
+          "pwm_magnitude": 255,
+          "n_unique_endpoints": 2,
+          "modal_endpoint_percent": 95.238095238095241
+        }
+      ]
+    }
+  },
+  "E0_REGRESSION_CASES": 784,
+  "E0_REGRESSION_MAX_ERROR": 1.1641532182693481E-10,
+  "E0_REGRESSION_NPOINT_MISMATCHES": 0,
+  "E0_REGRESSION_PASS": true,
+  "OPERATIONAL_MONOTONICITY_FAILURES": 0,
+  "M3_LONG_HORIZON_FAILURES": 28,
+  "MOTOR3_LONG_HORIZON_NONMONOTONIC_CHARACTERIZATION": "diagnostic only; artificial 3.0 s horizon, excluded from operational gate",
+  "oracleStressCases": 392,
+  "oracleMotor3ClosingStressFailures": 8,
+  "oracleOtherStressFailures": 0,
+  "E2_AUTHORIZED": false,
+  "RL_AUTHORIZED": false,
+  "outputDir": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\analysis\\paired_reference\\e0p_results",
+  "TESTS": 24,
+  "TESTS_PASS": true,
+  "OUT_OF_DOMAIN_HOLD_PASS": true,
+  "E0P_RESULT": "PASS"
+}

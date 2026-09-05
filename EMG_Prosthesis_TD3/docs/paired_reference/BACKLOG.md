@@ -98,3 +98,41 @@ Este archivo existe para que una idea buena no se convierta en una sub-etapa imp
   adquisicion controlado (colocacion, reposo etiquetado, calibracion por sesion), o una
   representacion distinta de la EMG. Ambas cosas son proyectos propios, no etapas de esta linea.
 - **Estado:** cerrado.
+
+### PLANT_LEGACY_CFIT_PHYSICS  -- ABIERTO, fuera de alcance
+
+- **Origen:** E0P.
+- **Hecho medido:** con Curve Fitting Toolbox instalada, la ruta `legacyAuto` lee `ws` como objetos
+  `cfit` con `numel(ws) = 1` y la trayectoria colapsa por el clamp. Sin la toolbox, los lee como
+  numericos vacios y cae a `pattern_curve`. Las dos fisicas conviven en el mismo commit historico.
+- **Estado:** documentado y aislado, no reparado. `legacyAuto` se conserva **sin modificar** para
+  poder reproducir corridas antiguas; la rama nueva usa `patternCurveCanonical` y no lo toca.
+- **Lo que quedaria por saber, y que NO se investiga ahora:** en cual de las dos ramas se entreno
+  `Agent7250` y las campanas historicas. No esta registrado y no es recuperable del repositorio.
+  Solo se sabria re-ejecutando cada agente bajo las dos rutas y comparando, lo que no aporta nada a
+  esta linea.
+
+### PLANT_CONTROL_RESOLUTION — ABIERTO, DIAGNOSTIC_ONLY
+
+- **Origen:** diagnóstico E0, auditado y corregido en E0P.
+- **Medición:** en 0.2 s, PWM64 distingue 11–21 destinos (mediana 18), PWM96 5–21
+  (mediana 12.5) y PWM>=128 2–20 (mediana 3.5), usando 21 posiciones globales por motor.
+  En PWM alto, 18/40 combinaciones dan dos destinos; 20/21 posiciones llegan al mismo
+  endpoint y una mantiene posición. Las medias de desplazamiento absoluto/carrera por
+  grupo van de 7.84–33.48 %, 14.08–43.42 % y 32.51–49.48 %, respectivamente.
+- **Corrección:** el anterior 12.7–47.2 % era fracción temporal, no de carrera. «Dos destinos»
+  no describe todos los motores/direcciones. La rejilla por combinación da resultados distintos.
+- **Alcance:** caracteriza la planta simulada congelada. No demuestra pérdida de control
+  proporcional, rendimiento de TD3, física de hardware ni causas de mesetas históricas.
+- **Estado:** sin cambios de periodo, action space, PWM, TD3 o reward. Tablas completas en
+  `E0P_PWM_DIAGNOSTICS.md`. Cualquier intervención futura requiere otra autorización.
+
+### PLANT_CURVE_ENTRY_AND_LONG_HORIZON — ABIERTO, CARACTERIZACIÓN
+
+- **E0P:** los 28 fallos M3 cierre de 3 s se reproducen en la rejilla histórica. En la rejilla
+  global hay 27 cierre y uno apertura M3 -192 desde 1295.5, con retroceso interno de 0.25 encoder.
+- El bound heurístico 1.5×avance de curva falla en cuatro casos global11 y dos por combinación21
+  porque omite la distancia desde el estado inicial al comienzo del recorrido empírico.
+  Los seis coinciden con E0. No equivalen al caso de búsqueda fallida que activa HOLD.
+- **Estado:** datos intactos; defectos visibles mediante trayectorias completas y tests de
+  caracterización. Monotonicidad operativa 0.2 s: cero fallos en ambas rejillas de 1176.

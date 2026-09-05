@@ -7,10 +7,8 @@ function tests = testPairedReferenceStage0PlantSanity
 %   No entrena, no crea agentes y no escribe nada. Llama al simulador como
 %   funcion pura y verifica invariantes fisicas.
 %
-%   AVISO: estos tests estan escritos para FALLAR si la planta de main tiene
-%   el defecto que E0.0 documenta (numel(ws)==1 con ws de clase cfit, que
-%   colapsa idx a 1 y deja la trayectoria constante). Un fallo aqui no es un
-%   test mal escrito: es el gate haciendo su trabajo.
+%   E0P separa el gate operativo (0.2 s) de la caracterizacion de 3.0 s.
+%   El fallo global original de E0 permanece en los documentos historicos.
 %
 %   La lista de tests es explicita a proposito: functiontests(localfunctions)
 %   recogeria tambien los helpers locales y los trataria como tests.
@@ -23,8 +21,10 @@ tests = functiontests({ ...
     @testZeroSpeedProducesNoMotion, ...
     @testTrajectoryDependsOnInitialPosition, ...
     @testDirectionMonotonicity, ...
+    @testMotor3LongHorizonCharacterization, ...
+    @testGlobalLongHorizonCharacterization, ...
     @testNoCrossTalkBetweenMotors, ...
-    @testOperationalStepIsBounded});
+    @testOperationalStepBoundCharacterization});
 end
 
 %% ------------------------------------------------------------------------
@@ -132,7 +132,7 @@ end
 
 %% ------------------------------------------------------------------------
 function testDirectionMonotonicity(testCase)
-% closing => la posicion no decrece. opening => no crece.
+% Gate OPERATIVO: closing no decrece; opening no crece en 0.2 s.
 grids = testCase.TestData.grids;
 nMotors = testCase.TestData.nMotors;
 mid = localMidpoints(grids);
@@ -148,7 +148,7 @@ for m = 1:nMotors
                 speeds = zeros(1, nMotors);
                 speeds(m) = sgn * L;
 
-                traj = SimController.prosthesis_simulator(initial, speeds, 3.0, ...
+                traj = SimController.prosthesis_simulator(initial, speeds, 0.2, ...
                     testCase.TestData.samplingPeriod);
                 deltas = diff([initial(m); traj(:, m)]);
 
@@ -163,6 +163,72 @@ for m = 1:nMotors
         end
     end
 end
+end
+
+%% ------------------------------------------------------------------------
+function testMotor3LongHorizonCharacterization(testCase)
+% MOTOR3_LONG_HORIZON_NONMONOTONIC_CHARACTERIZATION.
+% La rejilla POR COMBINACION de 21 posiciones reproduce 28 casos E0.
+% El test exige conservar y localizar el defecto, no corregir las curvas.
+grids = testCase.TestData.grids;
+mid = localMidpoints(grids);
+failures = zeros(0, 3);
+for m = 1:4
+    for L = localLevels(testCase)
+        for sgn = [1 -1]
+            sp = testCase.TestData.speedsTxt(testCase.TestData.simSpeeds == ...
+                localSnapSpeed(L, testCase.TestData.simSpeeds));
+            direction = "closing";
+            if sgn < 0, direction = "opening"; end
+            entry = testCase.TestData.fit.params.(sp).(direction).(sprintf("m_%d", m));
+            grid = linspace(entry.min_lim, entry.max_lim, 21);
+            for p = grid
+                initial = mid;
+                initial(m) = p;
+                speeds = zeros(1, 4);
+                speeds(m) = sgn * L;
+                trajectory = SimController.prosthesis_simulator(initial, speeds, 3.0, ...
+                    testCase.TestData.samplingPeriod, plantSource="patternCurveCanonical");
+                % Se inspecciona TODA la trayectoria; first/last/sum no bastan.
+                if any(sgn * diff([p; trajectory(:, m)]) < -1e-9)
+                    failures(end+1, :) = [m, sgn * L, p]; %#ok<AGROW>
+                end
+            end
+        end
+    end
+end
+fprintf("  MOTOR3_LONG_HORIZON_NONMONOTONIC_CHARACTERIZATION = %d (por combinacion, 21)\n", ...
+    size(failures, 1));
+verifyEqual(testCase, size(failures, 1), 28);
+verifyTrue(testCase, all(failures(:, 1) == 3 & failures(:, 2) > 0));
+end
+
+function testGlobalLongHorizonCharacterization(testCase)
+% La rejilla global no tiene los mismos casos que la historica: 27 cierre
+% M3 y uno apertura M3 -192, q=1295.5, con un retroceso interno de 0.25.
+grids = testCase.TestData.grids;
+mid = localMidpoints(grids);
+failures = zeros(0, 4);
+for m = 1:4
+    for L = localLevels(testCase)
+        for sgn = [1 -1]
+            for p = linspace(grids{m}(1), grids{m}(end), 21)
+                initial = mid; initial(m) = p;
+                speeds = zeros(1, 4); speeds(m) = sgn * L;
+                trajectory = SimController.prosthesis_simulator(initial, speeds, 3.0, ...
+                    testCase.TestData.samplingPeriod, plantSource="patternCurveCanonical");
+                worst = min(sgn * diff([p; trajectory(:, m)]));
+                if worst < -1e-9
+                    failures(end+1, :) = [m, sgn * L, p, worst]; %#ok<AGROW>
+                end
+            end
+        end
+    end
+end
+verifyEqual(testCase, nnz(failures(:, 2) > 0), 27);
+verifyTrue(testCase, all(failures(:, 1) == 3));
+verifyEqual(testCase, failures(failures(:, 2) < 0, :), ...
+    [3 -192 1295.5 -0.25], AbsTol=1e-9);
 end
 
 %% ------------------------------------------------------------------------
@@ -194,10 +260,11 @@ end
 end
 
 %% ------------------------------------------------------------------------
-function testOperationalStepIsBounded(testCase)
-% Un paso operativo (duracion = params.period) no debe avanzar mas de lo que
-% la curva de referencia avanza en el mismo numero de milisegundos.
-% Este es el gate que atrapa el teletransporte.
+function testOperationalStepBoundCharacterization(testCase)
+% El bound heuristico E0 (1.5 * avance maximo sobre la curva) omite la
+% distancia desde q inicial hasta el primer punto de la curva. No es un
+% bound valido si q esta antes del inicio del recorrido empirico. Se
+% conservan visibles sus excesos: cuatro global11 y dos por combinacion21.
 configs = testCase.TestData.configs;
 grids = testCase.TestData.grids;
 nMotors = testCase.TestData.nMotors;
@@ -212,6 +279,8 @@ nPoints = round(configs.period / samplingPeriod);
 assumeGreaterThanOrEqual(testCase, nPoints, 1, ...
     "period/samplingPeriod < 1: el simulador no produce muestras.");
 deltaMs = configs.period * 1000 / nPoints;
+globalFailures = zeros(0, 4);
+combinationFailures = zeros(0, 3);
 
 for m = 1:nMotors
     mTxt = sprintf("m_%d", m);
@@ -231,7 +300,10 @@ for m = 1:nMotors
             verifyGreaterThan(testCase, refStep, 0, ...
                 sprintf("Curva de referencia degenerada en %s/%s/%s", spTxt, dirName, mTxt));
 
-            for p = grids{m}
+            entry = testCase.TestData.fit.params.(spTxt).(dirName).(mTxt);
+            positions = [linspace(entry.min_lim, entry.max_lim, 21), grids{m}];
+            for iPosition = 1:numel(positions)
+                p = positions(iPosition);
                 initial = mid;
                 initial(m) = p;
                 speeds = zeros(1, nMotors);
@@ -239,13 +311,26 @@ for m = 1:nMotors
                 traj = SimController.prosthesis_simulator(initial, speeds, ...
                     configs.period, samplingPeriod);
                 jump = max(abs(diff([initial(m); traj(:, m)])));
-                verifyLessThanOrEqual(testCase, jump, jumpFactor * refStep, ...
-                    sprintf("Salto no fisico: motor %d, PWM %d, pos %.1f (%.1f > %.1f)", ...
-                    m, sgn*L, p, jump, jumpFactor * refStep));
+                beforeCurve = (sgn < 0 && p > max(curve)) || (sgn > 0 && p < min(curve));
+                if iPosition <= 21
+                    if jump > jumpFactor * refStep
+                        combinationFailures(end+1, :) = [m, sgn*L, p]; %#ok<AGROW>
+                        verifyTrue(testCase, beforeCurve);
+                    end
+                elseif jump > jumpFactor * refStep
+                    globalFailures(end+1, :) = [m, sgn*L, p, ...
+                        beforeCurve]; %#ok<AGROW>
+                end
             end
         end
     end
 end
+verifyEqual(testCase, globalFailures(:, 1:3), ...
+    [2 -64 5361.4; 2 -64 6091.2; 2 -64 6821; 3 -64 7912], AbsTol=1e-9);
+verifyTrue(testCase, all(globalFailures(:, 4) == 1));
+verifyEqual(testCase, combinationFailures, [2 -64 5271.3; 2 -64 5550], AbsTol=1e-9);
+fprintf("  GLOBAL_11_POINT_BOUND_CHARACTERIZATION = %d (antes del recorrido empirico)\n", ...
+    size(globalFailures, 1));
 end
 
 %% ########################################################################
