@@ -1,0 +1,682 @@
+[
+  {
+    "teacher": {
+      "subject": "BLANCA",
+      "split": "DEVELOPMENT",
+      "repetition": 1,
+      "side": 1,
+      "datasetPath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\BLANCA.mat",
+      "loadedVariables": [
+        "emgs",
+        "gloves"
+      ],
+      "includeTeacher": true,
+      "emgSamples": 400,
+      "emgSHA256": "56fa2d7c2e2430d0489ef32f719ed35f25e7d462267481c25a91e2e080da4876",
+      "emgHashMethod": "SHA256(class;dimensions;native-endian;raw-column-major-bytes)",
+      "datasetFileSHA256": "NOT_READ_TO_AVOID_GLOVE_BYTES",
+      "teacherSamples": 18,
+      "teacherSHA256": "ab8d34a3f157ef59cf855de333822b80b19dd7405fb8342b0b2bca29f1eeb208",
+      "teacherHashMethod": "SHA256(MATLAB-jsonencode-UTF8)"
+    },
+    "absent": {
+      "subject": "BLANCA",
+      "split": "DEVELOPMENT",
+      "repetition": 1,
+      "side": 1,
+      "datasetPath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\BLANCA.mat",
+      "loadedVariables": "emgs",
+      "includeTeacher": false,
+      "emgSamples": 400,
+      "emgSHA256": "56fa2d7c2e2430d0489ef32f719ed35f25e7d462267481c25a91e2e080da4876",
+      "emgHashMethod": "SHA256(class;dimensions;native-endian;raw-column-major-bytes)",
+      "datasetFileSHA256": "NOT_READ_TO_AVOID_GLOVE_BYTES"
+    }
+  },
+  {
+    "teacher": {
+      "subject": "BLANCA",
+      "split": "DEVELOPMENT",
+      "repetition": 1,
+      "side": 2,
+      "datasetPath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\BLANCA.mat",
+      "loadedVariables": [
+        "emgs",
+        "gloves"
+      ],
+      "includeTeacher": true,
+      "emgSamples": 404,
+      "emgSHA256": "765e7b7cb80b9095bfa1c282e66d3ed51d8ec6c8cff7e19cb6cab643d8fd3bed",
+      "emgHashMethod": "SHA256(class;dimensions;native-endian;raw-column-major-bytes)",
+      "datasetFileSHA256": "NOT_READ_TO_AVOID_GLOVE_BYTES",
+      "teacherSamples": 18,
+      "teacherSHA256": "5c4b370fd8cc5fa1bfc759f2d339963472fb2c21d9500082ecc9dfd54dd61788",
+      "teacherHashMethod": "SHA256(MATLAB-jsonencode-UTF8)"
+    },
+    "absent": {
+      "subject": "BLANCA",
+      "split": "DEVELOPMENT",
+      "repetition": 1,
+      "side": 2,
+      "datasetPath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\BLANCA.mat",
+      "loadedVariables": "emgs",
+      "includeTeacher": false,
+      "emgSamples": 404,
+      "emgSHA256": "765e7b7cb80b9095bfa1c282e66d3ed51d8ec6c8cff7e19cb6cab643d8fd3bed",
+      "emgHashMethod": "SHA256(class;dimensions;native-endian;raw-column-major-bytes)",
+      "datasetFileSHA256": "NOT_READ_TO_AVOID_GLOVE_BYTES"
+    }
+  },
+  {
+    "teacher": {
+      "subject": "CECILIA",
+      "split": "DEVELOPMENT",
+      "repetition": 1,
+      "side": 1,
+      "datasetPath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\CECILIA.mat",
+      "loadedVariables": [
+        "emgs",
+        "gloves"
+      ],
+      "includeTeacher": true,
+      "emgSamples": 404,
+      "emgSHA256": "f0bc6f16667b53ab81be1b50fb22eef0a2c529aed67eaa56609c27f116626636",
+      "emgHashMethod": "SHA256(class;dimensions;native-endian;raw-column-major-bytes)",
+      "datasetFileSHA256": "NOT_READ_TO_AVOID_GLOVE_BYTES",
+      "teacherSamples": 18,
+      "teacherSHA256": "6ad47f1b0b4f376c5b2976f1bd0a605857fe6f81e4be90876dc01325ed59bcdb",
+      "teacherHashMethod": "SHA256(MATLAB-jsonencode-UTF8)"
+    },
+    "absent": {
+      "subject": "CECILIA",
+      "split": "DEVELOPMENT",
+      "repetition": 1,
+      "side": 1,
+      "datasetPath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\CECILIA.mat",
+      "loadedVariables": "emgs",
+      "includeTeacher": false,
+      "emgSamples": 404,
+      "emgSHA256": "f0bc6f16667b53ab81be1b50fb22eef0a2c529aed67eaa56609c27f116626636",
+      "emgHashMethod": "SHA256(class;dimensions;native-endian;raw-column-major-bytes)",
+      "datasetFileSHA256": "NOT_READ_TO_AVOID_GLOVE_BYTES"
+    }
+  },
+  {
+    "teacher": {
+      "subject": "CECILIA",
+      "split": "DEVELOPMENT",
+      "repetition": 1,
+      "side": 2,
+      "datasetPath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\CECILIA.mat",
+      "loadedVariables": [
+        "emgs",
+        "gloves"
+      ],
+      "includeTeacher": true,
+      "emgSamples": 394,
+      "emgSHA256": "9788bf0f64fa21d69b679de2b99ecd1ad842bf7289838457faaa1cc9540e0b58",
+      "emgHashMethod": "SHA256(class;dimensions;native-endian;raw-column-major-bytes)",
+      "datasetFileSHA256": "NOT_READ_TO_AVOID_GLOVE_BYTES",
+      "teacherSamples": 19,
+      "teacherSHA256": "2d5de68256fa14e6e3b19ba3ff2abce8896bb23485c34b7174d482e4bc630556",
+      "teacherHashMethod": "SHA256(MATLAB-jsonencode-UTF8)"
+    },
+    "absent": {
+      "subject": "CECILIA",
+      "split": "DEVELOPMENT",
+      "repetition": 1,
+      "side": 2,
+      "datasetPath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\CECILIA.mat",
+      "loadedVariables": "emgs",
+      "includeTeacher": false,
+      "emgSamples": 394,
+      "emgSHA256": "9788bf0f64fa21d69b679de2b99ecd1ad842bf7289838457faaa1cc9540e0b58",
+      "emgHashMethod": "SHA256(class;dimensions;native-endian;raw-column-major-bytes)",
+      "datasetFileSHA256": "NOT_READ_TO_AVOID_GLOVE_BYTES"
+    }
+  },
+  {
+    "teacher": {
+      "subject": "DENIS",
+      "split": "DEVELOPMENT",
+      "repetition": 1,
+      "side": 1,
+      "datasetPath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\DENIS.mat",
+      "loadedVariables": [
+        "emgs",
+        "gloves"
+      ],
+      "includeTeacher": true,
+      "emgSamples": 404,
+      "emgSHA256": "c12983f254c6583f323eaf4fb4fc60fe316352b27495322dbc2a2492871691f3",
+      "emgHashMethod": "SHA256(class;dimensions;native-endian;raw-column-major-bytes)",
+      "datasetFileSHA256": "NOT_READ_TO_AVOID_GLOVE_BYTES",
+      "teacherSamples": 18,
+      "teacherSHA256": "9cf9ff57dd22c89bfd16989b1f5a7675e828af05231f0fddf5099f8c942495f6",
+      "teacherHashMethod": "SHA256(MATLAB-jsonencode-UTF8)"
+    },
+    "absent": {
+      "subject": "DENIS",
+      "split": "DEVELOPMENT",
+      "repetition": 1,
+      "side": 1,
+      "datasetPath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\DENIS.mat",
+      "loadedVariables": "emgs",
+      "includeTeacher": false,
+      "emgSamples": 404,
+      "emgSHA256": "c12983f254c6583f323eaf4fb4fc60fe316352b27495322dbc2a2492871691f3",
+      "emgHashMethod": "SHA256(class;dimensions;native-endian;raw-column-major-bytes)",
+      "datasetFileSHA256": "NOT_READ_TO_AVOID_GLOVE_BYTES"
+    }
+  },
+  {
+    "teacher": {
+      "subject": "DENIS",
+      "split": "DEVELOPMENT",
+      "repetition": 1,
+      "side": 2,
+      "datasetPath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\DENIS.mat",
+      "loadedVariables": [
+        "emgs",
+        "gloves"
+      ],
+      "includeTeacher": true,
+      "emgSamples": 396,
+      "emgSHA256": "7c5bdfde23493e8c5482be1938f81155231a73977d2a24e1375c848a64496d0f",
+      "emgHashMethod": "SHA256(class;dimensions;native-endian;raw-column-major-bytes)",
+      "datasetFileSHA256": "NOT_READ_TO_AVOID_GLOVE_BYTES",
+      "teacherSamples": 19,
+      "teacherSHA256": "333184d08c85df08801f5eea9ea7e053e5080fe2a0fc20f9075dd1979e0a52a0",
+      "teacherHashMethod": "SHA256(MATLAB-jsonencode-UTF8)"
+    },
+    "absent": {
+      "subject": "DENIS",
+      "split": "DEVELOPMENT",
+      "repetition": 1,
+      "side": 2,
+      "datasetPath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\DENIS.mat",
+      "loadedVariables": "emgs",
+      "includeTeacher": false,
+      "emgSamples": 396,
+      "emgSHA256": "7c5bdfde23493e8c5482be1938f81155231a73977d2a24e1375c848a64496d0f",
+      "emgHashMethod": "SHA256(class;dimensions;native-endian;raw-column-major-bytes)",
+      "datasetFileSHA256": "NOT_READ_TO_AVOID_GLOVE_BYTES"
+    }
+  },
+  {
+    "teacher": {
+      "subject": "EMILIA",
+      "split": "DEVELOPMENT",
+      "repetition": 1,
+      "side": 1,
+      "datasetPath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\EMILIA.mat",
+      "loadedVariables": [
+        "emgs",
+        "gloves"
+      ],
+      "includeTeacher": true,
+      "emgSamples": 404,
+      "emgSHA256": "4a61afaf7d336e09c48f1427dcd578d770c8cbc9f7ed47a043394ecc2507794d",
+      "emgHashMethod": "SHA256(class;dimensions;native-endian;raw-column-major-bytes)",
+      "datasetFileSHA256": "NOT_READ_TO_AVOID_GLOVE_BYTES",
+      "teacherSamples": 18,
+      "teacherSHA256": "6be75874894340ecd76b5988fe4bbd80151f79ea90ca8d64aee8cc6d85d214b5",
+      "teacherHashMethod": "SHA256(MATLAB-jsonencode-UTF8)"
+    },
+    "absent": {
+      "subject": "EMILIA",
+      "split": "DEVELOPMENT",
+      "repetition": 1,
+      "side": 1,
+      "datasetPath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\EMILIA.mat",
+      "loadedVariables": "emgs",
+      "includeTeacher": false,
+      "emgSamples": 404,
+      "emgSHA256": "4a61afaf7d336e09c48f1427dcd578d770c8cbc9f7ed47a043394ecc2507794d",
+      "emgHashMethod": "SHA256(class;dimensions;native-endian;raw-column-major-bytes)",
+      "datasetFileSHA256": "NOT_READ_TO_AVOID_GLOVE_BYTES"
+    }
+  },
+  {
+    "teacher": {
+      "subject": "EMILIA",
+      "split": "DEVELOPMENT",
+      "repetition": 1,
+      "side": 2,
+      "datasetPath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\EMILIA.mat",
+      "loadedVariables": [
+        "emgs",
+        "gloves"
+      ],
+      "includeTeacher": true,
+      "emgSamples": 395,
+      "emgSHA256": "dac8a0c7a88ae78c0f1615ff19463dac99f9fbb2cfda89e80049406524f62e82",
+      "emgHashMethod": "SHA256(class;dimensions;native-endian;raw-column-major-bytes)",
+      "datasetFileSHA256": "NOT_READ_TO_AVOID_GLOVE_BYTES",
+      "teacherSamples": 19,
+      "teacherSHA256": "23bff9708b0858f94053d5f37704933b161d6c985f4a3fd5fb59948f6b2fdb0c",
+      "teacherHashMethod": "SHA256(MATLAB-jsonencode-UTF8)"
+    },
+    "absent": {
+      "subject": "EMILIA",
+      "split": "DEVELOPMENT",
+      "repetition": 1,
+      "side": 2,
+      "datasetPath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\EMILIA.mat",
+      "loadedVariables": "emgs",
+      "includeTeacher": false,
+      "emgSamples": 395,
+      "emgSHA256": "dac8a0c7a88ae78c0f1615ff19463dac99f9fbb2cfda89e80049406524f62e82",
+      "emgHashMethod": "SHA256(class;dimensions;native-endian;raw-column-major-bytes)",
+      "datasetFileSHA256": "NOT_READ_TO_AVOID_GLOVE_BYTES"
+    }
+  },
+  {
+    "teacher": {
+      "subject": "GABI",
+      "split": "DEVELOPMENT",
+      "repetition": 1,
+      "side": 1,
+      "datasetPath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\GABI.mat",
+      "loadedVariables": [
+        "emgs",
+        "gloves"
+      ],
+      "includeTeacher": true,
+      "emgSamples": 396,
+      "emgSHA256": "453981024f34bda95baf7d286f7f9bd79359a1f81caa1902b8800bed63511d78",
+      "emgHashMethod": "SHA256(class;dimensions;native-endian;raw-column-major-bytes)",
+      "datasetFileSHA256": "NOT_READ_TO_AVOID_GLOVE_BYTES",
+      "teacherSamples": 19,
+      "teacherSHA256": "8b63bcd54de2525db18a2ff4123f20483830c5990540504ea4c8ee46c1465831",
+      "teacherHashMethod": "SHA256(MATLAB-jsonencode-UTF8)"
+    },
+    "absent": {
+      "subject": "GABI",
+      "split": "DEVELOPMENT",
+      "repetition": 1,
+      "side": 1,
+      "datasetPath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\GABI.mat",
+      "loadedVariables": "emgs",
+      "includeTeacher": false,
+      "emgSamples": 396,
+      "emgSHA256": "453981024f34bda95baf7d286f7f9bd79359a1f81caa1902b8800bed63511d78",
+      "emgHashMethod": "SHA256(class;dimensions;native-endian;raw-column-major-bytes)",
+      "datasetFileSHA256": "NOT_READ_TO_AVOID_GLOVE_BYTES"
+    }
+  },
+  {
+    "teacher": {
+      "subject": "GABI",
+      "split": "DEVELOPMENT",
+      "repetition": 1,
+      "side": 2,
+      "datasetPath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\GABI.mat",
+      "loadedVariables": [
+        "emgs",
+        "gloves"
+      ],
+      "includeTeacher": true,
+      "emgSamples": 404,
+      "emgSHA256": "8f43f3617680e621c18bc7d9928622fa7e56b7e47e816bc3688bf8228ce1d65b",
+      "emgHashMethod": "SHA256(class;dimensions;native-endian;raw-column-major-bytes)",
+      "datasetFileSHA256": "NOT_READ_TO_AVOID_GLOVE_BYTES",
+      "teacherSamples": 18,
+      "teacherSHA256": "7016edea9f1ab339dccb17f582dca43e97c9f92c2a0dffc214558676c2029e2f",
+      "teacherHashMethod": "SHA256(MATLAB-jsonencode-UTF8)"
+    },
+    "absent": {
+      "subject": "GABI",
+      "split": "DEVELOPMENT",
+      "repetition": 1,
+      "side": 2,
+      "datasetPath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\GABI.mat",
+      "loadedVariables": "emgs",
+      "includeTeacher": false,
+      "emgSamples": 404,
+      "emgSHA256": "8f43f3617680e621c18bc7d9928622fa7e56b7e47e816bc3688bf8228ce1d65b",
+      "emgHashMethod": "SHA256(class;dimensions;native-endian;raw-column-major-bytes)",
+      "datasetFileSHA256": "NOT_READ_TO_AVOID_GLOVE_BYTES"
+    }
+  },
+  {
+    "teacher": {
+      "subject": "GABRIEL",
+      "split": "DEVELOPMENT",
+      "repetition": 1,
+      "side": 1,
+      "datasetPath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\GABRIEL.mat",
+      "loadedVariables": [
+        "emgs",
+        "gloves"
+      ],
+      "includeTeacher": true,
+      "emgSamples": 396,
+      "emgSHA256": "bb9878b347803ace9a0c749b2d28d078e5f2c48d6736ade714bed089e79459f2",
+      "emgHashMethod": "SHA256(class;dimensions;native-endian;raw-column-major-bytes)",
+      "datasetFileSHA256": "NOT_READ_TO_AVOID_GLOVE_BYTES",
+      "teacherSamples": 18,
+      "teacherSHA256": "e2fc190eec49d62f8c129a2092fdf8861aabefa9d3355f41e6f83bd53c499685",
+      "teacherHashMethod": "SHA256(MATLAB-jsonencode-UTF8)"
+    },
+    "absent": {
+      "subject": "GABRIEL",
+      "split": "DEVELOPMENT",
+      "repetition": 1,
+      "side": 1,
+      "datasetPath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\GABRIEL.mat",
+      "loadedVariables": "emgs",
+      "includeTeacher": false,
+      "emgSamples": 396,
+      "emgSHA256": "bb9878b347803ace9a0c749b2d28d078e5f2c48d6736ade714bed089e79459f2",
+      "emgHashMethod": "SHA256(class;dimensions;native-endian;raw-column-major-bytes)",
+      "datasetFileSHA256": "NOT_READ_TO_AVOID_GLOVE_BYTES"
+    }
+  },
+  {
+    "teacher": {
+      "subject": "GABRIEL",
+      "split": "DEVELOPMENT",
+      "repetition": 1,
+      "side": 2,
+      "datasetPath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\GABRIEL.mat",
+      "loadedVariables": [
+        "emgs",
+        "gloves"
+      ],
+      "includeTeacher": true,
+      "emgSamples": 404,
+      "emgSHA256": "e5c6363a0859fce8ca21e73c8c600fb436b1d4ebe6e5fa97e6618a2cda4d6d46",
+      "emgHashMethod": "SHA256(class;dimensions;native-endian;raw-column-major-bytes)",
+      "datasetFileSHA256": "NOT_READ_TO_AVOID_GLOVE_BYTES",
+      "teacherSamples": 18,
+      "teacherSHA256": "47f87e14771d7f78e394d7e36fb2ef542ffa2204761dec3028b89619ce6bbc23",
+      "teacherHashMethod": "SHA256(MATLAB-jsonencode-UTF8)"
+    },
+    "absent": {
+      "subject": "GABRIEL",
+      "split": "DEVELOPMENT",
+      "repetition": 1,
+      "side": 2,
+      "datasetPath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\GABRIEL.mat",
+      "loadedVariables": "emgs",
+      "includeTeacher": false,
+      "emgSamples": 404,
+      "emgSHA256": "e5c6363a0859fce8ca21e73c8c600fb436b1d4ebe6e5fa97e6618a2cda4d6d46",
+      "emgHashMethod": "SHA256(class;dimensions;native-endian;raw-column-major-bytes)",
+      "datasetFileSHA256": "NOT_READ_TO_AVOID_GLOVE_BYTES"
+    }
+  },
+  {
+    "teacher": {
+      "subject": "IVANNA",
+      "split": "DEVELOPMENT",
+      "repetition": 1,
+      "side": 1,
+      "datasetPath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\IVANNA.mat",
+      "loadedVariables": [
+        "emgs",
+        "gloves"
+      ],
+      "includeTeacher": true,
+      "emgSamples": 398,
+      "emgSHA256": "7cdb68aac6209b1cc5933cf355164cb5a23916c5c1b0c8aaa11b72884ec53a8b",
+      "emgHashMethod": "SHA256(class;dimensions;native-endian;raw-column-major-bytes)",
+      "datasetFileSHA256": "NOT_READ_TO_AVOID_GLOVE_BYTES",
+      "teacherSamples": 18,
+      "teacherSHA256": "db3e0fdd64664db1c6a5da9f948947fc62d02a16b487d433ee359363f859cc12",
+      "teacherHashMethod": "SHA256(MATLAB-jsonencode-UTF8)"
+    },
+    "absent": {
+      "subject": "IVANNA",
+      "split": "DEVELOPMENT",
+      "repetition": 1,
+      "side": 1,
+      "datasetPath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\IVANNA.mat",
+      "loadedVariables": "emgs",
+      "includeTeacher": false,
+      "emgSamples": 398,
+      "emgSHA256": "7cdb68aac6209b1cc5933cf355164cb5a23916c5c1b0c8aaa11b72884ec53a8b",
+      "emgHashMethod": "SHA256(class;dimensions;native-endian;raw-column-major-bytes)",
+      "datasetFileSHA256": "NOT_READ_TO_AVOID_GLOVE_BYTES"
+    }
+  },
+  {
+    "teacher": {
+      "subject": "IVANNA",
+      "split": "DEVELOPMENT",
+      "repetition": 1,
+      "side": 2,
+      "datasetPath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\IVANNA.mat",
+      "loadedVariables": [
+        "emgs",
+        "gloves"
+      ],
+      "includeTeacher": true,
+      "emgSamples": 394,
+      "emgSHA256": "c82c4c792d97da8ab2e9141e7a3f030ee879fbb23e0451c2dc313fb7a10d8584",
+      "emgHashMethod": "SHA256(class;dimensions;native-endian;raw-column-major-bytes)",
+      "datasetFileSHA256": "NOT_READ_TO_AVOID_GLOVE_BYTES",
+      "teacherSamples": 19,
+      "teacherSHA256": "29957d8cf1b11603f56b398ae6570e1136cf66485794a7cb82b68fac9a58c649",
+      "teacherHashMethod": "SHA256(MATLAB-jsonencode-UTF8)"
+    },
+    "absent": {
+      "subject": "IVANNA",
+      "split": "DEVELOPMENT",
+      "repetition": 1,
+      "side": 2,
+      "datasetPath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\IVANNA.mat",
+      "loadedVariables": "emgs",
+      "includeTeacher": false,
+      "emgSamples": 394,
+      "emgSHA256": "c82c4c792d97da8ab2e9141e7a3f030ee879fbb23e0451c2dc313fb7a10d8584",
+      "emgHashMethod": "SHA256(class;dimensions;native-endian;raw-column-major-bytes)",
+      "datasetFileSHA256": "NOT_READ_TO_AVOID_GLOVE_BYTES"
+    }
+  },
+  {
+    "teacher": {
+      "subject": "JOE",
+      "split": "DEVELOPMENT",
+      "repetition": 1,
+      "side": 1,
+      "datasetPath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\JOE.mat",
+      "loadedVariables": [
+        "emgs",
+        "gloves"
+      ],
+      "includeTeacher": true,
+      "emgSamples": 404,
+      "emgSHA256": "b5f19a7cc10270453b213d6c6cbf7bd4220731d2f8a6d3ee099178c502855017",
+      "emgHashMethod": "SHA256(class;dimensions;native-endian;raw-column-major-bytes)",
+      "datasetFileSHA256": "NOT_READ_TO_AVOID_GLOVE_BYTES",
+      "teacherSamples": 18,
+      "teacherSHA256": "1b8dfa5eab347da459734c23871be61ba993cf9045f3558323df9c5726aa0825",
+      "teacherHashMethod": "SHA256(MATLAB-jsonencode-UTF8)"
+    },
+    "absent": {
+      "subject": "JOE",
+      "split": "DEVELOPMENT",
+      "repetition": 1,
+      "side": 1,
+      "datasetPath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\JOE.mat",
+      "loadedVariables": "emgs",
+      "includeTeacher": false,
+      "emgSamples": 404,
+      "emgSHA256": "b5f19a7cc10270453b213d6c6cbf7bd4220731d2f8a6d3ee099178c502855017",
+      "emgHashMethod": "SHA256(class;dimensions;native-endian;raw-column-major-bytes)",
+      "datasetFileSHA256": "NOT_READ_TO_AVOID_GLOVE_BYTES"
+    }
+  },
+  {
+    "teacher": {
+      "subject": "JOE",
+      "split": "DEVELOPMENT",
+      "repetition": 1,
+      "side": 2,
+      "datasetPath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\JOE.mat",
+      "loadedVariables": [
+        "emgs",
+        "gloves"
+      ],
+      "includeTeacher": true,
+      "emgSamples": 404,
+      "emgSHA256": "a788e9c2e19e1bbebde7fffd8d1af07474ca184f812a124b7d70fec129cf191e",
+      "emgHashMethod": "SHA256(class;dimensions;native-endian;raw-column-major-bytes)",
+      "datasetFileSHA256": "NOT_READ_TO_AVOID_GLOVE_BYTES",
+      "teacherSamples": 19,
+      "teacherSHA256": "23575453f9d64507f3943e37a226936234c24b023763f898c89835da53aba274",
+      "teacherHashMethod": "SHA256(MATLAB-jsonencode-UTF8)"
+    },
+    "absent": {
+      "subject": "JOE",
+      "split": "DEVELOPMENT",
+      "repetition": 1,
+      "side": 2,
+      "datasetPath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\JOE.mat",
+      "loadedVariables": "emgs",
+      "includeTeacher": false,
+      "emgSamples": 404,
+      "emgSHA256": "a788e9c2e19e1bbebde7fffd8d1af07474ca184f812a124b7d70fec129cf191e",
+      "emgHashMethod": "SHA256(class;dimensions;native-endian;raw-column-major-bytes)",
+      "datasetFileSHA256": "NOT_READ_TO_AVOID_GLOVE_BYTES"
+    }
+  },
+  {
+    "teacher": {
+      "subject": "JONATHAN",
+      "split": "DEVELOPMENT",
+      "repetition": 1,
+      "side": 1,
+      "datasetPath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\JONATHAN.mat",
+      "loadedVariables": [
+        "emgs",
+        "gloves"
+      ],
+      "includeTeacher": true,
+      "emgSamples": 396,
+      "emgSHA256": "e338427edf48a70bd860652411e392620a13db64983622e915c20cf4ba97a62c",
+      "emgHashMethod": "SHA256(class;dimensions;native-endian;raw-column-major-bytes)",
+      "datasetFileSHA256": "NOT_READ_TO_AVOID_GLOVE_BYTES",
+      "teacherSamples": 18,
+      "teacherSHA256": "cb7106229421aa997c0f87fd182bd959bb96a7018630aa3fa78cb7c2de6dcb27",
+      "teacherHashMethod": "SHA256(MATLAB-jsonencode-UTF8)"
+    },
+    "absent": {
+      "subject": "JONATHAN",
+      "split": "DEVELOPMENT",
+      "repetition": 1,
+      "side": 1,
+      "datasetPath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\JONATHAN.mat",
+      "loadedVariables": "emgs",
+      "includeTeacher": false,
+      "emgSamples": 396,
+      "emgSHA256": "e338427edf48a70bd860652411e392620a13db64983622e915c20cf4ba97a62c",
+      "emgHashMethod": "SHA256(class;dimensions;native-endian;raw-column-major-bytes)",
+      "datasetFileSHA256": "NOT_READ_TO_AVOID_GLOVE_BYTES"
+    }
+  },
+  {
+    "teacher": {
+      "subject": "JONATHAN",
+      "split": "DEVELOPMENT",
+      "repetition": 1,
+      "side": 2,
+      "datasetPath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\JONATHAN.mat",
+      "loadedVariables": [
+        "emgs",
+        "gloves"
+      ],
+      "includeTeacher": true,
+      "emgSamples": 404,
+      "emgSHA256": "70d4e0faef8f07f64b63ce8ce069750acfd9a00b5885a139f51fc78006e25bab",
+      "emgHashMethod": "SHA256(class;dimensions;native-endian;raw-column-major-bytes)",
+      "datasetFileSHA256": "NOT_READ_TO_AVOID_GLOVE_BYTES",
+      "teacherSamples": 18,
+      "teacherSHA256": "085ded23c30562fb340765fb067a293f5f6fc9a3affd92f94caeedced2bc38a9",
+      "teacherHashMethod": "SHA256(MATLAB-jsonencode-UTF8)"
+    },
+    "absent": {
+      "subject": "JONATHAN",
+      "split": "DEVELOPMENT",
+      "repetition": 1,
+      "side": 2,
+      "datasetPath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\JONATHAN.mat",
+      "loadedVariables": "emgs",
+      "includeTeacher": false,
+      "emgSamples": 404,
+      "emgSHA256": "70d4e0faef8f07f64b63ce8ce069750acfd9a00b5885a139f51fc78006e25bab",
+      "emgHashMethod": "SHA256(class;dimensions;native-endian;raw-column-major-bytes)",
+      "datasetFileSHA256": "NOT_READ_TO_AVOID_GLOVE_BYTES"
+    }
+  },
+  {
+    "teacher": {
+      "subject": "KHAROL",
+      "split": "DEVELOPMENT",
+      "repetition": 1,
+      "side": 1,
+      "datasetPath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\KHAROL.mat",
+      "loadedVariables": [
+        "emgs",
+        "gloves"
+      ],
+      "includeTeacher": true,
+      "emgSamples": 404,
+      "emgSHA256": "f0bc6f16667b53ab81be1b50fb22eef0a2c529aed67eaa56609c27f116626636",
+      "emgHashMethod": "SHA256(class;dimensions;native-endian;raw-column-major-bytes)",
+      "datasetFileSHA256": "NOT_READ_TO_AVOID_GLOVE_BYTES",
+      "teacherSamples": 18,
+      "teacherSHA256": "6ad47f1b0b4f376c5b2976f1bd0a605857fe6f81e4be90876dc01325ed59bcdb",
+      "teacherHashMethod": "SHA256(MATLAB-jsonencode-UTF8)"
+    },
+    "absent": {
+      "subject": "KHAROL",
+      "split": "DEVELOPMENT",
+      "repetition": 1,
+      "side": 1,
+      "datasetPath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\KHAROL.mat",
+      "loadedVariables": "emgs",
+      "includeTeacher": false,
+      "emgSamples": 404,
+      "emgSHA256": "f0bc6f16667b53ab81be1b50fb22eef0a2c529aed67eaa56609c27f116626636",
+      "emgHashMethod": "SHA256(class;dimensions;native-endian;raw-column-major-bytes)",
+      "datasetFileSHA256": "NOT_READ_TO_AVOID_GLOVE_BYTES"
+    }
+  },
+  {
+    "teacher": {
+      "subject": "KHAROL",
+      "split": "DEVELOPMENT",
+      "repetition": 1,
+      "side": 2,
+      "datasetPath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\KHAROL.mat",
+      "loadedVariables": [
+        "emgs",
+        "gloves"
+      ],
+      "includeTeacher": true,
+      "emgSamples": 394,
+      "emgSHA256": "9788bf0f64fa21d69b679de2b99ecd1ad842bf7289838457faaa1cc9540e0b58",
+      "emgHashMethod": "SHA256(class;dimensions;native-endian;raw-column-major-bytes)",
+      "datasetFileSHA256": "NOT_READ_TO_AVOID_GLOVE_BYTES",
+      "teacherSamples": 19,
+      "teacherSHA256": "2d5de68256fa14e6e3b19ba3ff2abce8896bb23485c34b7174d482e4bc630556",
+      "teacherHashMethod": "SHA256(MATLAB-jsonencode-UTF8)"
+    },
+    "absent": {
+      "subject": "KHAROL",
+      "split": "DEVELOPMENT",
+      "repetition": 1,
+      "side": 2,
+      "datasetPath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\KHAROL.mat",
+      "loadedVariables": "emgs",
+      "includeTeacher": false,
+      "emgSamples": 394,
+      "emgSHA256": "9788bf0f64fa21d69b679de2b99ecd1ad842bf7289838457faaa1cc9540e0b58",
+      "emgHashMethod": "SHA256(class;dimensions;native-endian;raw-column-major-bytes)",
+      "datasetFileSHA256": "NOT_READ_TO_AVOID_GLOVE_BYTES"
+    }
+  }
+]

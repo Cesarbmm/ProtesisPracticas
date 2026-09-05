@@ -6,3 +6,6 @@ EMG_Prosthesis_TD3/matlab_code/analysis/paired_reference/plant_e0_regression_cas
 # MATLAB exporta CRLF en Windows; se conservan y se reconocen como fin de linea.
 EMG_Prosthesis_TD3/matlab_code/analysis/paired_reference/e0p_results/*.csv -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 EMG_Prosthesis_TD3/matlab_code/analysis/paired_reference/e0p_results/*.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+# E2A conserva las trazas y manifiestos exportados por MATLAB sin conversion.
+EMG_Prosthesis_TD3/matlab_code/analysis/paired_reference/e2a_results/*.csv -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+EMG_Prosthesis_TD3/matlab_code/analysis/paired_reference/e2a_results/*.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
