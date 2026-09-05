@@ -222,6 +222,16 @@ params.speeds = 255* [1, 1, 1, 1]; % little, idx, thumb, mid
 params.quantizeCommandsForSimulation = true;
 params.actionCommandActivationThreshold = 0.05;
 params.actionCommandLevels = [0 64 96 128 160 192 224 255];
+
+%% Fuente de la dinamica de la planta (ETAPA E0P)
+% "legacyAuto"            : semantica historica. Carga fit_C2.mat y decide la
+%                           rama segun numel(ws). Su fisica DEPENDE de que
+%                           Curve Fitting Toolbox este instalada.
+% "patternCurveCanonical" : ruta reproducible. Usa solo pattern_curve.mat y
+%                           plant_limits_canonical.csv. No carga fit_C2.mat,
+%                           no inspecciona cfit y no consulta license().
+params.simPlantSource = "patternCurveCanonical";
+% params.simPlantSource = "legacyAuto"; % solo para reproducir corridas historicas
 params.actionInterfaceVariant = "baselineQuantized";
 params.actionWarpDeadzone = 0.05;
 params.actionWarpOutputLevels = [64 96 128 160 192 224 255] / 255;
