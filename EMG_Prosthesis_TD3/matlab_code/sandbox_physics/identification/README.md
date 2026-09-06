@@ -1,29 +1,40 @@
-# identification/ — S4, NO ABIERTA
+# identification/ — S4 ejecutada · `DYNAMIC_MEMORY_NOT_JUSTIFIED`
 
-Esta carpeta está vacía a propósito. La identificación de una planta dinámica reducida no
-empieza hasta que S1 y S2 estén aprobados y se muestren resultados.
+Resultado completo: **`S4_RESULTADOS.md`**. Umbrales fijados antes de ajustar:
+`../PREREGISTRO_S4_DYNAMIC_IDENTIFICATION.md`.
 
-Cuando se abra, estas restricciones ya están decididas y no se renegocian:
+Resumen en una línea: añadir memoria de velocidad (`tau`) al modelo de planta no mejora
+nada. El `tau` identificado es ≤ 2.7 ms, la mejora held-out mediana es −0.016 %, y ninguna
+de las 56 condiciones mejora por encima del suelo de repetibilidad. **No se creó
+`DynamicPlantAdapter`**; S5 y S6 quedan bloqueadas.
 
-1. **Se ajusta contra `pattern_curve.mat`**, no con parámetros J/B/Kt inventados. Un modelo
-   con parámetros heurísticos no es "la física real" por muy suave que se vea.
-2. **Partición honesta**: cada curva guarda entre 3 y 6 repeticiones crudas en `data`
-   (medido en la auditoría S0, hallazgo F8). Se ajusta con un subconjunto de repeticiones y
-   se valida con el resto. No se valida con exactamente los mismos puntos del ajuste.
-3. **Se ajusta por motor y, si los datos lo exigen, por dirección.** Antes de dar un
-   parámetro independiente a cada nivel PWM hay que comprobar si una relación compartida
-   PWM → ganancia/velocidad explica los niveles.
-4. **Expectativa escrita antes de ver el error**: 38 de las 56 curvas promedio **no** son
-   monótonas (hallazgo F9). Un modelo de primer o segundo orden no podrá reproducir esas
-   ondulaciones. Si el ajuste sale "limpio", hay que preguntarse si el modelo suaviza ruido
-   o si simplemente no representa el dato.
-5. **Métricas mínimas**: RMSE/MAE de trayectoria, error de posición final, tiempo de subida
-   y establecimiento cuando sean interpretables, error de dirección/monotonicidad,
-   respuesta al cambio de signo de PWM, y desglose por motor, dirección y nivel PWM.
-6. **Soporte de los datos**: el recorrido alcanzable por motor está en
-   `sandboxPlantReachableRange`. Fuera de él el modelo extrapola y hay que decirlo.
-7. **Preregistro propio** antes de ajustar el primer parámetro.
+## Qué hay aquí
 
-Modelos candidatos, de menor a mayor complejidad: M1 primer orden con `q∞(u)` y constante
-de tiempo; M2 segundo orden fenomenológico con estado `[q, dq]`; M3 identificación discreta
-en espacio de estados. Empezar por el más simple y subir sólo si el dato lo exige.
+| Archivo | Qué es |
+|---|---|
+| `S4_RESULTADOS.md` | Informe: suelo de repetibilidad, split, modelos A y B, parámetros, errores por motor/dirección/PWM, límites y decisión |
+| `s4_repetition_split.csv` | Split congelado FIT/VALIDATION por repetición (268 filas) |
+| `s4_condition_floor.csv` | Repeatability floor por condición, calculado sólo con FIT |
+| `s4_identified_parameters.csv` | `v_inf` por condición y `tau` por motor, con marca `at_bound` |
+| `s4_validation_heldout.csv` | Métricas held-out de A y B por condición |
+| `buildS4IdentificationDataset.m` | Dataset largo + split + floor desde `pattern_curve.mat` |
+| `s4Conditions.m` | Estructura por condición, con límites empíricos y verificación del split |
+| `reducedOrderPlantResponse.m` | Modelos A y B: solución analítica + RK4 para el test de convergencia |
+| `fitReducedOrderPlant.m` | Ajuste determinista sobre FIT (rejilla + `fminbnd`) |
+| `validateReducedOrderPlant.m` | Evaluación held-out con las métricas del preregistro |
+| `runSandboxS4Identification.m` | Orquestador: ejecuta todo y aplica el gate C1-C5 |
+| `s4_fig1..3*.png` | Figuras del informe |
+
+## Reglas que siguen vigentes para cualquier continuación
+
+1. **Se ajusta contra `pattern_curve.mat`**, nunca con `J`/`B`/`Kt` inventados. Se comprobó
+   además que esos parámetros físicos **no son identificables** con estos datos.
+2. **Partición honesta por repetición**, disjunta y congelada antes de ajustar. Hay un test
+   que corrompe las repeticiones VALIDATION y exige que el ajuste no cambie.
+3. **Preregistro propio** antes de tocar el primer parámetro de cualquier modelo nuevo.
+4. Nada de topes elásticos, fricción de Coulomb, redes ni Simscape sin identificación
+   previa y sin autorización explícita.
+
+La hipótesis que los datos señalan para una eventual **S4b** —no abierta— está en
+`S4_RESULTADOS.md` §9: la estructura dominante es una **velocidad dependiente de la
+posición**, `dq/dt = f(q, u)`, no una velocidad con memoria.
