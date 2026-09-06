@@ -1,0 +1,37 @@
+{
+  "startSHA": "fc2e15bb931b79f41be6ce1c3c822dd88a8e9c40",
+  "preregistrationSHA256": "4883abc911701119f8312aede9accc9b697a6b4c450a1d8b5ff8ab8d85aa88f5",
+  "seed": 2.0260905E+7,
+  "period": 0.2,
+  "actionCommandLevels": [
+    0,
+    64,
+    96,
+    128,
+    160,
+    192,
+    224,
+    255
+  ],
+  "speeds": [
+    255,
+    255,
+    255,
+    255
+  ],
+  "activationThreshold": 0.05,
+  "observationVariant": "markov52",
+  "actionInterfaceVariant": "baselineQuantized",
+  "rewardActionWeight": 0.01,
+  "rewardDeltaActionWeight": 0.05,
+  "trainingGloveRole": "PRIVILEGED_TEACHER",
+  "teacherTerminationDecision": "PRESERVE_HISTORICAL_TEACHER_AVAILABILITY",
+  "kpGrid": [
+    0.5,
+    1,
+    2,
+    4,
+    8
+  ],
+  "trainingExecuted": false
+}

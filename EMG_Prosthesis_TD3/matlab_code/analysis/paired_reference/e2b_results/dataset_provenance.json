@@ -1,0 +1,52 @@
+[
+  {
+    "subject": "BLANCA",
+    "path": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\BLANCA.mat",
+    "sha256": "44be4301fffe4b1d407fd6ec6be1ef99315dd3e0ec4088354c5f9e106a873028"
+  },
+  {
+    "subject": "CECILIA",
+    "path": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\CECILIA.mat",
+    "sha256": "9b5430714d944774d8896fb41050eb544d7d323a684e20fbc56c0f13db91c803"
+  },
+  {
+    "subject": "DENIS",
+    "path": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\DENIS.mat",
+    "sha256": "6d079ceffa2c4f25fb2594d3d9dc59fcbf5c5972035196aba4baedc73aab3f99"
+  },
+  {
+    "subject": "EMILIA",
+    "path": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\EMILIA.mat",
+    "sha256": "b2540c1a211c74e08959e09e1a0fb31e66b5a66d090dd10671da711876cb01cf"
+  },
+  {
+    "subject": "GABI",
+    "path": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\GABI.mat",
+    "sha256": "d8113737202f81993799366e1b407cb41273919f0648f6d1085ab060da25a596"
+  },
+  {
+    "subject": "GABRIEL",
+    "path": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\GABRIEL.mat",
+    "sha256": "0cb4532484b04c1e7b753e7dec8354d9c32ca3136c2325af6b743fa338779eac"
+  },
+  {
+    "subject": "IVANNA",
+    "path": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\IVANNA.mat",
+    "sha256": "95e9dc9807788dd31c486afa983206f930956e2a6c6b27fc0c9f0aa25ec747a9"
+  },
+  {
+    "subject": "JOE",
+    "path": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\JOE.mat",
+    "sha256": "275ee86208aa368392b8e65220fddcf395d477618af86dead577760f9613b359"
+  },
+  {
+    "subject": "JONATHAN",
+    "path": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\JONATHAN.mat",
+    "sha256": "70647d067d1bac81470536eef3e8358468d596fb83be7f5b06772ea041a7d362"
+  },
+  {
+    "subject": "KHAROL",
+    "path": "C:\\Users\\Cesarbmm\\ProtesisPracticas_paired_reference\\EMG_Prosthesis_TD3\\matlab_code\\data\\datasets\\Denis Dataset\\KHAROL.mat",
+    "sha256": "5a396215b38d02cfea991b83ba7bd2fbc925ff6a4c802d5e38593c5222983f69"
+  }
+]

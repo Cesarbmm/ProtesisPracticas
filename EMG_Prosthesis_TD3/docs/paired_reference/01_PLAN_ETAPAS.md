@@ -1,5 +1,29 @@
 # Plan por etapas — `experiment/no-glove-paired-reference-td3`
 
+## Roadmap vigente tras E2B (cierre 2026-09-06)
+
+**La arquitectura original de E2/E3 basada en emgDecoder está SUPERSEDIDA.**
+E1–E1D cerraron la línea de guante virtual; las instrucciones históricas conservadas
+más abajo no autorizan implementarla, probar nuevos decoders ni abrir otras variantes.
+La formulación actual es **glove-supervised training + glove-free execution**.
+
+| Etapa vigente | Estado y alcance |
+|---|---|
+| E0P | PASS; planta canónica reproducible y 24 regresiones preservadas. Su rejilla operativa no es una garantía universal de monotonicidad. |
+| E1–E1D | CERRADAS con resultados congelados; sin decoder ni calibración nuevos. |
+| E2A | PASS; ejecución causal sin guante validada, guard contra entrenamiento accidental. |
+| E2B | **FAIL, SIN RL**. Contrato teacher/done cuantificado; P Kp=2 mejora tracking/reward, pero presenta dos ciclos persistentes y se observan retrocesos M3 en otros comandos altos. Ver `RESULTADOS_E2B.md`. |
+| E3 | **NO PREPARADA / NO EJECUTADA. RL_AUTHORIZED=NO.** No hay comando de entrenamiento habilitado por E2B. |
+
+La condición solicitada para una eventual preparación de E3 era E2B PASS: TD3
+feedforward histórico, receta compatible con Agent7250, piloto máximo 600 episodios,
+checkpoints frecuentes, selección sólo por validation, final test sellado y comparación
+cero/P/TD3 con roles de información explícitos. **Esa condición no se cumplió.**
+No se selecciona otro Kp ni se cambia planta, reward, cuantización o periodo para
+rescatar E2B. MATEO/SANDRA siguen sellados; no push.
+
+## Plan original conservado como historial — no es autorización vigente
+
 Cinco etapas. Tope duro. TD3 se conserva en las cinco. **No hay DQN en ningún punto de este plan.**
 
 Sólo dos etapas gastan episodios de entrenamiento (E3 y, condicionalmente, E4). Las tres primeras
@@ -109,7 +133,7 @@ reporta con LOSO completo. **No** se escalan arquitecturas para rescatar el núm
 
 ---
 
-## E2 — Integrar la referencia estimada · sin entrenar
+## E2 original — Integrar la referencia estimada · SUPERSEDIDA
 
 **Pregunta:** ¿puede el entorno correr con la referencia estimada sin alterar nada más?
 
@@ -136,7 +160,7 @@ Invariantes:
 
 ---
 
-## E3 — Piloto comparativo · aquí entra el RL
+## E3 original — Piloto con referencia estimada · SUPERSEDIDO
 
 **Pregunta:** con la referencia estimada, ¿aporta TD3 algo sobre un control clásico?
 

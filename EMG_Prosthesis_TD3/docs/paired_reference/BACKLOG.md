@@ -3,9 +3,10 @@
 Hipótesis aparcadas. **No se abre etapa por ninguna de ellas sin discutirlo primero.**
 Este archivo existe para que una idea buena no se convierta en una sub-etapa improvisada.
 
-Estado actual: **E2A cerrada, PASS**, 37/37 tests. Se validó ejecución causal sin
-guante con política congelada. **E2B y cualquier entrenamiento RL siguen sin
-autorización.** E1–E1D continúan cerradas. Ver `11_RESULTADOS_E2A.md`.
+Estado actual: **E2B cerrada, FAIL**, 59/59 tests. E2A/E0P siguen pasando sus
+regresiones. P mejora tracking/reward, pero aparecen ciclos persistentes y
+retrocesos M3 operativos fuera de las rejillas anteriores. **RL no autorizado;
+E3 no preparada.** E1–E1D continúan cerradas. Ver `RESULTADOS_E2B.md`.
 
 | # | Idea | Origen | Condición para reconsiderarla |
 |---|---|---|---|
@@ -141,15 +142,26 @@ autorización.** E1–E1D continúan cerradas. Ver `11_RESULTADOS_E2A.md`.
 - **Estado:** datos intactos; defectos visibles mediante trayectorias completas y tests de
   caracterización. Monotonicidad operativa 0.2 s: cero fallos en ambas rejillas de 1176.
 
-### E2B_GLOVE_SUPERVISED_TRAINING — NO AUTORIZADA
+### E2B_GLOVE_SUPERVISED_TRAINING — CERRADA, FAIL
 
 - **Origen:** E2A PASS: el actor congelado conserva estado, acción y posición al
   retirar o invertir el guante; el reward sí depende del teacher.
-- **Cuestión reservada para discusión:** entrenamiento TD3 supervisado por guante
-  y validación/inferencia sin guante sobre planta canónica. E2A no demuestra calidad
-  de control y no cambia el protocolo histórico de entrenamiento.
+- **Etapa autorizada y ejecutada sin RL:** se conserva explícitamente teacher en
+  reward/reset/termination histórico y se cuantifica la diferencia con EMG-only.
+  P Kp=2 supera a cero, pero incumple el gate de ciclos. La ejecución E2A permanece intacta.
 - **Límites pendientes:** fuente histórica de planta de Agent7250 desconocida;
   concentración de endpoints de E0P; 582/760 comandos motor-paso de B con PWM >=128
   en E2A. Este último número es sólo descriptivo, no evidencia de buen o mal control.
-- **Estado:** no iniciada. Requiere autorización explícita. No se cambian reward,
-  periodo, niveles PWM o action space como consecuencia automática de E2A.
+- **Estado:** FAIL. RL no autorizado; E3 no preparada. No se cambian reward,
+  periodo, niveles PWM o action space para rescatar el resultado.
+
+### E2B_OPERATIONAL_REVERSALS_AND_TWO_CYCLES — BLOQUEO DOCUMENTADO
+
+- P seleccionado Kp=2: BLANCA1/cierre/M3 alterna 1541.6667↔7532.5 con PWM +224/−64;
+  IVANNA104/apertura/M4 alterna 6049.75↔2976.3333 con −64/+96, cuatro pasos finales.
+- M3 presenta 125 retrocesos con P8 y 395 con Agent7250 bajo comandos de cierre;
+  máximo 65 encoder por paso de 0.2 s. Son idénticos al oráculo E0 y no estaban
+  cubiertos por las rejillas operativas congeladas de E0P.
+- La observación es más amplia que el defecto M3 de estrés de 3 s ya conocido.
+  Las curvas no se modifican. Los tests de caracterización preservan la evidencia.
+- No se abre una subetapa ni se propone un arreglo automático. `RL_AUTHORIZED=NO`.
