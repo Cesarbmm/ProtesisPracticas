@@ -1,0 +1,22 @@
+{
+  "acquisitionTests": {
+    "passed": 34,
+    "total": 34,
+    "failed": 0
+  },
+  "documentationRegressionTests": {
+    "passed": 12,
+    "total": 12
+  },
+  "guiVisuallyInspected": true,
+  "rawStoredWithoutAdditionalProcessing": true,
+  "realMyoCollected": false,
+  "trainingStarted": false,
+  "myoMexBinaryPresent": false,
+  "realConnectionVerified": false,
+  "historicalCodeUnchanged": true,
+  "referenceContractValidated": false,
+  "hardwareActuationAuthorized": false,
+  "baseCommit": "c8e4d3132ea7299d0fadf2f8f19d29c3433539fa",
+  "scope": "Software and mock verified; real acquisition requires compatible MyoMex binary, SDK and Myo Connect"
+}

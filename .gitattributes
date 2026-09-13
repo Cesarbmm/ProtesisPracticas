@@ -25,3 +25,8 @@ docs/paired_reference/** -text
 PUBLICATION_MANIFEST.csv -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 # Dos espacios al final son saltos de linea Markdown historicos.
 *.md whitespace=-blank-at-eol
+# Captura: conservar hashes de implementacion y evidencia mock entre plataformas.
+EMG_Prosthesis_TD3/matlab_code/acquisition/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+EMG_Prosthesis_TD3/matlab_code/tests/acquisition/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+docs/data_acquisition/validation/*.csv -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+docs/data_acquisition/validation/*.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

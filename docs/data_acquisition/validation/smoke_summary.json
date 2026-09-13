@@ -1,0 +1,12 @@
+{
+  "result": "PASS",
+  "mock_only": true,
+  "gui_created": true,
+  "target_changed": true,
+  "trials": 25,
+  "sample_count": 1720,
+  "session_directory": "C:\\Users\\Cesarbmm\\ProtesisPracticas_myo_calibration\\EMG_Prosthesis_TD3\\matlab_code\\results\\myo_acquisition_smoke\\run_20260913_025057_304_4f272425\\P001\\S01",
+  "gui_screenshot": "C:\\Users\\Cesarbmm\\ProtesisPracticas_myo_calibration\\EMG_Prosthesis_TD3\\matlab_code\\results\\myo_acquisition_smoke\\run_20260913_025057_304_4f272425\\gui_mock.png",
+  "real_myo_data_collected": false,
+  "training_started": false
+}

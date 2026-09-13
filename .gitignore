@@ -10,6 +10,8 @@ EMG_Prosthesis_TD3/matlab_code/analysis/paired_reference/*_results/
 EMG_Prosthesis_TD3/matlab_code/analysis/paired_reference/*_preparation/
 EMG_Prosthesis_TD3/matlab_code/analysis/paired_reference/*_run_audit/
 **/__pycache__/
+# Nuevos datos personales/RAW: conservar localmente, nunca publicar por defecto.
+EMG_Prosthesis_TD3/matlab_code/data_acquisition/
 
 EMG_Prosthesis_TD3/matlab_code/trainedAgents/
 EMG_Prosthesis_TD3/docs/td3_training_report/report_*
