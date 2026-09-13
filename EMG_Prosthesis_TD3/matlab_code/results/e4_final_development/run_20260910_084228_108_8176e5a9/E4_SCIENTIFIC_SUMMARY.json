@@ -1,0 +1,16 @@
+{
+  "status": "COMPLETE",
+  "stage": "E4_FINAL_DEVELOPMENT",
+  "algorithm": "FACTORIZED_MULTICATEGORICAL_PPO",
+  "finalAgentStep": 500000,
+  "finalAgentSHA256": "2aa39fdf166c62fb6da057f1ddecb6455fbaa142f476718dd4e2725dfde08c90",
+  "developmentEpisodes": 200,
+  "developmentMacroMSE": 0.048226949393699411,
+  "developmentMedianMSE": 0.044150973438891544,
+  "developmentMinMSE": 0.0161267622276766,
+  "developmentMaxMSE": 0.117768032216095,
+  "m3ReversalsTotal": 5,
+  "cyclesTotal": 0,
+  "periodicTotal": 0,
+  "sealedSubjectsProtected": true
+}
