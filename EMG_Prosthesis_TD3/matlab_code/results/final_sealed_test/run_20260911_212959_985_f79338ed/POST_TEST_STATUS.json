@@ -1,0 +1,21 @@
+{
+  "status": "COMPLETE",
+  "stage": "FINAL_SEALED_TEST",
+  "finalResult": "FAIL",
+  "sealedTestOpened": true,
+  "trainingExecuted": false,
+  "finalAgentSHA256": "2aa39fdf166c62fb6da057f1ddecb6455fbaa142f476718dd4e2725dfde08c90",
+  "episodes": 40,
+  "compactPng": 40,
+  "compactFig": 40,
+  "proPng": 40,
+  "proFig": 40,
+  "classicPng": 40,
+  "classicFig": 40,
+  "annotatedCount": 6,
+  "globalFiguresCount": 5,
+  "traceMatch": true,
+  "pwmMatch": true,
+  "metricsMatch": true,
+  "htmlReport": "C:\\Users\\Cesarbmm\\ProtesisPracticas_e2b_audit\\EMG_Prosthesis_TD3\\matlab_code\\results\\final_sealed_test\\run_20260911_212959_985_f79338ed\\TEST_FINAL_SELLADO.html"
+}
