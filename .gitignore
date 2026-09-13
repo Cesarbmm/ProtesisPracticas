@@ -3,6 +3,13 @@
 /codex_*.m
 /*.log
 /baseline_article.txt
+/.publication_local/
+# Archivo cientifico voluminoso: solo resúmenes aprobados se agregan explícitamente.
+EMG_Prosthesis_TD3/matlab_code/results/
+EMG_Prosthesis_TD3/matlab_code/analysis/paired_reference/*_results/
+EMG_Prosthesis_TD3/matlab_code/analysis/paired_reference/*_preparation/
+EMG_Prosthesis_TD3/matlab_code/analysis/paired_reference/*_run_audit/
+**/__pycache__/
 
 EMG_Prosthesis_TD3/matlab_code/trainedAgents/
 EMG_Prosthesis_TD3/docs/td3_training_report/report_*

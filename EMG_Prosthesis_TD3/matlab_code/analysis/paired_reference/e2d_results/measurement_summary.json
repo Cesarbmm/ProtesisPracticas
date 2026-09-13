@@ -1,0 +1,23 @@
+{
+  "grid": [
+    0,
+    0.03,
+    0.05,
+    0.08,
+    0.12
+  ],
+  "episodes": 200,
+  "motorStepsPerEpsilon": 11752,
+  "baselineExact": true,
+  "baselineMaxQError": 0,
+  "baselineMaxRawError": 0,
+  "baselineMaxRewardError": 0,
+  "baselineMSE": 0.025400336373607925,
+  "baselineReward": -0.032728377109804987,
+  "baselineCycles": 2,
+  "provisionalSelectedEpsilon": null,
+  "selectionRequiresFinalTests": true,
+  "preregistrationSHA256": "9a9527571f9fac8524aa8b3ef90ee0110ed1bfce075146596868b7e5cd1ee8c9",
+  "sourceSHA256": "99f45aa6a5b2269235072e0559d7dc087ef8ade1cfc256ecb799484fbda37352",
+  "RL_AUTHORIZED": false
+}

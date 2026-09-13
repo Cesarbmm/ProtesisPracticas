@@ -1,0 +1,10 @@
+gate,passGate
+A_direction_gain_3pp,True
+B_phase_direction_gain_5pp,True
+C_order_gain_2pp,False
+D_opening_MSE_reduction_10pct,False
+E_closing_MSE_no_worse_5pct,True
+F_global_MSE_improves,True
+G_zero_final_cycles_periodicity,True
+H_M3_no_material_increase,True
+I_max_category_fraction,True

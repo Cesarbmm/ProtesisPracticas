@@ -1,0 +1,6 @@
+Name,Passed,Failed,Incomplete,Duration
+testE3CTemporal/testCompactFiguresComplete,1,0,0,4.0458707
+testE3CTemporal/testCompactFourMotorsNoActionLabels,1,0,0,4.2982256
+testE3CTemporal/testAnnotatedTwoPoliciesAndEffectiveLabels,1,0,0,0.84631
+testE3CTemporal/testAnnotatedCsvMatConsistency,1,0,0,2.1178094
+testE3CTemporal/testViewerTracesAllThreePolicies,1,0,0,0.4059891

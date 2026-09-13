@@ -1,0 +1,1 @@
+cd('C:\Users\Cesarbmm\ProtesisPracticas_e2b_audit\EMG_Prosthesis_TD3\matlab_code'); summary = runE3AXLongTraining();

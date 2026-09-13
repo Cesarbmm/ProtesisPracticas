@@ -1,0 +1,15 @@
+{
+  "result": "PASS",
+  "episodesReplayed": 400,
+  "maxStateDiff": 0,
+  "maxRawDiff": 0,
+  "maxEffectiveDiff": 0,
+  "maxPwmDiff": 0,
+  "maxQDiff": 0,
+  "maxRewardDiff": 0,
+  "maxMetricsCsvDiff": 3.637978807091713E-11,
+  "metricsCsvTolerance": 1E-9,
+  "trainingExecuted": false,
+  "finalTestExecuted": false,
+  "MATEO_SANDRA_SEALED": true
+}

@@ -1,0 +1,4 @@
+grid,positiveM3Cases,casesInReversalRegion,regionsCovered,totalRegions
+operational_cases.csv,147,0,0,3
+operational_cases_combination_limits.csv,147,0,0,3
+e0_regression_results.csv,49,0,0,3

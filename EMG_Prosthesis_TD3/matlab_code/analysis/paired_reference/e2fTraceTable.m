@@ -1,0 +1,16 @@
+function T=e2fTraceTable(t)
+n=size(t.pwm,1);md=t.metadata;previous=[zeros(1,4);t.effectiveAction(1:end-1,:)];rows=cell(1,4);
+for m=1:4
+    key=table(repmat(md.controller,n,1),repmat(md.subject,n,1),repmat(md.repetition,n,1), ...
+        repmat(md.side,n,1),(1:n)',repmat(m,n,1), ...
+        VariableNames=["controller","subject","repetition","side","step","motor"]);
+    pred=t.prediction(:,m);tracking=-(pred-t.reference(:,m)).^2;ap=.01*t.effectiveAction(:,m).^2;
+    dp=.05*(t.effectiveAction(:,m)-previous(:,m)).^2;
+    vals=[t.referenceBefore(:,m),t.reference(:,m),t.rawAction(:,m),t.effectiveAction(:,m), ...
+        t.pwm(:,m),previous(:,m)*255,t.q(1:n,m),t.q(2:end,m),pred,tracking,ap,dp,tracking-ap-dp,t.reward];
+    rows{m}=[key array2table(vals,VariableNames=["referenceBefore","referenceAfter","rawAction","effective", ...
+        "pwm","previousPwm","qBefore","qAfter","hAfter","trackingTermMotor","actionPenaltyMotor", ...
+        "deltaPenaltyMotor","rewardMotor","rewardEpisode"])];
+end
+T=vertcat(rows{:});
+end

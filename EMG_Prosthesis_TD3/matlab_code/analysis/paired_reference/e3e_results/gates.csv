@@ -1,0 +1,12 @@
+gate,pass
+A_subject_id_reduction,0
+B_direction_F1_no_worse,1
+C_phase_direction_F1_no_worse,0
+D_train_val_gap_decreases,0
+E_opening_MSE_improves_10pct,0
+F_closing_MSE_no_worse_5pct,1
+G_global_MSE_improves,1
+H_zero_cycles_periodicities,1
+I_m3_reversals_no_material_increase,1
+J_max_category_fraction,1
+K_causal_for_new_subject,1

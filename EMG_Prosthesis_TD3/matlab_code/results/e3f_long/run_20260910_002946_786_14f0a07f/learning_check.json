@@ -1,0 +1,14 @@
+{
+  "actorChanged": true,
+  "criticChanged": true,
+  "discChanged": true,
+  "encoderChanged": true,
+  "headGradientMax": [
+    3.9233479865112511,
+    3.6900095617690023,
+    3.6641907634992243,
+    4.5682508761446554
+  ],
+  "allHeadsReceivedGradient": true,
+  "updates": 62516
+}

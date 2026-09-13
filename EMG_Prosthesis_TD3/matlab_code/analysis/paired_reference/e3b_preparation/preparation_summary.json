@@ -1,0 +1,58 @@
+{
+  "E3B_PREPARATION": "PASS",
+  "algorithm": "FACTORIZED_MULTICATEGORICAL_PPO",
+  "heads": 4,
+  "categoriesPerHead": 15,
+  "transitionEquivalenceCases": 60,
+  "transitionMaxError": 0,
+  "rewardMaxError": 0,
+  "smokeEpisodes": 6,
+  "smokeSteps": 132,
+  "smokeResult": "PASS",
+  "smokePath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_e2b_audit\\EMG_Prosthesis_TD3\\matlab_code\\results\\e3b_smoke\\run_20260908_204945_939_f411b82c",
+  "learning": {
+    "actorChanged": true,
+    "criticChanged": true,
+    "headGradientMax": [
+      4.032737226291452,
+      3.243154872903776,
+      4.046293979053639,
+      4.080906435315209
+    ],
+    "allHeadsReceivedGradient": true,
+    "updates": 16
+  },
+  "tests": {
+    "previousTests": 258,
+    "previousPassed": 258,
+    "newTests": 36,
+    "newPassed": 36,
+    "totalTests": 294,
+    "passed": 294,
+    "failed": 0,
+    "incomplete": 0,
+    "reusedPrevious": true
+  },
+  "historicalIntegrity": {
+    "files": 1070,
+    "unchanged": true,
+    "authorizedViewerSHA256": "e4c4108624681912838101478a661c56f16b681bdf3f53e27a17aa8ede8a0edf"
+  },
+  "manualCommand": "cd('C:\\Users\\Cesarbmm\\ProtesisPracticas_e2b_audit\\EMG_Prosthesis_TD3\\matlab_code'); summary = runE3BCategoricalTraining();",
+  "maxAgentSteps": 1000000,
+  "checkpointSteps": [
+    50000,
+    100000,
+    250000,
+    500000,
+    750000,
+    1000000.0
+  ],
+  "longTrainingStartedByAI": false,
+  "viewerReady": true,
+  "referenceContractValidated": false,
+  "hardwareAuthorized": false,
+  "sealedSubjectsUnopened": true,
+  "gitRepairAttempted": false,
+  "push": false
+}

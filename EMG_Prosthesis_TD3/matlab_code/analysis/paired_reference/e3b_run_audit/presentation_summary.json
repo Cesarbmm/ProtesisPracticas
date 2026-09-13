@@ -1,0 +1,6 @@
+{
+  "result": "PASS",
+  "figuresAudited": 400,
+  "curvesAudited": 3200,
+  "maxCurveDataDiff": 0
+}

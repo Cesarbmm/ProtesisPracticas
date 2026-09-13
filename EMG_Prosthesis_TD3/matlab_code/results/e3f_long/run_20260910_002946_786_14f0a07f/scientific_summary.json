@@ -1,0 +1,32 @@
+{
+  "bestStep": 1.0E+6,
+  "bestMSE": 0.058305875797543212,
+  "bestReward": -0.063585615489351419,
+  "bestCheckpoint": "C:\\Users\\Cesarbmm\\ProtesisPracticas_e2b_audit\\EMG_Prosthesis_TD3\\matlab_code\\results\\e3f_long\\run_20260910_002946_786_14f0a07f\\checkpoints\\CategoricalStep001000000.mat",
+  "strongSignal": false,
+  "learningSignal": false,
+  "subjectInvariantControlSupported": false,
+  "continueTo5MSteps": false,
+  "audit": {
+    "baselineSubjectIDAccuracy": 0.7914,
+    "baselineSubjectIDMacroF1": 0.7845,
+    "baselineDirectionF1": 0.810528,
+    "baselinePhaseDirectionF1": 0.510308,
+    "latentSubjectIDAccuracy": 0.3964354527938343,
+    "latentSubjectIDMacroF1": 0.37284318606232841,
+    "directionMacroF1": 0.57021071764697429,
+    "phaseDirectionMacroF1": 0.23092980978424138,
+    "subjectInvarianceSupported": true,
+    "directionRetentionSupported": false,
+    "phaseDirectionRetentionSupported": false
+  },
+  "gates": {
+    "gateA_beatsE3B": false,
+    "gateB_strongAgent7250": false,
+    "gateD_subjectInvariance": true,
+    "gateE_directionRetention": false,
+    "gateF_phaseRetention": false,
+    "gateG_zeroCycles": true,
+    "gateI_maxCategoryFraction": true
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "verified": true,
+  "historicalHashes": 740,
+  "artifactHashes": 52,
+  "motorSteps": 23504,
+  "reachabilityDestinations": 705120,
+  "bellmanIndependentChecks": 32,
+  "maxRewardReconstructionError": 8.187894806610529e-16,
+  "tests": 196,
+  "RL_PILOT_AUTHORIZED": false
+}

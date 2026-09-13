@@ -1,0 +1,11 @@
+{
+  "checkpoint": "C:\\Users\\Cesarbmm\\ProtesisPracticas_e2b_audit\\EMG_Prosthesis_TD3\\matlab_code\\results\\e3ax_long\\run_20260908_141321_916_6ebf347b\\checkpoints\\AgentEpisode002000.mat",
+  "label": "TD3_Episode2000",
+  "reward": -0.11269694259139823,
+  "mse": 0.097651539804733178,
+  "episodes": 60,
+  "output": "C:\\Users\\Cesarbmm\\ProtesisPracticas_e2b_audit\\EMG_Prosthesis_TD3\\matlab_code\\results\\e3ax_long\\run_20260908_141321_916_6ebf347b\\evaluation\\checkpoints\\Episode02000",
+  "actorUnchanged": true,
+  "runtimeTermination": "EMG_ONLY",
+  "commonHorizonTeacherMetrics": true
+}

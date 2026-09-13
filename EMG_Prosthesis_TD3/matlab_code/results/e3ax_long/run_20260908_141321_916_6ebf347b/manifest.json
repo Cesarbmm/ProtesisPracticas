@@ -1,0 +1,16 @@
+{
+  "timestamp": "2026-09-08T19:13:22Z",
+  "simPlantSource": "patternCurveCanonical",
+  "patternCurvePath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_e2b_audit\\EMG_Prosthesis_TD3\\matlab_code\\src\\@SimController\\pattern_curve.mat",
+  "patternCurveSHA256": "a519555bcfcbbc7b140843d6fc1240118738cd3a6ca69f6f5517617372073590",
+  "limitsPath": "C:\\Users\\Cesarbmm\\ProtesisPracticas_e2b_audit\\EMG_Prosthesis_TD3\\matlab_code\\src\\@SimController\\plant_limits_canonical.csv",
+  "limitsSHA256": "dc643b5a656e5e9e21de6b61f0d2a614aafcfbca452c3e15acc14cbe448e9dc2",
+  "fitC2Path": "C:\\Users\\Cesarbmm\\ProtesisPracticas_e2b_audit\\EMG_Prosthesis_TD3\\matlab_code\\src\\@SimController\\fit_C2.mat",
+  "fitC2Present": true,
+  "curveFittingToolboxPresent": true,
+  "matlabVersion": "23.2.0.3097123 (R2023b) Update 11",
+  "protocolSHA256": "2598e1348c5ca2412ea68c38378d38183fece1f9bb8db646be45f6fab293c953",
+  "splitSHA256": "838c940e74101925f3660428e76475cfbb255361105e34314ea7cd31acee6a21",
+  "referenceContractValidated": false,
+  "fullTrainingResumeAvailable": false
+}

@@ -1,0 +1,15 @@
+{
+  "localMapRows": 29160,
+  "fixedReplays": 100,
+  "fixedSteps": 10000,
+  "boundaryRows": 228,
+  "grid": [
+    0,
+    0.03,
+    0.05,
+    0.08,
+    0.12
+  ],
+  "epsilon0LocalMapExact": true,
+  "epsilon0FixedReferenceExact": true
+}

@@ -1,0 +1,8 @@
+{
+  "fixedReplaysPerMode": 20,
+  "fixedStepsPerMode": 2000,
+  "offExactE2C": true,
+  "onHistoricalCycles": 0,
+  "onAugmentedStateCycles": 20,
+  "onPersistentReversals": 20
+}

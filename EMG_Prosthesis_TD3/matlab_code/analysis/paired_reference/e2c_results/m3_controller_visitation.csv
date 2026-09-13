@@ -1,0 +1,8 @@
+controller,statesBefore,uniqueStatesBefore,uniqueStatesIncludingFinal,inAnyReversalRegion,fractionInAnyReversalRegion,inCommandReversalRegion,executedReversals,positiveCommandsInside,zeroCommandsInside,negativeCommandsInside
+ZERO,2938,2,2,0,0,0,0,0,0,0
+P_0.5,2938,30,31,0,0,0,0,0,0,0
+P_1,2938,72,73,4,0.00136147038801906,0,0,1,2,1
+P_2,2938,85,87,300,0.10211027910143,0,0,174,44,82
+P_4,2938,79,81,281,0.095643294758339,0,0,125,19,137
+P_8,2938,89,89,454,0.154526889040163,125,125,314,6,134
+AGENT7250,2938,56,58,867,0.295098706603131,395,395,828,17,22

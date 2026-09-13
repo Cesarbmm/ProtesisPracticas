@@ -1,0 +1,80 @@
+{
+  "cases": [
+    {
+      "caseId": 1,
+      "subject": "BLANCA",
+      "repetition": 1,
+      "motor": 3,
+      "primaryFixedReference": 0.739980449657869,
+      "referenceRange": [
+        0.739980449657869,
+        0.7702834799608993
+      ],
+      "pair": [
+        1541.6666666666667,
+        7532.5
+      ],
+      "fixedPrimaryPersists": true,
+      "allFixedReferencesPersist": false,
+      "primaryOvershoot": true,
+      "quantizationBoundaryCrossesTeacher": true,
+      "observedRaw": [
+        0.89345063538611924,
+        -0.20636363636363653,
+        0.91495601173020524,
+        -0.15553274682306961
+      ],
+      "observedPWM": [
+        224,
+        -64,
+        224,
+        -64
+      ],
+      "observedMaxRawJump": 1.1213196480938419,
+      "observedMaxPWMJump": 288,
+      "cause": "QUANTIZATION_OVERSHOOT"
+    },
+    {
+      "caseId": 2,
+      "subject": "IVANNA",
+      "repetition": 104,
+      "motor": 4,
+      "primaryFixedReference": 0.64565004887585531,
+      "referenceRange": [
+        0.61436950146627567,
+        0.64565004887585531
+      ],
+      "pair": [
+        6049.75,
+        2976.3333333333335
+      ],
+      "fixedPrimaryPersists": true,
+      "allFixedReferencesPersist": true,
+      "primaryOvershoot": true,
+      "quantizationBoundaryCrossesTeacher": true,
+      "observedRaw": [
+        -0.10228299568636956,
+        0.3890518084066471,
+        -0.1443162312679922,
+        0.34897360703812319
+      ],
+      "observedPWM": [
+        -64,
+        96,
+        -64,
+        96
+      ],
+      "observedMaxRawJump": 0.5333680396746393,
+      "observedMaxPWMJump": 160,
+      "cause": "QUANTIZATION_OVERSHOOT"
+    }
+  ],
+  "maxHistoricalQError": 0,
+  "maxHistoricalRawError": 0,
+  "maxHistoricalRewardError": 0,
+  "boundaryMaxPWMJump": 64,
+  "preregistrationSHA256": "bddb7f8f45b6e6e9cbceb45f3c082c2d1a1694b60ed2de3bb1ec3ca1a46d4013",
+  "sourceTrajectoriesSHA256": "99f45aa6a5b2269235072e0559d7dc087ef8ade1cfc256ecb799484fbda37352",
+  "continuousPlantCounterfactualAvailable": false,
+  "trainingExecuted": false
+}

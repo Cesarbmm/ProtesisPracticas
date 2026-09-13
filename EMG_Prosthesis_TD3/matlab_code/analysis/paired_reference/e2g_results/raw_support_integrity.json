@@ -1,0 +1,13 @@
+{
+  "historicalManifestFiles": 740,
+  "rawFilesInspected": 76,
+  "selectedRawFiles": 67,
+  "historicallyCovered": 33,
+  "historicalMatches": 33,
+  "historicalMismatches": 0,
+  "withoutHistoricalBaseline": 43,
+  "selectedHistoricallyCovered": 33,
+  "supportArtifactMatches": 67,
+  "supportArtifactMismatches": 0,
+  "baselineRecaptured": false
+}

@@ -1,0 +1,19 @@
+{
+  "previousTests": 81,
+  "previousPassed": 81,
+  "newE2DTests": 26,
+  "newE2DPassed": 26,
+  "totalTests": 107,
+  "passed": 107,
+  "failed": 0,
+  "incomplete": 0,
+  "e2aTests": 13,
+  "e0pTests": 24,
+  "e2bTests": 22,
+  "e2cTests": 22,
+  "historicalFilesProtected": 539,
+  "historicalFilesUnchanged": true,
+  "historicalTestsEdited": false,
+  "sandboxInPath": false,
+  "matlabVersion": "23.2.0.3097123 (R2023b) Update 11"
+}

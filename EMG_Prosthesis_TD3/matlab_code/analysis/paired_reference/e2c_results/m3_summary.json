@@ -1,0 +1,19 @@
+{
+  "domain": [
+    -910,
+    7912
+  ],
+  "mapRows": 86665,
+  "apiValidationCases": 2511,
+  "apiMaxError": 0,
+  "regions": 3,
+  "cells": 47,
+  "cause": "LOW_REPEATABILITY",
+  "rawColumnsVerified": 33,
+  "rawMaxError": 0,
+  "allReversals": 520,
+  "p2Visits": 300,
+  "p2Reversals": 0,
+  "patternCurveSHA256": "a519555bcfcbbc7b140843d6fc1240118738cd3a6ca69f6f5517617372073590",
+  "preregistrationSHA256": "bddb7f8f45b6e6e9cbceb45f3c082c2d1a1694b60ed2de3bb1ec3ca1a46d4013"
+}

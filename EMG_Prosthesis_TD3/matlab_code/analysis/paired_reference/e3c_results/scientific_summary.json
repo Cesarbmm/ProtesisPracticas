@@ -1,0 +1,99 @@
+{
+  "E3B_RESULT": "CAT_LEARNING_SIGNAL",
+  "seeds": [
+    20260912,
+    20260913,
+    20260914
+  ],
+  "FF_ORACLE_MACRO_F1": 0.16000551496308232,
+  "GRU_ORACLE_MACRO_F1": 0.16232531738018632,
+  "MACRO_F1_GAIN_PP": 0.2319802417104,
+  "FF_ORACLE_NLL": 0.9656883365342667,
+  "GRU_ORACLE_NLL": 0.983758235882433,
+  "NLL_CHANGE_PCT": 1.8711937034485704,
+  "SHUFFLED_HISTORY_MACRO_F1": 0.15601575354068067,
+  "SHUFFLED_HISTORY_NLL": 1.03067639523874,
+  "FF_CLOSED_LOOP_VALIDATION_MSE": 0.0901736474173415,
+  "GRU_CLOSED_LOOP_VALIDATION_MSE": 0.06989823939095173,
+  "FF_OPENING_MSE": 0.07080025214508487,
+  "GRU_OPENING_MSE": 0.04836774757810497,
+  "FF_OPENING_FLAT_RESPONSE": 0.825,
+  "GRU_OPENING_FLAT_RESPONSE": 0.2777777777777777,
+  "FF_OPENING_ACTION_NO_MOTION": 0.32393536678595736,
+  "GRU_OPENING_ACTION_NO_MOTION": 0.4294533182530947,
+  "FF_CLOSING_MSE": 0.10954704268959803,
+  "GRU_CLOSING_MSE": 0.0914287312037985,
+  "GRU_M3_REVERSALS": [
+    0,
+    0,
+    0
+  ],
+  "GRU_CYCLES": [
+    0,
+    0,
+    0
+  ],
+  "GRU_MAX_CATEGORY_FRACTION": [
+    0.6368909512761021,
+    0.7238979118329466,
+    0.7146171693735499
+  ],
+  "TEMPORAL_INFORMATION_SUPPORTED": false,
+  "E3C_RESULT": "TEMPORAL_INFORMATION_NOT_DEMONSTRATED",
+  "gates": {
+    "A_macroF1_gain_3pp": false,
+    "B_NLL_reduction_5pct": false,
+    "C_opening_MSE_reduction_5pct": true,
+    "D_opening_flat_reduction_5pp": true,
+    "E_closing_MSE_no_worse_5pct": true,
+    "F_cycles_and_periodicity": true,
+    "F_M3_no_material_increase": true,
+    "F_no_global_category_collapse": true,
+    "G_order_shuffle_loses_gain": false,
+    "paired_seed_consistency": false
+  },
+  "bootstrap": {
+    "VALIDATION": {
+      "trackingMSE": {
+        "meanDifference": -0.020275408026389753,
+        "CI95": [
+          -0.026211256491762258,
+          -0.014427648936945401
+        ],
+        "episodes": 60
+      },
+      "flat_response": {
+        "meanDifference": -0.42777777777777776,
+        "CI95": [
+          -0.5027777777777778,
+          -0.3527777777777778
+        ],
+        "episodes": 60
+      }
+    },
+    "OPENING": {
+      "trackingMSE": {
+        "meanDifference": -0.022432504566979893,
+        "CI95": [
+          -0.0316269485516038,
+          -0.012811433970116231
+        ],
+        "episodes": 30
+      },
+      "flat_response": {
+        "meanDifference": -0.5472222222222222,
+        "CI95": [
+          -0.6416666666666667,
+          -0.45
+        ],
+        "episodes": 30
+      }
+    }
+  },
+  "E3D_LONG_TRAINING_STARTED": false,
+  "MATEO_SANDRA_SEALED": true,
+  "REFERENCE_CONTRACT_VALIDATED": false,
+  "HARDWARE_AUTHORIZED": false,
+  "GIT_REPAIR_ATTEMPTED": false,
+  "PUSH": false
+}

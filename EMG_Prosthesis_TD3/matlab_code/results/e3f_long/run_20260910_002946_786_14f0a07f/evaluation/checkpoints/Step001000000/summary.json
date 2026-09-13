@@ -1,0 +1,29 @@
+{
+  "checkpoint": "C:\\Users\\Cesarbmm\\ProtesisPracticas_e2b_audit\\EMG_Prosthesis_TD3\\matlab_code\\results\\e3f_long\\run_20260910_002946_786_14f0a07f\\checkpoints\\CategoricalStep001000000.mat",
+  "label": "E3F_1000000",
+  "reward": -0.063585615489351419,
+  "mse": 0.058305875797543212,
+  "episodes": 60,
+  "output": "C:\\Users\\Cesarbmm\\ProtesisPracticas_e2b_audit\\EMG_Prosthesis_TD3\\matlab_code\\results\\e3f_long\\run_20260910_002946_786_14f0a07f\\evaluation\\checkpoints\\Step001000000",
+  "actorUnchanged": true,
+  "runtimeTermination": "EMG_ONLY",
+  "commonHorizonTeacherMetrics": true,
+  "headEntropy": [
+    1.7868346636920407,
+    1.8518281589497718,
+    1.4543208580446838,
+    1.5435134760188391
+  ],
+  "maxCategoryFraction": [
+    0.52900232018561488,
+    0.33294663573085848,
+    0.611368909512761,
+    0.62645011600928069
+  ],
+  "m3Reversals": 0,
+  "cycles": 0,
+  "periodic": 0,
+  "cycleWindows": 0,
+  "referenceContractValidated": false,
+  "algorithm": "SUBJECT_INVARIANT_FACTORIZED_CATEGORICAL_PPO"
+}

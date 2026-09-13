@@ -1,0 +1,18 @@
+{
+  "previousTests": 59,
+  "newE2CTests": 22,
+  "totalTests": 81,
+  "passed": 81,
+  "failed": 0,
+  "incomplete": 0,
+  "e2aTests": 13,
+  "e0pTests": 24,
+  "e2bTests": 22,
+  "historicalFilesProtected": 453,
+  "historicalFilesUnchanged": true,
+  "sandboxInPath": false,
+  "historicalTestsEdited": false,
+  "pathIsolation": "TEMP_GENPATH_WHITELIST",
+  "temporaryHarness": "C:\\Users\\Cesarbmm\\AppData\\Local\\Temp\\tp7939a2c9_b564_4b5c_a2d7_5e11f5a61307",
+  "matlabVersion": "23.2.0.3097123 (R2023b) Update 11"
+}

@@ -1,0 +1,18 @@
+{
+  "originalRun": {
+    "files": 1055,
+    "mismatches": [],
+    "pass": true
+  },
+  "historical": {
+    "files": 1070,
+    "mismatches": [],
+    "pass": true
+  },
+  "implementation": {
+    "files": 25,
+    "mismatches": [],
+    "pass": true
+  },
+  "trainingExecuted": false
+}

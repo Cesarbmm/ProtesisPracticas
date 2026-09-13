@@ -1,0 +1,22 @@
+{
+  "status": "COMPLETE",
+  "postprocessOnly": true,
+  "trainingExecuted": false,
+  "checkpoint": 1.0E+6,
+  "bestEqualsLast": true,
+  "episodes": 200,
+  "trainEpisodes": 140,
+  "validationEpisodes": 60,
+  "compactPng": 200,
+  "compactFig": 200,
+  "proPng": 200,
+  "proFig": 200,
+  "classicPng": 200,
+  "classicFig": 200,
+  "annotatedCount": 9,
+  "traceMatch": true,
+  "pwmMatch": true,
+  "metricsMatch": true,
+  "htmlReport": "C:\\Users\\Cesarbmm\\ProtesisPracticas_e2b_audit\\EMG_Prosthesis_TD3\\matlab_code\\results\\e3f_long\\run_20260910_002946_786_14f0a07f\\TEST_COMPORTAMENTAL.html",
+  "sealedSubjectsUntouched": true
+}

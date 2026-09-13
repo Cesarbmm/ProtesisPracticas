@@ -1,0 +1,6 @@
+{
+  "files": 2179,
+  "failures": [],
+  "pass": true,
+  "allowedChange": "exportE3AXViewerTrace.m ONLY; diff must be reviewed"
+}

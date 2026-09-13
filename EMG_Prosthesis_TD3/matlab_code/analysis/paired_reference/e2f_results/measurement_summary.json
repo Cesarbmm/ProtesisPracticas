@@ -1,0 +1,21 @@
+{
+  "episodesPerController": 200,
+  "horizons": [
+    1,
+    2,
+    3,
+    5
+  ],
+  "primaryHorizon": 5,
+  "baselinePlantExact": true,
+  "baselineMaxRewardError": 0,
+  "graphStates": [
+    4646,
+    635,
+    823,
+    613
+  ],
+  "commands": 82264,
+  "preregistrationSHA256": "52d2b643ca5f717b14c36c2a2638767cfe8a4a5f928802d559849d1128e3a177",
+  "RL_EXECUTED": false
+}

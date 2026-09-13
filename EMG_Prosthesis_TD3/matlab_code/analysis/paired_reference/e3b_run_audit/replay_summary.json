@@ -1,0 +1,31 @@
+{
+  "result": "PASS",
+  "episodesReplayed": 640,
+  "intermediateFinalValidationMatches": 120,
+  "maxStateDiff": 0,
+  "maxRawDiff": 0,
+  "maxEffectiveDiff": 0,
+  "maxPwmDiff": 0,
+  "maxQDiff": 0,
+  "maxRewardDiff": 0,
+  "maxMetricsCsvDiff": 3.637978807091713E-11,
+  "metricsCsvTolerance": 1E-9,
+  "checkpointRolloutTransitionsAudited": 2624,
+  "agentSteps": 1.0E+6,
+  "episodesStarted": 69959,
+  "teacherCompletedEpisodes": 69958,
+  "budgetTruncatedEpisodes": 1,
+  "rollouts": 980,
+  "optimizerUpdates": 62516,
+  "verifiedPNG": 400,
+  "verifiedFIG": 400,
+  "classification": {
+    "classification": "CAT_LEARNING_SIGNAL",
+    "continueTo5M": false,
+    "massiveTrainingJustified": false,
+    "bestSteps": 500000
+  },
+  "trainingExecuted": false,
+  "finalTestExecuted": false,
+  "MATEO_SANDRA_SEALED": true
+}

@@ -1,0 +1,13 @@
+{
+  "seed": 2.0260908E+7,
+  "cap": 0.75294117647058822,
+  "episodes": 200,
+  "checkpoints": [
+    10000,
+    20000
+  ],
+  "sourceRun": "C:\\Users\\Cesarbmm\\ProtesisPracticas_e2b_audit\\EMG_Prosthesis_TD3\\matlab_code\\results\\e3ax_long\\run_20260908_141321_916_6ebf347b",
+  "trainingExecuted": false,
+  "preregisteredBoundLimit": 0.5,
+  "referenceContractValidated": false
+}

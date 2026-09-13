@@ -1,0 +1,6 @@
+Name,Passed,Failed,Incomplete,Duration
+testE3DTemporalIntent/testCompactComplete,1,0,0,0.9855272
+testE3DTemporalIntent/testCompactFourMotors,1,0,0,0.5465377
+testE3DTemporalIntent/testAnnotatedTwoPolicies,1,0,0,0.7766814
+testE3DTemporalIntent/testAnnotatedCsvMatExactValues,1,0,0,0.6340381
+testE3DTemporalIntent/testViewerFormatProvenanceAndAlignment,1,0,0,0.3765288

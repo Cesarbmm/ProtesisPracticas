@@ -1,0 +1,17 @@
+Name,Passed,Failed,Incomplete,Duration
+testE3CTemporal/testCausalIndices,1,0,0,4.9936161
+testE3CTemporal/testNoFutureLeakage,1,0,0,0.0074627
+testE3CTemporal/testPrefixLength,1,0,0,0.0280908
+testE3CTemporal/testShuffledMultisetAndCurrent,1,0,0,0.0756274
+testE3CTemporal/testShuffleDeterministicAndRng,1,0,0,0.0507667
+testE3CTemporal/testShortShuffle,1,0,0,0.0054417
+testE3CTemporal/testFourHeads,1,0,0,0.0130982
+testE3CTemporal/testRealGRULayer,1,0,0,0.1549759
+testE3CTemporal/testGRUVariablePrefixesFinite,1,0,0,2.1001759
+testE3CTemporal/testFFUsesCurrentOnly,1,0,0,0.14433
+testE3CTemporal/testActorReset,1,0,0,0.1017333
+testE3CTemporal/testActorMemoryBounded,1,0,0,0.0444124
+testE3CTemporal/testEpisodeIsolation,1,0,0,0.0147396
+testE3CTemporal/testLegalCategoricalActions,1,0,0,0.3920821
+testE3CTemporal/testNoTeacherActorInterface,1,0,0,0.0206605
+testE3CTemporal/testGradientsAllHeadsAndGRU,1,0,0,1.9056698

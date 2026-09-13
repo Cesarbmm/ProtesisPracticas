@@ -1,0 +1,22 @@
+{
+  "status": "COMPLETE",
+  "testType": "POLICY_EVALUATION_TRAIN_VALIDATION",
+  "trainingExecuted": false,
+  "finalTestExecuted": false,
+  "sealedSubjects": [
+    "MATEO",
+    "SANDRA"
+  ],
+  "referenceContractValidated": false,
+  "bestEpisode": 10000,
+  "lastEpisode": 20000,
+  "episodesPerCheckpoint": 200,
+  "trainEpisodesPerCheckpoint": 140,
+  "validationEpisodesPerCheckpoint": 60,
+  "pngCount": 400,
+  "figCount": 400,
+  "html": "C:\\Users\\Cesarbmm\\ProtesisPracticas_e2b_audit\\EMG_Prosthesis_TD3\\matlab_code\\results\\e3ax_long\\run_20260908_141321_916_6ebf347b\\TEST_COMPORTAMENTAL.html",
+  "markdown": "C:\\Users\\Cesarbmm\\ProtesisPracticas_e2b_audit\\EMG_Prosthesis_TD3\\matlab_code\\results\\e3ax_long\\run_20260908_141321_916_6ebf347b\\TEST_COMPORTAMENTAL.md",
+  "qualityDecision": "DESCRIPTIVE_NO_NEW_PASS_GATE",
+  "repairedEpisodes": 0
+}

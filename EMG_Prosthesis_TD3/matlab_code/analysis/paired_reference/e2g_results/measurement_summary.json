@@ -1,0 +1,9 @@
+{
+  "episodes": 200,
+  "stepsPerController": 2938,
+  "horizon": 5,
+  "projectionTested": true,
+  "affineTested": false,
+  "preregistrationSHA256": "a973ae8c177c1bd0f3b737d7223f35268e73c09610e247612ec0c15fdc106a07",
+  "RL_EXECUTED": false
+}

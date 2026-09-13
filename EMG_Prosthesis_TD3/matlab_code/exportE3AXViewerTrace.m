@@ -1,0 +1,52 @@
+function viewerTrace=exportE3AXViewerTrace(checkpoint,subject,row,direction,outputFile,options)
+% Exportacion pasiva de actor guardado, runtime solo EMG y planta canonica.
+% No carga teacher, no entrena y no depende de ningun viewer externo.
+arguments
+    checkpoint (1,1) string
+    subject (1,1) string
+    row (1,1) double {mustBeInteger,mustBePositive}
+    direction (1,1) string {mustBeMember(direction,["closing","opening"])}
+    outputFile (1,1) string
+    options.cap192 (1,1) logical = false
+end
+assert(~ismember(upper(subject),["MATEO","SANDRA"]),"CAP192:SealedSubject","Los sujetos finales permanecen sellados.");
+assert(~isfile(outputFile),"CAP192:ViewerExists","No sobrescribir trazas existentes.");
+root=string(fileparts(mfilename("fullpath")));pr=fullfile(root,"analysis","paired_reference");
+oldPath=path;oldRng=rng;old=struct();if isappdata(0,"configurables_override"),old=getappdata(0,"configurables_override");end
+cleanup=onCleanup(@() restore(oldPath,oldRng,old)); %#ok<NASGU>
+addpath(pr,fullfile(pr,"e3ax"),fullfile(pr,"cap192"),fullfile(pr,"e3b"),fullfile(pr,"e3c"),fullfile(pr,"e3d"),fullfile(root,"config"));
+addpath(genpath(fullfile(root,"src")));addpath(genpath(fullfile(root,"lib")));
+configFile=fullfile(fileparts(fileparts(checkpoint)),"config.mat");
+saved=load(configFile,"cfg","o");allowed=[saved.cfg.trainSubjects saved.cfg.validationSubjects];
+assert(ismember(subject,allowed),"CAP192:DevelopmentOnly","Sujeto fuera del conjunto development autorizado.");
+o=saved.o;o.run_training=false;o.newTraining=false;setConfigurablesOverride(o);rng(20260908);
+side=find(["closing","opening"]==direction);
+base=load(fullfile(pr,"e2f_results","trajectories.mat"),"trajectories");
+ix=find(cellfun(@(t) string(t.metadata.subject)==subject && t.metadata.repetition==row && t.metadata.side==side,base.trajectories(:,2)));
+assert(isscalar(ix),"CAP192:EpisodeNotFrozen","Usar un episodio del conjunto development congelado.");
+q0=base.trajectories{ix,2}.q(1,:);clear base;
+emg=load(fullfile(root,"data","datasets","Denis Dataset",subject+".mat"),"emgs");
+a=load(checkpoint,"saved_actor");actor=a.saved_actor;before=getLearnableParameters(actor);
+isE3D=isa(actor,"E3DProbeActor");isProbe=isa(actor,"E3CProbeActor") || isE3D;
+if isProbe,reset(actor);end
+isCategorical=isa(actor,"E3BCategoricalActor") || isProbe;
+assert(~(isCategorical && options.cap192),"E3B:NoCap","El actor categorico utiliza las15categorias completas, sin cap.");
+r=cap192Runtime(actor,emg.emgs{row,side},q0,options.cap192);
+assert(isequaln(before,getLearnableParameters(actor)),"CAP192:ActorChanged","La exportacion no permite cambiar pesos.");
+n=size(r.pwm,1);[~,stem]=fileparts(checkpoint);policy="TD3_E3AX_"+stem;if options.cap192,policy=policy+"_CAP192";end
+if isCategorical,policy="CATEGORICAL_E3B_"+stem;end
+if isProbe,policy="E3C_"+actor.Kind+"_PROBE_"+stem;end
+if isE3D,policy="E3D_"+actor.Kind+"_PROBE_"+stem;end
+viewerTrace=struct("q",r.q,"PWM",r.pwm,"step",(0:n)',"commandStep",(1:n)',"Ts",.2,"time",(0:n)'*.2, ...
+    "subject",subject,"row",row,"direction",direction,"policy",policy,"checkpoint",checkpoint, ...
+    "checkpointSHA256",cap192SHA256(checkpoint),"plantManifest",r.plantManifest, ...
+    "source","saved_actor -> GloveFreePolicyRuntime -> patternCurveCanonical", ...
+    "qUnits","encoder counts","alignment","PWM(k,:) acts on q(k,:) and produces q(k+1,:)", ...
+    "termination","EMG_ONLY","cap192",options.cap192,"desiredRaw",r.desiredRaw,"commandRaw",r.rawAction, ...
+    "effectiveAction",r.effectiveAction,"state",r.state,"teacherLoaded",false,"trainingExecuted",false);
+folder=fileparts(outputFile);if strlength(folder)>0 && ~isfolder(folder),mkdir(folder);end
+save(outputFile,"-struct","viewerTrace","-v7.3");
+end
+function restore(p,r,o)
+setConfigurablesOverride(o);rng(r);path(p);
+end

@@ -1,0 +1,96 @@
+{
+  "bestCheckpoint": "C:\\Users\\Cesarbmm\\ProtesisPracticas_e2b_audit\\EMG_Prosthesis_TD3\\matlab_code\\results\\e3b_long\\run_20260909_002700_470_a733a786\\checkpoints\\CategoricalStep000500000.mat",
+  "bestSteps": 500000,
+  "lastCheckpoint": "C:\\Users\\Cesarbmm\\ProtesisPracticas_e2b_audit\\EMG_Prosthesis_TD3\\matlab_code\\results\\e3b_long\\run_20260909_002700_470_a733a786\\checkpoints\\CategoricalStep001000000.mat",
+  "lastSteps": 1.0E+6,
+  "bestEvaluation": {
+    "checkpoint": "C:\\Users\\Cesarbmm\\ProtesisPracticas_e2b_audit\\EMG_Prosthesis_TD3\\matlab_code\\results\\e3b_long\\run_20260909_002700_470_a733a786\\checkpoints\\CategoricalStep000500000.mat",
+    "label": "BEST_CATEGORICAL",
+    "reward": -0.053952448353062864,
+    "mse": 0.049352693228167377,
+    "episodes": 200,
+    "output": "C:\\Users\\Cesarbmm\\ProtesisPracticas_e2b_audit\\EMG_Prosthesis_TD3\\matlab_code\\results\\e3b_long\\run_20260909_002700_470_a733a786\\evaluation\\best_checkpoint",
+    "actorUnchanged": true,
+    "runtimeTermination": "EMG_ONLY",
+    "commonHorizonTeacherMetrics": true,
+    "headEntropy": [
+      1.6765530529794648,
+      1.6333439486701018,
+      1.43422412109764,
+      1.5493947385019105
+    ],
+    "maxCategoryFraction": [
+      0.34513274336283184,
+      0.4023144996596324,
+      0.35874744724302249,
+      0.4628999319264806
+    ],
+    "m3Reversals": 1,
+    "cycles": 0,
+    "periodic": 0,
+    "cycleWindows": 0,
+    "referenceContractValidated": false,
+    "algorithm": "FACTORIZED_MULTICATEGORICAL_PPO"
+  },
+  "lastEvaluation": {
+    "checkpoint": "C:\\Users\\Cesarbmm\\ProtesisPracticas_e2b_audit\\EMG_Prosthesis_TD3\\matlab_code\\results\\e3b_long\\run_20260909_002700_470_a733a786\\checkpoints\\CategoricalStep001000000.mat",
+    "label": "LAST_CATEGORICAL",
+    "reward": -0.051235531166226811,
+    "mse": 0.046483241094296468,
+    "episodes": 200,
+    "output": "C:\\Users\\Cesarbmm\\ProtesisPracticas_e2b_audit\\EMG_Prosthesis_TD3\\matlab_code\\results\\e3b_long\\run_20260909_002700_470_a733a786\\evaluation\\last_checkpoint",
+    "actorUnchanged": true,
+    "runtimeTermination": "EMG_ONLY",
+    "commonHorizonTeacherMetrics": true,
+    "headEntropy": [
+      1.4666309789221705,
+      1.4748470206511028,
+      1.2543457245766112,
+      1.3733908232472491
+    ],
+    "maxCategoryFraction": [
+      0.28522804628999321,
+      0.40571817562968004,
+      0.50987066031313821,
+      0.35023825731790331
+    ],
+    "m3Reversals": 0,
+    "cycles": 0,
+    "periodic": 0,
+    "cycleWindows": 0,
+    "referenceContractValidated": false,
+    "algorithm": "FACTORIZED_MULTICATEGORICAL_PPO"
+  },
+  "classification": {
+    "classification": "CAT_LEARNING_SIGNAL",
+    "continueTo5M": false,
+    "massiveTrainingJustified": false,
+    "bestSteps": 500000
+  },
+  "pngCount": 400,
+  "figCount": 400,
+  "episodeCountPerCheckpoint": 200,
+  "report": "C:\\Users\\Cesarbmm\\ProtesisPracticas_e2b_audit\\EMG_Prosthesis_TD3\\matlab_code\\results\\e3b_long\\run_20260909_002700_470_a733a786\\TEST_COMPORTAMENTAL.html",
+  "MATEO_SANDRA_SEALED": true,
+  "outputDirectory": "C:\\Users\\Cesarbmm\\ProtesisPracticas_e2b_audit\\EMG_Prosthesis_TD3\\matlab_code\\results\\e3b_long\\run_20260909_002700_470_a733a786",
+  "mode": "long",
+  "episodes": 69959,
+  "completedEpisodes": 69958,
+  "agentSteps": 1.0E+6,
+  "learning": {
+    "actorChanged": true,
+    "criticChanged": true,
+    "headGradientMax": [
+      6.2873572329411767,
+      11.346895169376443,
+      3.9316370532916429,
+      3.7593092607477177
+    ],
+    "allHeadsReceivedGradient": true,
+    "updates": 62516
+  },
+  "longTrainingStartedByAI": false,
+  "referenceContractValidated": false,
+  "hardwareAuthorized": false,
+  "fullTrainingResumeAvailable": false
+}

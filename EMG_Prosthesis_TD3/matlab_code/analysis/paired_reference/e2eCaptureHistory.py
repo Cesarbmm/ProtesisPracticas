@@ -1,0 +1,37 @@
+"""Inventario único anterior a E2E; sólo fuentes explícitas E0P–E2D."""
+import csv
+import hashlib
+import os
+from pathlib import Path
+
+here = Path(__file__).resolve().parent
+root = here.parents[1]
+out = here / 'e2e_results'
+out.mkdir(exist_ok=True)
+target = out / 'historical_hashes_before.csv'
+assert not target.exists(), 'No recapturar el inventario después de medir.'
+sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
+sources = set()
+with (here / 'e2d_results/historical_hashes_before.csv').open(encoding='utf-8-sig') as f:
+    for row in csv.DictReader(f):
+        p = (root / row['path']).resolve()
+        assert sha(p) == row['sha256'], str(p)
+        sources.add(p)
+for pattern in ('e2d*.m', 'e2d*.py', 'run*E2D*.m', 'verifyE2D*.py'):
+    sources.update(here.glob(pattern))
+sources.update((here / 'e2d_results').rglob('*'))
+sources.update((root / 'tests/paired_reference').glob('*E2D*.m'))
+sources.update((root.parent / 'docs/paired_reference').glob('*E2D.md'))
+with target.open('w', newline='', encoding='utf-8') as f:
+    writer = csv.DictWriter(f, fieldnames=['path', 'sha256', 'bytes'])
+    writer.writeheader()
+    count = 0
+    for p in sorted(sources):
+        if not p.is_file():
+            continue
+        assert 'sandbox' not in str(p).lower()
+        writer.writerow(dict(path=os.path.relpath(p, root), sha256=sha(p), bytes=p.stat().st_size))
+        count += 1
+prereg = root.parent / 'docs/paired_reference/PREREGISTRO_E2E.md'
+(out / 'preregistration.sha256').write_text(sha(prereg) + '\n', encoding='utf-8')
+print(dict(historicalFiles=count, preregistrationSHA256=sha(prereg)))

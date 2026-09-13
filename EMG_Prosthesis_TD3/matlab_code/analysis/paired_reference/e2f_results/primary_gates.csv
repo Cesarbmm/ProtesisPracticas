@@ -1,0 +1,2 @@
+primaryHorizon,trackingMSE,rewardMean,mseImprovementPct,rewardDeteriorationPct,subjectDegradations,motorDegradations,directionDegradations,fixedStable,fixedOrbits,finalCycles,newFinalCycles,periodicTrajectories,newPeriodicTrajectories,p2OneStepFloorMSE,p2OneStepFloorRatio,m3Reversals,zeroMotionFailures,pass1,pass2,pass3,pass4,measuredGatesPass
+5,0.0159219916689477,-0.0176264005770042,37.3158235593629,-46.1433711856016,0,0,0,20,0,0,0,0,0,0.0155397349674237,0.61179248726683,0,0,1,1,0,1,0

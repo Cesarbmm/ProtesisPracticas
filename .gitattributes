@@ -13,3 +13,14 @@ EMG_Prosthesis_TD3/matlab_code/analysis/paired_reference/e2a_results/*.json -tex
 EMG_Prosthesis_TD3/docs/paired_reference/PREREGISTRO_E2B.md -text
 EMG_Prosthesis_TD3/matlab_code/analysis/paired_reference/e2b_results/*.csv -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 EMG_Prosthesis_TD3/matlab_code/analysis/paired_reference/e2b_results/*.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Publicacion: preservar bytes y hashes del archivo cientifico copiado.
+EMG_Prosthesis_TD3/matlab_code/analysis/paired_reference/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+EMG_Prosthesis_TD3/matlab_code/tests/paired_reference/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+EMG_Prosthesis_TD3/matlab_code/results/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+EMG_Prosthesis_TD3/matlab_code/run*.m -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+EMG_Prosthesis_TD3/matlab_code/*.m -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+EMG_Prosthesis_TD3/docs/paired_reference/** -text
+PUBLICATION_MANIFEST.csv -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+# Dos espacios al final son saltos de linea Markdown historicos.
+*.md whitespace=-blank-at-eol

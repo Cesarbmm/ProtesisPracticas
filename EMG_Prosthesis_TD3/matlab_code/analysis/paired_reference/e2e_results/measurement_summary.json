@@ -1,0 +1,13 @@
+{
+  "episodes": 200,
+  "commandsPerMode": 11752,
+  "baselineExact": true,
+  "baselineMaxRewardError": 0,
+  "baselineMSE": 0.025400336373607925,
+  "baselineReward": -0.032728377109804987,
+  "baselineCycles": 2,
+  "selectionRequiresFinalTests": true,
+  "preregistrationSHA256": "fec5dd1bbd1c700bfd2e482e14572c3017d0e7462e732585352191e503d0164a",
+  "sourceSHA256": "99f45aa6a5b2269235072e0559d7dc087ef8ade1cfc256ecb799484fbda37352",
+  "RL_AUTHORIZED": false
+}

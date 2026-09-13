@@ -1,0 +1,11 @@
+gate,passGate
+A_macroF1_gain_3pp,False
+B_NLL_reduction_5pct,False
+C_opening_MSE_reduction_5pct,True
+D_opening_flat_reduction_5pp,True
+E_closing_MSE_no_worse_5pct,True
+F_cycles_and_periodicity,True
+F_M3_no_material_increase,True
+F_no_global_category_collapse,True
+G_order_shuffle_loses_gain,False
+paired_seed_consistency,False

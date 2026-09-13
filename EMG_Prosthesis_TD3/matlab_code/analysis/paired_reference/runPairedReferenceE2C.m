@@ -1,0 +1,36 @@
+function summary=runPairedReferenceE2C(options)
+% Reproduce E2C local. No entrenamiento, cambio Git, ni alteracion historica.
+arguments
+    options.outputDir (1,1) string = ""
+end
+here=string(fileparts(mfilename("fullpath")));root=fileparts(fileparts(here));
+out=options.outputDir;if out=="",out=fullfile(here,"e2c_results");end
+if ~isfolder(out),mkdir(out);end
+assert(out==fullfile(here,"e2c_results"),"E2C:NoncanonicalTestArtifacts", ...
+    "Ejecutar sin outputDir: los tests validan los artefactos de la entrega canonica.");
+assert(~contains(lower(string(path)),"sandbox"),"E2C:ForbiddenPath","Usar paths selectivos.");
+manifest=readtable(fullfile(here,"e2c_results","historical_hashes_before.csv"),TextType="string");
+for k=1:height(manifest)
+    assert(e2cSHA256(fullfile(root,manifest.path(k)))==manifest.sha256(k), ...
+        "E2C:HistoricalMutation","Archivo historico cambiado antes del analisis.");
+end
+pairedReferencePlantManifest(plantSource="patternCurveCanonical",outputPath=fullfile(out,"plant_manifest.json"));
+cycles=runE2CCycles(outputDir=out);m3=runE2CM3(outputDir=out);
+tests=e2cRunTests(outputDir=out);
+summary=struct("worktree",fileparts(fileparts(root)), ...
+    "branch","experiment/no-glove-paired-reference-td3", ...
+    "startSHA","165be049eb41fc41254435181c9857fe0f22ed1c", ...
+    "E2B_RESULT","FAIL","RL_AUTHORIZED",false,"E3_PREPARED",false,"E3_EXECUTED",false, ...
+    "P2_MSE",.025400336373607925,"P2_REWARD",-.03272837710980499,"P2_CYCLES",2, ...
+    "P2_M3_REVERSALS",0,"cycles",cycles,"m3",m3,"tests",tests, ...
+    "E2C_RESULT","INCONCLUSIVE","MATEO_SANDRA_SEALED",true, ...
+    "GIT_REPAIR_ATTEMPTED",false,"PUSH",false, ...
+    "NEXT_HYPOTHESIS","Un mecanismo minimo anti-chattering puede romper las orbitas P2 sin cambiar reward ni representacion EMG; requiere una futura prueba E2D, no implementada.");
+if all(string({cycles.cases.cause})~="UNRESOLVED") && m3.cause~="UNRESOLVED" && ...
+        m3.apiMaxError==0 && m3.rawMaxError==0 && tests.passed==tests.totalTests && tests.historicalFilesUnchanged
+    summary.E2C_RESULT="CHARACTERIZED";
+end
+e2cWriteJSON(fullfile(out,"e2c_summary.json"),summary);
+e2cPlotDiagnostics(out);e2cArtifactManifest(out);
+disp(summary);
+end

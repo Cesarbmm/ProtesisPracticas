@@ -1,0 +1,53 @@
+{
+  "E3AX_PREPARATION": "PASS",
+  "TRAINING_PROGRESS_ENABLED": true,
+  "TRAINING_WINDOW_EXPECTED_VISIBLE": true,
+  "TRAINING_MONITOR_OBSERVED": true,
+  "LONG_RUN_STARTED_BY_AI": false,
+  "SMOKE_EPISODES": 5,
+  "SMOKE_AGENT_STEPS": 110,
+  "SMOKE_RESULT": "PASS",
+  "SMOKE_OUTPUT": "C:\\Users\\Cesarbmm\\ProtesisPracticas_e2b_audit\\EMG_Prosthesis_TD3\\matlab_code\\results\\e3ax_smoke\\run_20260908_070829_356_11986845",
+  "TRAINING_RUNNER": "runE3AXLongTraining",
+  "MANUAL_LONG_TRAINING_COMMAND": "cd('C:\\Users\\Cesarbmm\\ProtesisPracticas_e2b_audit\\EMG_Prosthesis_TD3\\matlab_code'); summary = runE3AXLongTraining();",
+  "TRAINING_OUTPUT_DIRECTORY": "C:\\Users\\Cesarbmm\\ProtesisPracticas_e2b_audit\\EMG_Prosthesis_TD3\\matlab_code\\results\\e3ax_long\\run_<timestamp>_<UUID>",
+  "CHECKPOINTS": [
+    250,
+    500,
+    1000,
+    2000,
+    5000,
+    10000,
+    15000,
+    20000
+  ],
+  "TRAINING_STATS_SAVE": [
+    "trainingStats.mat",
+    "trainingStats.csv",
+    "training_incremental.csv"
+  ],
+  "TRAINING_GRAPH_SAVE": [
+    "training_progress.png",
+    "training_progress.fig",
+    "training_progress.pdf",
+    "training_progress.svg"
+  ],
+  "TRAINING_MONITOR_SCREENSHOT": "NOT_RELIABLY_SUPPORTED",
+  "EXISTING_COMPACT_EPISODE_PLOTTER_FOUND": true,
+  "PLOTTER_USED": "e3axPlotEpisode",
+  "BEST_CHECKPOINT_FULL_EPISODE_PLOTS": true,
+  "LAST_CHECKPOINT_FULL_EPISODE_PLOTS": true,
+  "FIGURE_LAYOUT": "ONE_FIGURE_PER_EPISODE_4_MOTORS",
+  "REGRESSION_TESTS": "196/196",
+  "E3AX_NEW_TESTS": "29/29",
+  "TOTAL_TESTS": "225/225",
+  "HISTORICAL_FILES_UNCHANGED": 816,
+  "AGENT_CHECKPOINT_AVAILABLE": true,
+  "FULL_TRAINING_RESUME_AVAILABLE": false,
+  "REFERENCE_CONTRACT_VALIDATED": false,
+  "EXPLORATORY_RL_TRAINING_AUTHORIZED": true,
+  "HARDWARE_AUTHORIZED": false,
+  "MATEO_SANDRA_SEALED": true,
+  "GIT_REPAIR_ATTEMPTED": false,
+  "PUSH": false
+}

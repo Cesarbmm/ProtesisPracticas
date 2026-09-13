@@ -1,0 +1,63 @@
+{
+  "mode": "long",
+  "outputDirectory": "C:\\Users\\Cesarbmm\\ProtesisPracticas_e2b_audit\\EMG_Prosthesis_TD3\\matlab_code\\results\\e3ax_long\\run_20260908_141321_916_6ebf347b",
+  "requestedEpisodes": 20000,
+  "completedEpisodes": 20000,
+  "plots": "training-progress",
+  "desktop": true,
+  "trainingStatsSaved": true,
+  "learning": {
+    "actorChanged": true,
+    "criticsChanged": [
+      true,
+      true
+    ]
+  },
+  "graphs": {
+    "mat": "C:\\Users\\Cesarbmm\\ProtesisPracticas_e2b_audit\\EMG_Prosthesis_TD3\\matlab_code\\results\\e3ax_long\\run_20260908_141321_916_6ebf347b\\trainingStats.mat",
+    "csv": "C:\\Users\\Cesarbmm\\ProtesisPracticas_e2b_audit\\EMG_Prosthesis_TD3\\matlab_code\\results\\e3ax_long\\run_20260908_141321_916_6ebf347b\\trainingStats.csv",
+    "fig": "C:\\Users\\Cesarbmm\\ProtesisPracticas_e2b_audit\\EMG_Prosthesis_TD3\\matlab_code\\results\\e3ax_long\\run_20260908_141321_916_6ebf347b\\training_progress.fig",
+    "png": "C:\\Users\\Cesarbmm\\ProtesisPracticas_e2b_audit\\EMG_Prosthesis_TD3\\matlab_code\\results\\e3ax_long\\run_20260908_141321_916_6ebf347b\\training_progress.png",
+    "svg": "C:\\Users\\Cesarbmm\\ProtesisPracticas_e2b_audit\\EMG_Prosthesis_TD3\\matlab_code\\results\\e3ax_long\\run_20260908_141321_916_6ebf347b\\training_progress.svg",
+    "pdf": "C:\\Users\\Cesarbmm\\ProtesisPracticas_e2b_audit\\EMG_Prosthesis_TD3\\matlab_code\\results\\e3ax_long\\run_20260908_141321_916_6ebf347b\\training_progress.pdf"
+  },
+  "evaluation": {
+    "bestCheckpoint": "C:\\Users\\Cesarbmm\\ProtesisPracticas_e2b_audit\\EMG_Prosthesis_TD3\\matlab_code\\results\\e3ax_long\\run_20260908_141321_916_6ebf347b\\checkpoints\\AgentEpisode010000.mat",
+    "bestEpisode": 10000,
+    "bestValidationReward": -0.075616209663579084,
+    "lastCheckpoint": "C:\\Users\\Cesarbmm\\ProtesisPracticas_e2b_audit\\EMG_Prosthesis_TD3\\matlab_code\\results\\e3ax_long\\run_20260908_141321_916_6ebf347b\\checkpoints\\AgentEpisode020000.mat",
+    "lastEpisode": 20000,
+    "selection": "Máximo reward macro VALIDATION; empate MSE y episodio",
+    "bestEvaluation": {
+      "checkpoint": "C:\\Users\\Cesarbmm\\ProtesisPracticas_e2b_audit\\EMG_Prosthesis_TD3\\matlab_code\\results\\e3ax_long\\run_20260908_141321_916_6ebf347b\\checkpoints\\AgentEpisode010000.mat",
+      "label": "BEST_TD3",
+      "reward": -0.065746066620663873,
+      "mse": 0.051441252532287915,
+      "episodes": 200,
+      "output": "C:\\Users\\Cesarbmm\\ProtesisPracticas_e2b_audit\\EMG_Prosthesis_TD3\\matlab_code\\results\\e3ax_long\\run_20260908_141321_916_6ebf347b\\evaluation\\best_checkpoint",
+      "actorUnchanged": true,
+      "runtimeTermination": "EMG_ONLY",
+      "commonHorizonTeacherMetrics": true
+    },
+    "lastEvaluation": {
+      "checkpoint": "C:\\Users\\Cesarbmm\\ProtesisPracticas_e2b_audit\\EMG_Prosthesis_TD3\\matlab_code\\results\\e3ax_long\\run_20260908_141321_916_6ebf347b\\checkpoints\\AgentEpisode020000.mat",
+      "label": "LAST_TD3",
+      "reward": -0.064566335376424533,
+      "mse": 0.053114732182854452,
+      "episodes": 200,
+      "output": "C:\\Users\\Cesarbmm\\ProtesisPracticas_e2b_audit\\EMG_Prosthesis_TD3\\matlab_code\\results\\e3ax_long\\run_20260908_141321_916_6ebf347b\\evaluation\\last_checkpoint",
+      "actorUnchanged": true,
+      "runtimeTermination": "EMG_ONLY",
+      "commonHorizonTeacherMetrics": true
+    },
+    "completedRequestedEpisodes": true
+  },
+  "agentCheckpointAvailable": true,
+  "fullTrainingResumeAvailable": false,
+  "trainingMonitorScreenshot": "NOT_RELIABLY_SUPPORTED",
+  "referenceContractValidated": false,
+  "exploratoryTrainingAuthorized": true,
+  "hardwareAuthorized": false,
+  "MATEO_SANDRA_SEALED": true,
+  "PUSH": false
+}

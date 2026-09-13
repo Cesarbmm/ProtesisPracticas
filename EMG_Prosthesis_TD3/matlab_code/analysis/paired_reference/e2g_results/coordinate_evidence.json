@@ -1,0 +1,19 @@
+{
+  "scope": "Auditoría documental y de código anterior a contrafactuales; no es calibración nueva",
+  "motors": [
+    {"motor":1,"pairedPhysicalCalibrationDemonstrated":false,"aggregate":"ringUp+ringDown+pinkyUp+pinkyDown","gap":7500,"breakLimit":26500,"low":1800,"divisor":4092},
+    {"motor":2,"pairedPhysicalCalibrationDemonstrated":false,"aggregate":"indexUp+indexDown","gap":3650,"breakLimit":11500,"low":900,"divisor":2046},
+    {"motor":3,"pairedPhysicalCalibrationDemonstrated":false,"aggregate":"thumb","gap":4000,"breakLimit":8500,"low":300,"divisor":1023},
+    {"motor":4,"pairedPhysicalCalibrationDemonstrated":false,"aggregate":"middleUp+middleDown","gap":3550,"breakLimit":9000,"low":900,"divisor":2046}
+  ],
+  "provenance": {
+    "gap": "HEREDADO; comentario de holgura; medición trazable UNKNOWN",
+    "breakLimit": "HEREDADO del firmware definitions.h; procedencia física de constantes UNKNOWN",
+    "low": "HEREDADO; comentario de reposo sin registro de calibración",
+    "divisor": "HEREDADO; 1023 multiplicado por cantidad de sensores sumados",
+    "encoder2Flex": "HEURÍSTICO heredado: abs, zona constante, interpolación lineal y saturación"
+  },
+  "evidence": ["config/definitions.m:31-80", "config/configurables.m:280-284", "src/preprocess/encoder2Flex.m:54-82", "src/preprocess/reduceFlexDimension.m:17-25", "../prosthesis_code/include/definitions.h:23", "../docs/paired_reference/AUDITORIA_COORDENADAS_E2G.md", "../docs/paired_reference/AUDITORIA_SOPORTE_E2G.md"],
+  "affineCalibrationIndependentAnchorsAvailable": false,
+  "projectionMeaning": "Proyección euclídea diagnóstica sobre envolvente del grafo cerrado E2F, no calibración física ni realizabilidad de cada valor interior"
+}

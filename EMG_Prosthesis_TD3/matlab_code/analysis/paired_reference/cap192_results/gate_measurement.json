@@ -1,0 +1,39 @@
+{
+  "original": {
+    "mse": 0.059980845187052427,
+    "reward": -0.075616209663579084,
+    "m3": 134
+  },
+  "candidate": {
+    "mse": 0.060347570208504682,
+    "reward": -0.070896136011422833,
+    "m3": 0,
+    "boundHitFraction192": 0.7067865429234339,
+    "newFinalCycles": 0,
+    "newFinalPeriodic": 0,
+    "newRuntimeFinalCycles": 0,
+    "newRuntimeFinalPeriodic": 0,
+    "zeroMotionFailures": 0
+  },
+  "gate": {
+    "mseChangePct": 0.61140355776683331,
+    "rewardWorseningPct": -6.24214526641329,
+    "m3ReductionPct": 100,
+    "msePass": true,
+    "rewardPass": true,
+    "m3Pass": true,
+    "newFinalCycles": 0,
+    "newFinalPeriodic": 0,
+    "newRuntimeFinalCycles": 0,
+    "newRuntimeFinalPeriodic": 0,
+    "orbitPass": true,
+    "boundHitFraction192": 0.7067865429234339,
+    "boundPass": false,
+    "zeroMotionPass": true,
+    "offReproduced": true,
+    "testsPass": false,
+    "hashesIntact": false,
+    "supported": false
+  },
+  "status": "MEASURED_PENDING_TESTS"
+}

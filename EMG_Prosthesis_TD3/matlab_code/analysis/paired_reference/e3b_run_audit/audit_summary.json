@@ -1,0 +1,103 @@
+{
+  "audit": {
+    "result": "PASS",
+    "episodesReplayed": 640,
+    "intermediateFinalValidationMatches": 120,
+    "maxStateDiff": 0,
+    "maxRawDiff": 0,
+    "maxEffectiveDiff": 0,
+    "maxPwmDiff": 0,
+    "maxQDiff": 0,
+    "maxRewardDiff": 0,
+    "maxMetricsCsvDiff": 3.637978807091713e-11,
+    "metricsCsvTolerance": 1e-09,
+    "checkpointRolloutTransitionsAudited": 2624,
+    "agentSteps": 1000000.0,
+    "episodesStarted": 69959,
+    "teacherCompletedEpisodes": 69958,
+    "budgetTruncatedEpisodes": 1,
+    "rollouts": 980,
+    "optimizerUpdates": 62516,
+    "verifiedPNG": 400,
+    "verifiedFIG": 400,
+    "classification": {
+      "classification": "CAT_LEARNING_SIGNAL",
+      "continueTo5M": false,
+      "massiveTrainingJustified": false,
+      "bestSteps": 500000
+    },
+    "trainingExecuted": false,
+    "finalTestExecuted": false,
+    "MATEO_SANDRA_SEALED": true
+  },
+  "figures": {
+    "result": "PASS",
+    "figuresAudited": 400,
+    "curvesAudited": 3200,
+    "maxCurveDataDiff": 0
+  },
+  "integrity": {
+    "originalRun": {
+      "files": 1055,
+      "mismatches": [],
+      "pass": true
+    },
+    "historical": {
+      "files": 1070,
+      "mismatches": [],
+      "pass": true
+    },
+    "implementation": {
+      "files": 25,
+      "mismatches": [],
+      "pass": true
+    },
+    "trainingExecuted": false
+  },
+  "science": {
+    "classification": "CAT_LEARNING_SIGNAL",
+    "bestSteps": 500000,
+    "lastSteps": 1000000,
+    "bestValidation": {
+      "trackingMSE": 0.0574389061274616,
+      "MAE": 0.193105978536674,
+      "rewardMean": -0.0629609110795768,
+      "actionL2": 0.245127901959511,
+      "deltaActionL2": 0.061414518650402,
+      "saturationFraction": 0.00599504662004662,
+      "flat_response": 0.233333333333333,
+      "action_no_motion": 0.772685335249012,
+      "m3Reversals": 0.0
+    },
+    "lastValidation": {
+      "trackingMSE": 0.0614749086254173,
+      "MAE": 0.194880958055663,
+      "rewardMean": -0.0671767676816677,
+      "actionL2": 0.197503555166906,
+      "deltaActionL2": 0.0745364700916265,
+      "saturationFraction": 0.00946726884226884,
+      "flat_response": 0.204166666666667,
+      "action_no_motion": 0.68405369816679,
+      "m3Reversals": 0.0
+    },
+    "bestMSEChangeVsTD3Pct": -4.237918041440847,
+    "bestMSEChangeVsAgent7250Pct": 11.32010564509579,
+    "lastValidationMSEChangeVsBestPct": 7.02660055711974,
+    "bestRewardImprovementVsTD3Pct": 16.73622446867736,
+    "bestRewardImprovementVsAgent7250Pct": 1.927954080602842,
+    "continueTo5MSteps": false,
+    "massiveTrainingJustified": false,
+    "referenceContractValidated": false,
+    "hardwareAuthorized": false,
+    "trainingExecutedInAudit": false,
+    "finalTestExecuted": false,
+    "MATEO_SANDRA_SEALED": true
+  },
+  "maxAggregateCsvError": 4.547473508864641e-12,
+  "regressionTests": {
+    "previousPassed": 294,
+    "previousTotal": 294,
+    "rerunInThisAudit": false,
+    "evidence": "Fuentes y artefactos protegidos por hash; 640 nuevos replays de la corrida."
+  }
+}

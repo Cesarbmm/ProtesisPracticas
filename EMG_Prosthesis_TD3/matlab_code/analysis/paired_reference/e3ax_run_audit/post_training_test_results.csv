@@ -1,0 +1,9 @@
+Name,Passed,Failed,Incomplete,Duration
+testE3AXPostTraining/testCompleteReportLinksEveryEpisode,1,0,0,1.5919858
+testE3AXPostTraining/testMissingFigurePreventsCompleteReport,1,0,0,0.1694923
+testE3AXPostTraining/testCorruptFigurePreventsCompleteReport,1,0,0,0.168911
+testE3AXPostTraining/testRecoveryRepairsOnlyMissingEpisode,1,0,0,4.0608551
+testE3AXPostTraining/testMissingMetricsEpisodeFailsCoverage,1,0,0,0.2096508
+testE3AXPostTraining/testWrongBestSelectionFailsReport,1,0,0,1.3302787
+testE3AXPostTraining/testPostTrainingReusesSavedEvaluationWithoutTraining,1,0,0,8.0868377
+testE3AXPostTraining/testRunnerDeclaresEvaluationBeforeCompletion,1,0,0,0.1455862
