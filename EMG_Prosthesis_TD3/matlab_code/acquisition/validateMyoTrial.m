@@ -15,12 +15,30 @@ assert(isnumeric(trial.emg_raw)&&size(trial.emg_raw,2)==8&&isreal(trial.emg_raw)
 assert(numel(trial.time_emg)==n&&numel(trial.target_aperture)==n&&numel(trial.phase)==n&&numel(trial.source_time_emg)==n&&numel(trial.arrival_time_emg)==n,"MyoTrial:Length","Datos o estado incompatibles con MyoTrial:Length.");
 assert(isequal(size(trial.quat),[ni 4])&&isequal(size(trial.gyro),[ni 3])&&isequal(size(trial.accel),[ni 3])&&numel(trial.pose_aux)==ni&&numel(trial.source_time_imu)==ni,"MyoTrial:IMUShape","Datos o estado incompatibles con MyoTrial:IMUShape.");
 assert(string(trial.reference_source)=="VISUAL_TARGET","MyoTrial:ReferenceSource","Datos o estado incompatibles con MyoTrial:ReferenceSource.");
-% Proveedor externo aun no implementado: nunca duplicar target como medicion.
+% Medición de apertura excluida de este proyecto: conservar campos vacíos.
 assert(~trial.measured_aperture_available && isempty(trial.measured_aperture),"MyoTrial:MeasuredUnavailable","Datos o estado incompatibles con MyoTrial:MeasuredUnavailable.");
 if trial.rest_intent
  assert(string(trial.condition)=="REST"&&all(isnan(trial.target_aperture))&&isnan(trial.target_start)&&isnan(trial.target_end),"MyoTrial:Rest","Datos o estado incompatibles con MyoTrial:Rest.");
 else
- assert(all((trial.target_aperture>=0 & trial.target_aperture<=1)|isnan(trial.time_emg)|trial.phase=="OUTSIDE_STIMULUS_CLOCK"),"MyoTrial:TargetRange","Datos o estado incompatibles con MyoTrial:TargetRange.");
+ allowed=(trial.target_aperture>=0 & trial.target_aperture<=1)|isnan(trial.time_emg)|trial.phase=="OUTSIDE_STIMULUS_CLOCK";
+ if string(trial.schema_version)=="myo-continuous-v2",allowed=allowed|(trial.phase=="RELEASE"&isnan(trial.target_aperture));end
+ assert(all(allowed),"MyoTrial:TargetRange","Datos o estado incompatibles con MyoTrial:TargetRange.");
+end
+if string(trial.schema_version)=="myo-continuous-v2"
+ fields=["movement_level","block_id","randomized_order","randomization_seed","arm_posture_id","campaign","protocol"];
+ assert(all(isfield(trial,fields))&&ismember(string(trial.arm_posture_id),["P0_NEUTRAL_90","P0_FORWARD_EXTENDED"]),'MyoTrial:Pilot2Fields','Metadata del piloto 2 incompleta.');
+ assert(string(trial.arm_posture_id)==string(trial.protocol.arm_posture_id),'MyoTrial:Posture','Postura inconsistente con protocolo.');
+ assert(trial.protocol.is_scientific_trial&&~trial.protocol.block_break,'MyoTrial:BlockBreak','Descanso de bloque no permitido como trial.');
+ [target,phase]=myoProtocolTarget(trial.protocol,trial.time_emg);
+ outside=trial.phase=="OUTSIDE_STIMULUS_CLOCK";
+ assert(isequaln(trial.target_aperture(~outside),target(~outside))&&isequal(string(trial.phase(~outside)),phase(~outside)), ...
+  'MyoTrial:Pilot2Phases','Labels/targets no corresponden al protocolo.');
+ if ~trial.rest_intent
+  level=trial.movement_level;assert(ismember(level,[.25 .5 .75 1]),'MyoTrial:MovementLevel','Nivel inválido.');
+  if string(trial.direction)=="opening",start=0;finish=level;else,start=1;finish=1-level;end
+  assert(trial.target_start==start&&trial.target_end==finish,'MyoTrial:Pilot2Coordinates','Coordenadas incompatibles con dirección/nivel.');
+  assert(~any(trial.phase=="REST"),'MyoTrial:ReleaseRest','RELEASE no puede etiquetarse REST.');
+ else,assert(isnan(trial.movement_level),'MyoTrial:MovementLevel','REST no tiene nivel de movimiento.');end
 end
 assert(isstruct(trial.quality)&&trial.quality.sample_count==n,"MyoTrial:Quality","Datos o estado incompatibles con MyoTrial:Quality.");
 report=struct("schema_valid",true,"samples",n,"imu_samples",ni,"quality_warning_count",trial.quality.warning_count);

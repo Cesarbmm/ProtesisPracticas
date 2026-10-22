@@ -1,5 +1,7 @@
 # Esquema `myo-continuous-v1`
 
+La [campaña multi-participante V2](MULTIPARTICIPANT_CAMPAIGN_V2.md) conserva lectura de v1/v2 y añade session_uuid, campaign_id, capture_utc, protocol_version, random_seed y confirmaciones de identidad/postura a nuevas sesiones. Para campaign_id presente el backend exige reserva válida, confirmaciones y hash de la referencia de postura. Los MAT v2 nuevos permiten P0_FORWARD_EXTENDED, siempre igual a la postura de su protocolo; los registros históricos P0_NEUTRAL_90 siguen legibles. Registro de participantes, reservas y anotaciones históricas se guardan fuera de las carpetas de sesión y permanecen ignorados por Git.
+
 Formato incremental:
 
 ```text
@@ -33,7 +35,7 @@ Cada MAT definitivo contiene una estructura `trial`. Identificadores seguros: le
 | rest_intent | Booleano; independiente de apertura |
 | measured_aperture | `[]` en v1; **nunca copia de target** |
 | measured_aperture_available | false; el validador rechaza medición ficticia |
-| measured_aperture_provider | NONE; reserva explícita para un proveedor futuro separado |
+| measured_aperture_provider | NONE; medición de apertura fuera del alcance definitivo de este proyecto |
 | emg_raw | N×8 double, exactamente MyoData.emg_log: códigos SDK divididos por 128; no voltios, no WMoos, no filtro/offset de GUI |
 | time_emg | N×1 segundos relativos al inicio de trial; conserva orden y diferencias del tiempo suministrado |
 | source_time_emg | N×1 timestamps originales de MyoData, segundos desde inicialización del proveedor; **reconstruidos**, no hardware timestamps |
@@ -63,12 +65,36 @@ El timer de GUI es de 50 ms y MyoMex consulta su FIFO cada 40 ms. Esto no cambia
 
 ## Persistencia y recuperación
 
-Cada trial se escribe a un MAT temporal único en el mismo directorio, se carga y valida, se compara su contenido y se renombra. En Windows se usa `System.IO.File.Move`, que no sobrescribe un destino existente. Metadatos/manifiesto usan reemplazo atómico independiente. El manifiesto contiene SHA256 del MAT, conteos, condición, estado, duración y frecuencia estimada.
+Cada trial se escribe a un MAT temporal único en el mismo directorio, se carga y valida, se compara su contenido y se renombra. En V1 se usa `java.nio.file.Files.move` sin reemplazo para trials finales. Metadatos/status/recovery/manifiesto solicitan ATOMIC_MOVE + REPLACE_EXISTING, con fallback explícito sólo si no se soporta ATOMIC_MOVE y reintentos acotados de E/S. Se verifica SHA256 tras promoción. El manifiesto contiene SHA256 del MAT, conteos, condición, estado, duración y frecuencia estimada. Ningún fallo elimina automáticamente temporales de evidencia ni trials anteriores.
+
+`session_status.json` V1 añade `protocol_complete` (sólo true al superar la última fila) y `last_error` (informe de error si lo hubo). `FINISHED` por cierre manual no significa necesariamente que el protocolo se completara; revisar ambas variables y el manifest. Finalizar no sustituye un estado ERROR/ABORTED por FINISHED. El esquema RAW de los trials y la semántica de target permanecen intactos.
 
 El backend conserva además un prefijo activo cada segundo mediante reemplazo de `recovery/active_trial.mat`. Abort/pausa/cierre de GUI guardan el buffer disponible como trial parcial. Si el proceso termina abruptamente, `recoverMyoSession` puede promover el último prefijo persistido como RECOVERED_PARTIAL y reconstruir el manifiesto desde los MAT completos. Es idempotente y no cambia trials existentes. Puede perderse el último intervalo aún en RAM; no se promete protección absoluta ante pérdida de alimentación o fallo del disco. Temporales incompletos no se eliminan automáticamente.
 
 La recuperación no reanuda una contracción ni concatena sesiones. Para continuar adquisición usar una nueva sesión y conservar la procedencia de los trials parciales.
 
-## Medición externa futura
+## Exclusión de medición de apertura y de visión
 
-Un futuro `MeasuredApertureSource` deberá suministrar su propio tiempo, unidades, calibración y valores observados (webcam/visión, goniómetro, flex sensor u otro sensor). Requerirá una nueva versión del contrato/validador. En v1 se rechaza activar measured sin esa implementación. El Myo por sí solo no observa «50% de apertura».
+Webcam, visión, MediaPipe y hand tracking están definitivamente fuera del alcance de este proyecto. No se implementará measured aperture aquí. `measured_aperture=[]`, `measured_aperture_available=false` y proveedor NONE permanecen por compatibilidad con los archivos existentes. La mano no se mide con el Myo ni con las imágenes de guía; todos los niveles son intención instruida. La IMU se conserva para estabilidad/postura, nunca como label de apertura.
+
+## Extensión piloto 2: `myo-continuous-v2`
+
+V1 continúa siendo legible con sus fases PREPARE/RAMP/HOLD/REST. Los nuevos registros de P001/S04 usan v2 con estos campos adicionales:
+
+| Campo | Contrato |
+|---|---|
+| campaign | MYO_PILOT2_OPEN_CLOSE |
+| direction | opening / closing en movimientos; rest en registros REST |
+| movement_level | .25/.50/.75/1 en movimientos; NaN en REST |
+| target_start / target_end | Opening: 0 → level; closing: 1 → 1−level |
+| block_id | 1/2/3 |
+| randomized_order | 1..48 para movimientos, NaN para REST |
+| randomization_seed | Seed preregistrada 20261008, repetida en protocolo y metadata |
+| arm_posture_id | P0_NEUTRAL_90; descripción en metadata |
+| protocol.move_s | 1/2/3/4 s; ramp_s se conserva como alias para herramientas antiguas |
+| protocol.release_s | 2 s después de HOLD; fase separada de REST |
+| phase | PREPARE/MOVE/HOLD/RELEASE en movimientos; REST en registro de reposo |
+
+RELEASE no prescribe apertura: `target_aperture=NaN`, `rest_intent=false`. El siguiente registro REST tiene también target NaN, pero `rest_intent=true` y condición REST. El validador v2 verifica que los labels y targets correspondan al protocolo y que RELEASE no se convierta en REST.
+
+La tabla de protocolo contiene 100 filas de planificación: 97 registros científicos (48 movimientos + 49 REST) y tres eventos BLOCK_BREAK. Para éstos `is_scientific_trial=false`; no hay MAT en trials, no aumentan trial_id, no almacenan RAW científico y no se presentan como REST. `block_break_events.csv` guarda sólo bloque, tiempos, duración y estado; una pausa puede producir varias instancias de un descanso. En el live view el Myo puede continuar enviando muestras, pero no se incorporan a los MAT científicos durante ese descanso. Al volver a un registro científico se descarta el backlog de dicho intervalo.

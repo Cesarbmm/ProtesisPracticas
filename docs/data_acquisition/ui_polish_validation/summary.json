@@ -1,0 +1,26 @@
+{
+  "tests_total": 113,
+  "tests_passed": 113,
+  "mock_smoke": {
+    "result": "PASS",
+    "mock_only": true,
+    "simulated_seconds": 833,
+    "movements": 48,
+    "scientific_records": 97,
+    "session_uuid": "6e2d8d64-8647-427d-9261-3e3a13a5d4e6",
+    "second_session_reserved": "S002",
+    "posture_confirmed": true,
+    "precheck_was_gated": true,
+    "practice_wrote_files": false,
+    "human_acquisition_started": false,
+    "training_started": false,
+    "session_directory": "C:\\Users\\Cesarbmm\\ProtesisPracticas_myo_calibration\\EMG_Prosthesis_TD3\\matlab_code\\results\\myo_ui_polish_smoke\\20261022_003148\\P001\\S001"
+  },
+  "hardware_started": false,
+  "training_started": false,
+  "data_files_unchanged": 155,
+  "only_changed_visual_sequence": "opening_025",
+  "other_sequences_unchanged": 7,
+  "raw_human_in_git": false,
+  "push_authorized_by_user": true
+}

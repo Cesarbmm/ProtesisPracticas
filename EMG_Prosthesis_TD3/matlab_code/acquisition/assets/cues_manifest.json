@@ -1,0 +1,1044 @@
+{
+  "sequences": {
+    "opening_025": {
+      "frames": [
+        "frames\\master_opening\\frame_0036.png",
+        "frames\\master_opening\\frame_0037.png",
+        "frames\\master_opening\\frame_0038.png",
+        "frames\\master_opening\\frame_0039.png",
+        "frames\\master_opening\\frame_0040.png",
+        "frames\\master_opening\\frame_0041.png",
+        "frames\\master_opening\\frame_0042.png",
+        "frames\\master_opening\\frame_0043.png",
+        "frames\\master_opening\\frame_0044.png",
+        "frames\\master_opening\\frame_0045.png",
+        "frames\\master_opening\\frame_0046.png",
+        "frames\\master_opening\\frame_0047.png",
+        "frames\\master_opening\\frame_0048.png",
+        "frames\\master_opening\\frame_0049.png",
+        "frames\\master_opening\\frame_0050.png",
+        "frames\\master_opening\\frame_0051.png",
+        "frames\\master_opening\\frame_0052.png",
+        "frames\\master_opening\\frame_0053.png",
+        "frames\\master_opening\\frame_0054.png",
+        "frames\\master_opening\\frame_0055.png",
+        "frames\\master_opening\\frame_0056.png",
+        "frames\\master_opening\\frame_0057.png",
+        "frames\\master_opening\\frame_0058.png",
+        "frames\\master_opening\\frame_0059.png",
+        "frames\\master_opening\\frame_0060.png",
+        "frames\\master_opening\\frame_0061.png",
+        "frames\\master_opening\\frame_0062.png",
+        "frames\\master_opening\\frame_0063.png"
+      ],
+      "source": "Cierre-Apertura.mp4",
+      "source_sha256": "0497f859754cac970ae2f9ba9d5a61e5aa942ec52e534a376c09df5d4a12159a",
+      "source_first_frame": 36,
+      "source_last_frame": 63,
+      "native_frame_rate": 24
+    },
+    "opening_050": {
+      "frames": [
+        "frames\\master_opening\\frame_0036.png",
+        "frames\\master_opening\\frame_0037.png",
+        "frames\\master_opening\\frame_0038.png",
+        "frames\\master_opening\\frame_0039.png",
+        "frames\\master_opening\\frame_0040.png",
+        "frames\\master_opening\\frame_0041.png",
+        "frames\\master_opening\\frame_0042.png",
+        "frames\\master_opening\\frame_0043.png",
+        "frames\\master_opening\\frame_0044.png",
+        "frames\\master_opening\\frame_0045.png",
+        "frames\\master_opening\\frame_0046.png",
+        "frames\\master_opening\\frame_0047.png",
+        "frames\\master_opening\\frame_0048.png",
+        "frames\\master_opening\\frame_0049.png",
+        "frames\\master_opening\\frame_0050.png",
+        "frames\\master_opening\\frame_0051.png",
+        "frames\\master_opening\\frame_0052.png",
+        "frames\\master_opening\\frame_0053.png",
+        "frames\\master_opening\\frame_0054.png",
+        "frames\\master_opening\\frame_0055.png",
+        "frames\\master_opening\\frame_0056.png",
+        "frames\\master_opening\\frame_0057.png",
+        "frames\\master_opening\\frame_0058.png",
+        "frames\\master_opening\\frame_0059.png",
+        "frames\\master_opening\\frame_0060.png",
+        "frames\\master_opening\\frame_0061.png",
+        "frames\\master_opening\\frame_0062.png",
+        "frames\\master_opening\\frame_0063.png",
+        "frames\\master_opening\\frame_0064.png",
+        "frames\\master_opening\\frame_0065.png",
+        "frames\\master_opening\\frame_0066.png",
+        "frames\\master_opening\\frame_0067.png",
+        "frames\\master_opening\\frame_0068.png",
+        "frames\\master_opening\\frame_0069.png",
+        "frames\\master_opening\\frame_0070.png",
+        "frames\\master_opening\\frame_0071.png"
+      ],
+      "source": "Cierre-Apertura.mp4",
+      "source_sha256": "0497f859754cac970ae2f9ba9d5a61e5aa942ec52e534a376c09df5d4a12159a",
+      "source_first_frame": 36,
+      "source_last_frame": 71,
+      "native_frame_rate": 24
+    },
+    "opening_075": {
+      "frames": [
+        "frames\\master_opening\\frame_0036.png",
+        "frames\\master_opening\\frame_0037.png",
+        "frames\\master_opening\\frame_0038.png",
+        "frames\\master_opening\\frame_0039.png",
+        "frames\\master_opening\\frame_0040.png",
+        "frames\\master_opening\\frame_0041.png",
+        "frames\\master_opening\\frame_0042.png",
+        "frames\\master_opening\\frame_0043.png",
+        "frames\\master_opening\\frame_0044.png",
+        "frames\\master_opening\\frame_0045.png",
+        "frames\\master_opening\\frame_0046.png",
+        "frames\\master_opening\\frame_0047.png",
+        "frames\\master_opening\\frame_0048.png",
+        "frames\\master_opening\\frame_0049.png",
+        "frames\\master_opening\\frame_0050.png",
+        "frames\\master_opening\\frame_0051.png",
+        "frames\\master_opening\\frame_0052.png",
+        "frames\\master_opening\\frame_0053.png",
+        "frames\\master_opening\\frame_0054.png",
+        "frames\\master_opening\\frame_0055.png",
+        "frames\\master_opening\\frame_0056.png",
+        "frames\\master_opening\\frame_0057.png",
+        "frames\\master_opening\\frame_0058.png",
+        "frames\\master_opening\\frame_0059.png",
+        "frames\\master_opening\\frame_0060.png",
+        "frames\\master_opening\\frame_0061.png",
+        "frames\\master_opening\\frame_0062.png",
+        "frames\\master_opening\\frame_0063.png",
+        "frames\\master_opening\\frame_0064.png",
+        "frames\\master_opening\\frame_0065.png",
+        "frames\\master_opening\\frame_0066.png",
+        "frames\\master_opening\\frame_0067.png",
+        "frames\\master_opening\\frame_0068.png",
+        "frames\\master_opening\\frame_0069.png",
+        "frames\\master_opening\\frame_0070.png",
+        "frames\\master_opening\\frame_0071.png",
+        "frames\\master_opening\\frame_0072.png",
+        "frames\\master_opening\\frame_0073.png",
+        "frames\\master_opening\\frame_0074.png",
+        "frames\\master_opening\\frame_0075.png",
+        "frames\\master_opening\\frame_0076.png",
+        "frames\\master_opening\\frame_0077.png",
+        "frames\\master_opening\\frame_0078.png",
+        "frames\\master_opening\\frame_0079.png",
+        "frames\\master_opening\\frame_0080.png",
+        "frames\\master_opening\\frame_0081.png",
+        "frames\\master_opening\\frame_0082.png",
+        "frames\\master_opening\\frame_0083.png",
+        "frames\\master_opening\\frame_0084.png",
+        "frames\\master_opening\\frame_0085.png",
+        "frames\\master_opening\\frame_0086.png",
+        "frames\\master_opening\\frame_0087.png",
+        "frames\\master_opening\\frame_0088.png",
+        "frames\\master_opening\\frame_0089.png"
+      ],
+      "source": "Cierre-Apertura.mp4",
+      "source_sha256": "0497f859754cac970ae2f9ba9d5a61e5aa942ec52e534a376c09df5d4a12159a",
+      "source_first_frame": 36,
+      "source_last_frame": 89,
+      "native_frame_rate": 24
+    },
+    "opening_100": {
+      "frames": [
+        "frames\\master_opening\\frame_0036.png",
+        "frames\\master_opening\\frame_0037.png",
+        "frames\\master_opening\\frame_0038.png",
+        "frames\\master_opening\\frame_0039.png",
+        "frames\\master_opening\\frame_0040.png",
+        "frames\\master_opening\\frame_0041.png",
+        "frames\\master_opening\\frame_0042.png",
+        "frames\\master_opening\\frame_0043.png",
+        "frames\\master_opening\\frame_0044.png",
+        "frames\\master_opening\\frame_0045.png",
+        "frames\\master_opening\\frame_0046.png",
+        "frames\\master_opening\\frame_0047.png",
+        "frames\\master_opening\\frame_0048.png",
+        "frames\\master_opening\\frame_0049.png",
+        "frames\\master_opening\\frame_0050.png",
+        "frames\\master_opening\\frame_0051.png",
+        "frames\\master_opening\\frame_0052.png",
+        "frames\\master_opening\\frame_0053.png",
+        "frames\\master_opening\\frame_0054.png",
+        "frames\\master_opening\\frame_0055.png",
+        "frames\\master_opening\\frame_0056.png",
+        "frames\\master_opening\\frame_0057.png",
+        "frames\\master_opening\\frame_0058.png",
+        "frames\\master_opening\\frame_0059.png",
+        "frames\\master_opening\\frame_0060.png",
+        "frames\\master_opening\\frame_0061.png",
+        "frames\\master_opening\\frame_0062.png",
+        "frames\\master_opening\\frame_0063.png",
+        "frames\\master_opening\\frame_0064.png",
+        "frames\\master_opening\\frame_0065.png",
+        "frames\\master_opening\\frame_0066.png",
+        "frames\\master_opening\\frame_0067.png",
+        "frames\\master_opening\\frame_0068.png",
+        "frames\\master_opening\\frame_0069.png",
+        "frames\\master_opening\\frame_0070.png",
+        "frames\\master_opening\\frame_0071.png",
+        "frames\\master_opening\\frame_0072.png",
+        "frames\\master_opening\\frame_0073.png",
+        "frames\\master_opening\\frame_0074.png",
+        "frames\\master_opening\\frame_0075.png",
+        "frames\\master_opening\\frame_0076.png",
+        "frames\\master_opening\\frame_0077.png",
+        "frames\\master_opening\\frame_0078.png",
+        "frames\\master_opening\\frame_0079.png",
+        "frames\\master_opening\\frame_0080.png",
+        "frames\\master_opening\\frame_0081.png",
+        "frames\\master_opening\\frame_0082.png",
+        "frames\\master_opening\\frame_0083.png",
+        "frames\\master_opening\\frame_0084.png",
+        "frames\\master_opening\\frame_0085.png",
+        "frames\\master_opening\\frame_0086.png",
+        "frames\\master_opening\\frame_0087.png",
+        "frames\\master_opening\\frame_0088.png",
+        "frames\\master_opening\\frame_0089.png",
+        "frames\\master_opening\\frame_0090.png",
+        "frames\\master_opening\\frame_0091.png",
+        "frames\\master_opening\\frame_0092.png",
+        "frames\\master_opening\\frame_0093.png",
+        "frames\\master_opening\\frame_0094.png",
+        "frames\\master_opening\\frame_0095.png",
+        "frames\\master_opening\\frame_0096.png",
+        "frames\\master_opening\\frame_0097.png",
+        "frames\\master_opening\\frame_0098.png",
+        "frames\\master_opening\\frame_0099.png",
+        "frames\\master_opening\\frame_0100.png",
+        "frames\\master_opening\\frame_0101.png",
+        "frames\\master_opening\\frame_0102.png",
+        "frames\\master_opening\\frame_0103.png",
+        "frames\\master_opening\\frame_0104.png",
+        "frames\\master_opening\\frame_0105.png",
+        "frames\\master_opening\\frame_0106.png"
+      ],
+      "source": "Cierre-Apertura.mp4",
+      "source_sha256": "0497f859754cac970ae2f9ba9d5a61e5aa942ec52e534a376c09df5d4a12159a",
+      "source_first_frame": 36,
+      "source_last_frame": 106,
+      "native_frame_rate": 24
+    },
+    "closing_025": {
+      "frames": [
+        "frames\\master_closing\\frame_0036.png",
+        "frames\\master_closing\\frame_0037.png",
+        "frames\\master_closing\\frame_0038.png",
+        "frames\\master_closing\\frame_0039.png",
+        "frames\\master_closing\\frame_0040.png",
+        "frames\\master_closing\\frame_0041.png",
+        "frames\\master_closing\\frame_0042.png",
+        "frames\\master_closing\\frame_0043.png",
+        "frames\\master_closing\\frame_0044.png",
+        "frames\\master_closing\\frame_0045.png",
+        "frames\\master_closing\\frame_0046.png",
+        "frames\\master_closing\\frame_0047.png",
+        "frames\\master_closing\\frame_0048.png",
+        "frames\\master_closing\\frame_0049.png",
+        "frames\\master_closing\\frame_0050.png",
+        "frames\\master_closing\\frame_0051.png",
+        "frames\\master_closing\\frame_0052.png",
+        "frames\\master_closing\\frame_0053.png",
+        "frames\\master_closing\\frame_0054.png"
+      ],
+      "source": "Apertura-Cierre.mp4",
+      "source_sha256": "4da193369fa28f3430e6b0be9433317e099a67db6cfe6666ea563e4e82556366",
+      "source_first_frame": 36,
+      "source_last_frame": 54,
+      "native_frame_rate": 24
+    },
+    "closing_050": {
+      "frames": [
+        "frames\\master_closing\\frame_0036.png",
+        "frames\\master_closing\\frame_0037.png",
+        "frames\\master_closing\\frame_0038.png",
+        "frames\\master_closing\\frame_0039.png",
+        "frames\\master_closing\\frame_0040.png",
+        "frames\\master_closing\\frame_0041.png",
+        "frames\\master_closing\\frame_0042.png",
+        "frames\\master_closing\\frame_0043.png",
+        "frames\\master_closing\\frame_0044.png",
+        "frames\\master_closing\\frame_0045.png",
+        "frames\\master_closing\\frame_0046.png",
+        "frames\\master_closing\\frame_0047.png",
+        "frames\\master_closing\\frame_0048.png",
+        "frames\\master_closing\\frame_0049.png",
+        "frames\\master_closing\\frame_0050.png",
+        "frames\\master_closing\\frame_0051.png",
+        "frames\\master_closing\\frame_0052.png",
+        "frames\\master_closing\\frame_0053.png",
+        "frames\\master_closing\\frame_0054.png",
+        "frames\\master_closing\\frame_0055.png",
+        "frames\\master_closing\\frame_0056.png",
+        "frames\\master_closing\\frame_0057.png",
+        "frames\\master_closing\\frame_0058.png",
+        "frames\\master_closing\\frame_0059.png",
+        "frames\\master_closing\\frame_0060.png",
+        "frames\\master_closing\\frame_0061.png",
+        "frames\\master_closing\\frame_0062.png",
+        "frames\\master_closing\\frame_0063.png",
+        "frames\\master_closing\\frame_0064.png",
+        "frames\\master_closing\\frame_0065.png",
+        "frames\\master_closing\\frame_0066.png",
+        "frames\\master_closing\\frame_0067.png",
+        "frames\\master_closing\\frame_0068.png",
+        "frames\\master_closing\\frame_0069.png",
+        "frames\\master_closing\\frame_0070.png",
+        "frames\\master_closing\\frame_0071.png"
+      ],
+      "source": "Apertura-Cierre.mp4",
+      "source_sha256": "4da193369fa28f3430e6b0be9433317e099a67db6cfe6666ea563e4e82556366",
+      "source_first_frame": 36,
+      "source_last_frame": 71,
+      "native_frame_rate": 24
+    },
+    "closing_075": {
+      "frames": [
+        "frames\\master_closing\\frame_0036.png",
+        "frames\\master_closing\\frame_0037.png",
+        "frames\\master_closing\\frame_0038.png",
+        "frames\\master_closing\\frame_0039.png",
+        "frames\\master_closing\\frame_0040.png",
+        "frames\\master_closing\\frame_0041.png",
+        "frames\\master_closing\\frame_0042.png",
+        "frames\\master_closing\\frame_0043.png",
+        "frames\\master_closing\\frame_0044.png",
+        "frames\\master_closing\\frame_0045.png",
+        "frames\\master_closing\\frame_0046.png",
+        "frames\\master_closing\\frame_0047.png",
+        "frames\\master_closing\\frame_0048.png",
+        "frames\\master_closing\\frame_0049.png",
+        "frames\\master_closing\\frame_0050.png",
+        "frames\\master_closing\\frame_0051.png",
+        "frames\\master_closing\\frame_0052.png",
+        "frames\\master_closing\\frame_0053.png",
+        "frames\\master_closing\\frame_0054.png",
+        "frames\\master_closing\\frame_0055.png",
+        "frames\\master_closing\\frame_0056.png",
+        "frames\\master_closing\\frame_0057.png",
+        "frames\\master_closing\\frame_0058.png",
+        "frames\\master_closing\\frame_0059.png",
+        "frames\\master_closing\\frame_0060.png",
+        "frames\\master_closing\\frame_0061.png",
+        "frames\\master_closing\\frame_0062.png",
+        "frames\\master_closing\\frame_0063.png",
+        "frames\\master_closing\\frame_0064.png",
+        "frames\\master_closing\\frame_0065.png",
+        "frames\\master_closing\\frame_0066.png",
+        "frames\\master_closing\\frame_0067.png",
+        "frames\\master_closing\\frame_0068.png",
+        "frames\\master_closing\\frame_0069.png",
+        "frames\\master_closing\\frame_0070.png",
+        "frames\\master_closing\\frame_0071.png",
+        "frames\\master_closing\\frame_0072.png",
+        "frames\\master_closing\\frame_0073.png",
+        "frames\\master_closing\\frame_0074.png",
+        "frames\\master_closing\\frame_0075.png",
+        "frames\\master_closing\\frame_0076.png",
+        "frames\\master_closing\\frame_0077.png",
+        "frames\\master_closing\\frame_0078.png",
+        "frames\\master_closing\\frame_0079.png",
+        "frames\\master_closing\\frame_0080.png",
+        "frames\\master_closing\\frame_0081.png",
+        "frames\\master_closing\\frame_0082.png",
+        "frames\\master_closing\\frame_0083.png",
+        "frames\\master_closing\\frame_0084.png",
+        "frames\\master_closing\\frame_0085.png",
+        "frames\\master_closing\\frame_0086.png",
+        "frames\\master_closing\\frame_0087.png",
+        "frames\\master_closing\\frame_0088.png",
+        "frames\\master_closing\\frame_0089.png"
+      ],
+      "source": "Apertura-Cierre.mp4",
+      "source_sha256": "4da193369fa28f3430e6b0be9433317e099a67db6cfe6666ea563e4e82556366",
+      "source_first_frame": 36,
+      "source_last_frame": 89,
+      "native_frame_rate": 24
+    },
+    "closing_100": {
+      "frames": [
+        "frames\\master_closing\\frame_0036.png",
+        "frames\\master_closing\\frame_0037.png",
+        "frames\\master_closing\\frame_0038.png",
+        "frames\\master_closing\\frame_0039.png",
+        "frames\\master_closing\\frame_0040.png",
+        "frames\\master_closing\\frame_0041.png",
+        "frames\\master_closing\\frame_0042.png",
+        "frames\\master_closing\\frame_0043.png",
+        "frames\\master_closing\\frame_0044.png",
+        "frames\\master_closing\\frame_0045.png",
+        "frames\\master_closing\\frame_0046.png",
+        "frames\\master_closing\\frame_0047.png",
+        "frames\\master_closing\\frame_0048.png",
+        "frames\\master_closing\\frame_0049.png",
+        "frames\\master_closing\\frame_0050.png",
+        "frames\\master_closing\\frame_0051.png",
+        "frames\\master_closing\\frame_0052.png",
+        "frames\\master_closing\\frame_0053.png",
+        "frames\\master_closing\\frame_0054.png",
+        "frames\\master_closing\\frame_0055.png",
+        "frames\\master_closing\\frame_0056.png",
+        "frames\\master_closing\\frame_0057.png",
+        "frames\\master_closing\\frame_0058.png",
+        "frames\\master_closing\\frame_0059.png",
+        "frames\\master_closing\\frame_0060.png",
+        "frames\\master_closing\\frame_0061.png",
+        "frames\\master_closing\\frame_0062.png",
+        "frames\\master_closing\\frame_0063.png",
+        "frames\\master_closing\\frame_0064.png",
+        "frames\\master_closing\\frame_0065.png",
+        "frames\\master_closing\\frame_0066.png",
+        "frames\\master_closing\\frame_0067.png",
+        "frames\\master_closing\\frame_0068.png",
+        "frames\\master_closing\\frame_0069.png",
+        "frames\\master_closing\\frame_0070.png",
+        "frames\\master_closing\\frame_0071.png",
+        "frames\\master_closing\\frame_0072.png",
+        "frames\\master_closing\\frame_0073.png",
+        "frames\\master_closing\\frame_0074.png",
+        "frames\\master_closing\\frame_0075.png",
+        "frames\\master_closing\\frame_0076.png",
+        "frames\\master_closing\\frame_0077.png",
+        "frames\\master_closing\\frame_0078.png",
+        "frames\\master_closing\\frame_0079.png",
+        "frames\\master_closing\\frame_0080.png",
+        "frames\\master_closing\\frame_0081.png",
+        "frames\\master_closing\\frame_0082.png",
+        "frames\\master_closing\\frame_0083.png",
+        "frames\\master_closing\\frame_0084.png",
+        "frames\\master_closing\\frame_0085.png",
+        "frames\\master_closing\\frame_0086.png",
+        "frames\\master_closing\\frame_0087.png",
+        "frames\\master_closing\\frame_0088.png",
+        "frames\\master_closing\\frame_0089.png",
+        "frames\\master_closing\\frame_0090.png",
+        "frames\\master_closing\\frame_0091.png",
+        "frames\\master_closing\\frame_0092.png",
+        "frames\\master_closing\\frame_0093.png",
+        "frames\\master_closing\\frame_0094.png",
+        "frames\\master_closing\\frame_0095.png",
+        "frames\\master_closing\\frame_0096.png",
+        "frames\\master_closing\\frame_0097.png",
+        "frames\\master_closing\\frame_0098.png",
+        "frames\\master_closing\\frame_0099.png",
+        "frames\\master_closing\\frame_0100.png",
+        "frames\\master_closing\\frame_0101.png",
+        "frames\\master_closing\\frame_0102.png",
+        "frames\\master_closing\\frame_0103.png",
+        "frames\\master_closing\\frame_0104.png",
+        "frames\\master_closing\\frame_0105.png",
+        "frames\\master_closing\\frame_0106.png"
+      ],
+      "source": "Apertura-Cierre.mp4",
+      "source_sha256": "4da193369fa28f3430e6b0be9433317e099a67db6cfe6666ea563e4e82556366",
+      "source_first_frame": 36,
+      "source_last_frame": 106,
+      "native_frame_rate": 24
+    }
+  },
+  "files": [
+    {
+      "file": "frames\\master_opening\\frame_0036.png",
+      "sha256": "da175281cedc737d3348ff7ccf89f99b50c9a218df0e64e41f23041fce8f7347"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0037.png",
+      "sha256": "85b03b5d453fef43989bbb19e1b4e4b3cac58323c40e94a949b3eed90766a069"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0038.png",
+      "sha256": "cfb252942a81f22429698d4ec9b2451b1482f5406fbe0ec4a7f53b81aeb2cd1b"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0039.png",
+      "sha256": "5a064035cae083cfd0a1d015270bb5752ef0a813531a5bc986669f96771101d1"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0040.png",
+      "sha256": "9aeea18665a0d5d6a5b0c07cd200633d0bfa97dc9479b8342f6e9e2dc0ecf5b1"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0041.png",
+      "sha256": "dfe3e5649434b500c62457778c46e3feae1750392f5e96b58d47e9470a5b6374"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0042.png",
+      "sha256": "d66c7ebd9819114c40064a20a1677c078c792dcd048c4a9fef2c4cc942cc4535"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0043.png",
+      "sha256": "231e21c52c0fb970e491f3de1cef94601354676f177e22cac8a4f8e05f0ba972"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0044.png",
+      "sha256": "06cba4caa7c72f2e3476e7ac5ad84442a8f7fd21b2681be23dc486f996cf4846"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0045.png",
+      "sha256": "cc6dd2143312133d2278ceebf7fbc3680f94a842581fcceb4b60af3852c9e7e4"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0046.png",
+      "sha256": "57aebe8a8002e5e8a2ee95f283deff6e6a398162b4fd957adadfa0fb1bc6c32e"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0047.png",
+      "sha256": "b30832621a83444ff21a75fbcc7b3434d45378cbf96bf766d103a2c0db59f8c3"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0048.png",
+      "sha256": "bc5aad75ca4f56a1f06ebc8362a283187e3b516663417f356126c02109386dd2"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0049.png",
+      "sha256": "673abafd08bf294ca47bd3cf68eabd4167637799c638aa184c839c1eca373bf9"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0050.png",
+      "sha256": "7d8e03b0056a4c622159de082815c8dfc7777fb8799437dd9a42ba1278e7bc1e"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0051.png",
+      "sha256": "ddb560000b24152c968cbf5b963a930f796521143dccb8c1ce3503e32d826dae"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0052.png",
+      "sha256": "339f87a1f06c5b4f6980aaa8c7cded6a80dc55bdd0aa066aa828bb7990a34120"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0053.png",
+      "sha256": "f7d363d74f5a8c0cd9ee2d14e9d0e2d2b2d675c740523e3587e539afef9ee267"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0054.png",
+      "sha256": "202a8932bc61a36727c91ab69eb337e51d53330f0b70b08c373c963af17df0e1"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0055.png",
+      "sha256": "fcc3daa0a84095982ab490ea0454be824198c750849e8952770aa467598aa88c"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0056.png",
+      "sha256": "2f9144f760501369abffee2de9fbca7acd2811eb49b24d9b4f39ab4bd77028b5"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0057.png",
+      "sha256": "ef84875d5ad750fccaaeb3b0ddd68ef3533a870cbeb2f77533d2c2385d80208e"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0058.png",
+      "sha256": "671d6fe3bae41552901a21c4bf7184ba8d4ec5a85e1d3ae997557513c85105c8"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0059.png",
+      "sha256": "15f3b7adbc91b344e60e74d970d266142458177080f99282472174a9b5c5a223"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0060.png",
+      "sha256": "cc7eeaa458801dc91a2e61831a0fd26b86e6f176d248b4d0c3869ae9e7225e28"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0061.png",
+      "sha256": "bc61022726c6a51464792e9fd90f8ce207f4bc15a4d601152f7aca6162addcb3"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0062.png",
+      "sha256": "cbabced4fb82e71aedb83f0223e0ab5f206843f7ad61c79cf4145f5512e434da"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0063.png",
+      "sha256": "23ed9b60f8c35942983def18497ea83d8e3a2e56c4a794b0b8899f2bb12f1ae3"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0064.png",
+      "sha256": "008a47917561b1cdca78f7be524a0c71a746a4cfa07274346675cdf7db04574d"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0065.png",
+      "sha256": "fc138c748cd43a56878a5ad340792ed425684f7930fbbcb9eb3d5f2d20308f2f"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0066.png",
+      "sha256": "732ee3ef1672ee482cbf1b41b596edbe24615046a05c068dbb037ffaca7a2c8a"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0067.png",
+      "sha256": "ac658270ff913c89977f21dd22ff699ccf75a1f262bc9687dbc4ec0f0e825dc7"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0068.png",
+      "sha256": "22c1390da7c278624dfc52b8a22ff0baf9413f173a9312958ca9eb321f729d96"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0069.png",
+      "sha256": "3a3fad197b8b8d75441a78c9742ae36917c91b3fa544e0e68cfe937f86e3371d"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0070.png",
+      "sha256": "083bd63e9d811f6f8f62e6206bc273209d31b4afb4842ce6b0ebb2474a95ea98"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0071.png",
+      "sha256": "00c9e7f2092bad79a9939206c462f321a71393ae54c1b0d9f86ede58673716ad"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0072.png",
+      "sha256": "a683d3a55179200345bf9b3d89cd222fae6ccaddbd182b4f414f5ce74eb26844"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0073.png",
+      "sha256": "c4a7a4045fefa8b1a31f0522fedb1f7c6f1fece8eb405cff9ac874a76141cba8"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0074.png",
+      "sha256": "cdde28e28f63edc8e22b2dab5a8196e20ed5afdcfa60547e7433244fadb83b79"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0075.png",
+      "sha256": "856a98d72ad205ef97b72838df27f285af4d166ec76a71ff59566c469a26e48f"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0076.png",
+      "sha256": "1bafa79005cfa1db5816aea179de57decac3b90fd407d83a6dd67a25885398ba"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0077.png",
+      "sha256": "5a79e8c904df56dc9ef39da31e7d6562ca0ea8cc3ca9cf625e42e882d4f56ef0"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0078.png",
+      "sha256": "2ce62db0b61339f55e2b102a806bdd9b28775584b7ae9b0de8d6ecd21e6bc92f"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0079.png",
+      "sha256": "5e51f5bc65aed013d17e8bbc784f908d5515837f25e9c9f6a63043c48db24016"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0080.png",
+      "sha256": "5f992add29d421c2651a3148ce3fd4adb5753fc987d7a6664e48e2a2a604fb4b"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0081.png",
+      "sha256": "2b297bdcd20a3ea89b93062579e85eea9e8db83ba5084b071d76a64f611adff3"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0082.png",
+      "sha256": "ad84bd45a6dc439fe4be9bb061da4c1d6602af26fea6439482c72b45942b84b3"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0083.png",
+      "sha256": "fc61a1505a3d2d1f7d2c1d40c9fe5b625ac13710859bfa35c665a8688eea70f1"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0084.png",
+      "sha256": "4759d1e4bced2f47e586ef7ad459b86003568bfc3cd444dccd73866119efed20"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0085.png",
+      "sha256": "4d2e97af54c2f0ecf712a303a9c7247cf5288aa24500932792617d2d68da5b67"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0086.png",
+      "sha256": "4f89e22b4c3559484af5392656df29ece82b74c95f73b4fade9dcd45e80c6e3e"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0087.png",
+      "sha256": "8aa5573fd3cb0e60f4b4f1f951b327bffba3756e018a22c67f7c2b3d41e710c8"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0088.png",
+      "sha256": "a83a455135a801d9b950b85fdfe8c57644e52a554f603f03b10bfa157d5dd925"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0089.png",
+      "sha256": "4f4468d35242097aa4321627dfce2aa82af1fd05c5097ef4a0e87fab26941092"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0090.png",
+      "sha256": "fc9ca7c62d4f5532d0cb5183d3218e512d0518aa69e1c0cb77d394c05a14011c"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0091.png",
+      "sha256": "6f77f958bebbfd4503bfec385986261d98ce18a2aeaaa030b2fb422fbb2cd94f"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0092.png",
+      "sha256": "35b3e6ae3db381a49a92d850e407f3e58fe7b71ea240c5e0fd52183feac41df0"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0093.png",
+      "sha256": "4282bfe9608717019c185e747bcbd4faabe49b80f002f46bc777449e48c0b992"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0094.png",
+      "sha256": "4a03b50ac205e0fa8c4779b99860eed30319ac867bda9bfa223becac47ffd2dc"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0095.png",
+      "sha256": "fadba4105954983b4748873f98d0ccf5224c693237463ce899044c742df73d8d"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0096.png",
+      "sha256": "7b33da6a294726545a5b1216e0a89a6c45e84b0fa71c5ed70cc1b0062b311293"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0097.png",
+      "sha256": "df1c9c17f1cab8fb120db7226659696d1841f4b90dc4df723caf59e2f69ac60d"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0098.png",
+      "sha256": "a2b2e7fc42c30035ae0219e00936a2bee0c1364d35513d1243178082a1b12d53"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0099.png",
+      "sha256": "0196b48bef22e677e7b801f64910a8dc21e431aad4fde0022e057864b315e276"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0100.png",
+      "sha256": "8b21ba5e881fc6b849e468c4e5f83cbcb883fc2519bde1a5db9ef49b1e4268d8"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0101.png",
+      "sha256": "949e6dc753586be3d91b4ba218a4f9498b1147c59c8393436c5b49ade27461b8"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0102.png",
+      "sha256": "c21d90dd2cc703cc148f39704cca2976c7b3df1e2cdb0594faff5be4942193c8"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0103.png",
+      "sha256": "692f51410126a88b74ca604e5b9a910b09c19f9507a914735d52b64f06014c86"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0104.png",
+      "sha256": "b3ae07b37edf5b6d7d00f118a0e4723dec652528f34dccff62263cf334cffcfe"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0105.png",
+      "sha256": "4a970d77dbe39d4fa17d2f09b9e847b13464c8b1241b868385fc6799c28893bb"
+    },
+    {
+      "file": "frames\\master_opening\\frame_0106.png",
+      "sha256": "53f7378fe1726732719f8b03073c534bfbb0abb7958fbc2f19f8631eea1f4c16"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0036.png",
+      "sha256": "5246054a51bcbaa7a83d2a3e5adbb7b91c671449884654b8d7badbb3f9d50f56"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0037.png",
+      "sha256": "4735998ab5dfe9254c65b1807f68c9cf21b8b332f84ce8c7546899cf74d307f8"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0038.png",
+      "sha256": "b7fa7175fbc2225283ff4a2c19645108393d5a39dafbbfb88f0ac05a8a0df725"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0039.png",
+      "sha256": "b57af5b76ce5de24a37743d1686cdd1deb0215791c5682e7fe16402eb5a35081"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0040.png",
+      "sha256": "079b5cc15418f1b56544c883a7bc1448d654e9ca783446f731d12b5fd2df703e"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0041.png",
+      "sha256": "9ea9ed08d00258a48f28f1ccfba79b7e145cbee861636bcd10f6c5a184d00eda"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0042.png",
+      "sha256": "833cc6466812e5eeaf0f0e99015b413ad4e4de005a355880a466159a78c824ad"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0043.png",
+      "sha256": "1b1f100d8cae67333364c5496f097983aec91a18d64d950c6a1d542c0701a7f7"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0044.png",
+      "sha256": "2c5936b09875bda48c74f325d021478f88ab461610c662d60da0ed47253b6162"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0045.png",
+      "sha256": "fc67c338869990cfc1e2abca885f12681e22f59dd08140f4c8a7ec8cf1a29089"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0046.png",
+      "sha256": "04469ecd951cb27e133eb5ed060a397df234fb7469ef53eec3eedd68a932a8e4"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0047.png",
+      "sha256": "2c5c040a206390a9bd1c0543b26ef284f9dbcd982595f84c5d48ccfe65c4324a"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0048.png",
+      "sha256": "b97f27e2433bda154af1b62e47341ec9661b460eba8ae1875d77021e3f13cd13"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0049.png",
+      "sha256": "1b9380578a8ff86fa5c1a7e04bbe231df8738612ab8833760e5eed62c9adbada"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0050.png",
+      "sha256": "836869eaf7d40e3d27ceda782dabc11cd7b746556abda84879c71093ab317a6d"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0051.png",
+      "sha256": "3f6b313ccbac4c079232a1388aba120c4b1beb68d119ed4f652169add63f03ed"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0052.png",
+      "sha256": "e5f5075eee0f7d90856e2dd237adbab3af8dbd2f3ca38ef7a350c53813d52a37"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0053.png",
+      "sha256": "a7565c9670e6d1be3c8281ac8bd645eae6903dcd3018ee1cf6b33ab55cb1364d"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0054.png",
+      "sha256": "1cd7d14ccd811c50764d5f64ffc75e14cf5278e77c972f77fabbf169b921ff6c"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0055.png",
+      "sha256": "d5aed6e8404b190e0362fcf68e2742295fee97248f4d767e0848306ec9bcc903"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0056.png",
+      "sha256": "679d5fa3bebf8ec94f263e9b1755dfef48bc788931cec14f231a286f62588d65"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0057.png",
+      "sha256": "4857c23ba13717bf79498edcdc02539fa732d7cb687c6ca461c052e958535df6"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0058.png",
+      "sha256": "4ff9f1e7173cdaedb4887a56478e9008c8204fcecc1ae1fdde6d2999e17562a3"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0059.png",
+      "sha256": "0da06ef1539cde363129d12cec53d70643a4a17c5bd185bb50919dc9639f4df3"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0060.png",
+      "sha256": "3fc11b6ab4f028c497793f3cecd78fbc2b73cfbdc7c3738e8d0db0f66e349fb9"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0061.png",
+      "sha256": "68c6e861333dbd8c9b6f3b7302d51b5ab592b8f1dd0e76d5340055863162109d"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0062.png",
+      "sha256": "06529bb2c8b17c2143ae3503547697636474cb41d59204a68d74c6473f16eacb"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0063.png",
+      "sha256": "19921c28b76c066b69ca52ca37cb692a94452c1be2fbbdf33f30f5b15abb1d21"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0064.png",
+      "sha256": "32ac30686166f16b16a96408b6ad30f0284bee1471e92ab3bc2767f489b5d819"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0065.png",
+      "sha256": "27cb49973816911f76a2c5a4e192f92180e16fdfe12900b71b0856513a472971"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0066.png",
+      "sha256": "5dd6b013f857992420ac485bcf3c571a0a2177780ef123f61ced19c625c35f53"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0067.png",
+      "sha256": "c44ab77e3f137602ff176cf85297a305b61377b6a7e41ad4d0f2a5d4689825a3"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0068.png",
+      "sha256": "675fda3bb9451f41e23fc4a9973f3b9f5339c4dd7087076c97f0a8571036d91c"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0069.png",
+      "sha256": "676fc9e4cea4be5c9d8c4d3c8a4c12c3cd37e3a1f4677346ea1c840999d3bbe9"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0070.png",
+      "sha256": "6874889e6f289e83aa02cbd69e6f8d3e8b2df4a0a843c19293026bbf7864e85f"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0071.png",
+      "sha256": "59822f77e23f9da3e699592fecde47d952e52d69854ca29a9e0db3c9b4fccca9"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0072.png",
+      "sha256": "76d2ccf631445b05e764d5ca1a8b844c239af3e5d879da6d7c8afe69eb439c19"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0073.png",
+      "sha256": "b6b0913396e0b474629a8a1fadca4aed97cfc1db892fe2973ecec9ac5aadd708"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0074.png",
+      "sha256": "06b136e77cd1d627d8115501974a1eec4d647e5d432176189fd7cbf7795eaf58"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0075.png",
+      "sha256": "3d04064fe0a0a7bd23e20f93cc021533bbe1f6ca2630e88e60777bd7f2e0fb55"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0076.png",
+      "sha256": "249d81d15e357fc1a1de8c38c6d07f98728de3d80ca2eca799580e33eaa6c36e"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0077.png",
+      "sha256": "74cb2483c79b0e2bea3fffc3dfeebcc00cec62e784abb4a3cfb534e597542c4b"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0078.png",
+      "sha256": "8458cabff08e8324f1546b0cc09aaf6a2489139e29ac2efe00e54c025ab93fe1"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0079.png",
+      "sha256": "dc504f3d7507f5d9b76fdf94e50415309fd541abfe77d47309fa12984889d0e4"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0080.png",
+      "sha256": "021f56cc982f5fc36faae17324dfa1f730b2142476c48948316d34eb80a3ba66"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0081.png",
+      "sha256": "b0c1ddc07e67f42ea99e79daba7abdd46b7fa1a3e1f2f5e58a09fd7e7127c9c4"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0082.png",
+      "sha256": "f38b893f57302d3509465f7964a4e75fb919d1a4a8bdaef463b05f7323a35acb"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0083.png",
+      "sha256": "a7df661bc45dc6433499ec0599b8f47fc1a95a8be20f240be4735c6212b622c1"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0084.png",
+      "sha256": "042b376c548686d3bd2279f71803f433629338f03f069ef321790b3ebf7ed21d"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0085.png",
+      "sha256": "935632786d6c58e1b16fd7af3be9723a688d19bfb47c5b398dbb738f7688e033"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0086.png",
+      "sha256": "4748e34ef8dd9866ac51ed83616c8d70b1b7b27fd4f276d87837ff3931eac754"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0087.png",
+      "sha256": "780bcb96437fa0f7fbff18b3c8a713db585b402f8c8944750621071660d3be3b"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0088.png",
+      "sha256": "37cd20301a0b88ef4ff6cca6f81b52b0922be60e58da66453962f371350869f9"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0089.png",
+      "sha256": "6024ed9ae9180dd8ea81cbf6addcf707d1fb5c24dbbee8779560f3553866b9a7"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0090.png",
+      "sha256": "8753c6bbbee7242595060640a36538ca40247f68172615d48b217a4c4a61a645"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0091.png",
+      "sha256": "059e25a0dbc9b3f1ae53102e116119eeaed60cb7bcbe1a7109fef6a6365489b7"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0092.png",
+      "sha256": "b3f5f3393eaa01abe4950c533258f3a6e0a57ef1f4f5a25e374ecc1ed6e03386"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0093.png",
+      "sha256": "2c2879b8e7a8537000e1e28ba7cc450110cdda8a53e304beb83bdc1688add463"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0094.png",
+      "sha256": "8e82e3fa821a40e705202c2165271c7959aed0fffcf8e0e2562f5a19757d97a1"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0095.png",
+      "sha256": "a4041026f4fd6e6cc22db95673348533039f4a52736ccb1a691c93a7a1169d17"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0096.png",
+      "sha256": "64d999e4a2a51579b3c3752fc22cffa61aa01c7ca2c3ea8ee8a937e8fde3f6e1"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0097.png",
+      "sha256": "60ab635bd9cfb87f8041fca0f9203f6ba7e9a497640454ed7def3a7f74f141f7"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0098.png",
+      "sha256": "c8326b2d8ea69da1a508ec0b7fe5c7f850f3169ad795b30e922ee1832e1c4fb5"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0099.png",
+      "sha256": "fa23a75eb79dda625a25991527a1df6be0b54f7ac6c7bcbdaff1f790240d6672"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0100.png",
+      "sha256": "fb4822cc522c642760bc7d1096cab068e63355c4866b3fe20dcd8c1ba947b648"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0101.png",
+      "sha256": "8cee3e1445a6ef50aba58e736b636a7739f8ef1303216b633148833eed0cf309"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0102.png",
+      "sha256": "901aaef95f648391be9fb651d90650360e409fa0a522c2be950e20f6a306ee47"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0103.png",
+      "sha256": "9775aa62ae27b9aa4c73c378ba279943cd6cd9e05498c041adaec4cf5fead222"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0104.png",
+      "sha256": "d1cc5fbb07ad14acf96186e06f84a2c56f0b006dc1c2b3f5f989edacc8fcc0d0"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0105.png",
+      "sha256": "9442be58f7de1f828da6149ddf24d45f5b808aa1095a14bc97e794145365c580"
+    },
+    {
+      "file": "frames\\master_closing\\frame_0106.png",
+      "sha256": "63e80f777009e0e70ff143a35c6a0c25d91f3ce9e4ff5c140bb4d1948f78400b"
+    },
+    {
+      "file": "postures/P0_FORWARD_EXTENDED.png",
+      "sha256": "eff5b93718a343958af69049c3db7c9ca0936ee892b64a8c398f0f0651942e7b"
+    },
+    {
+      "file": "prepare_closed.png",
+      "sha256": "c520b2b656a6a71c79c18f61e8ab57a699ad5b5668d9c7a9d58adb0eb0431eca"
+    },
+    {
+      "file": "prepare_open.png",
+      "sha256": "04b3530e949a1a5d89358f7f99259444df7206b0bf45a8b2d5653f0c76729050"
+    }
+  ],
+  "posture_source_sha256": "89dc3fb94444d19e8c44c149256f6c9263a95c506d10cd4b0ae1c62eaa718723",
+  "sources": {
+    "master_opening": {
+      "file": "Cierre-Apertura.mp4",
+      "trim_first": 36,
+      "trim_last": 106,
+      "review": "Revisión visual de extremos y sentido; niveles nominales, no pose medida."
+    },
+    "master_closing": {
+      "file": "Apertura-Cierre.mp4",
+      "trim_first": 36,
+      "trim_last": 106,
+      "review": "Revisión visual de extremos y sentido; niveles nominales, no pose medida."
+    }
+  },
+  "timing": "frame = 1 + floor(clip((elapsed-prepare)/move,0,1)*(N-1)); HOLD = N",
+  "visual_revision": "OPENING25_VISIBLE_ENDPOINT_63"
+}

@@ -1,6 +1,13 @@
 function trial = makeMyoTrial(metadata,row,packet,trialID,startTime,status,events,duration)
 % Conservar el RAW recibido. La conversion temporal conserva tambien el original.
 trial=metadata;trial.schema_version="myo-continuous-v1";trial.trial_id=trialID;
+if isfield(row,'campaign')&&string(row.campaign)=="MYO_PILOT2_OPEN_CLOSE"
+ assert(row.is_scientific_trial,'MyoTrial:BlockBreak','Un descanso de bloque no es un trial científico.');
+ trial.schema_version="myo-continuous-v2";
+ for f=["movement_level","block_id","randomized_order","randomization_seed","arm_posture_id","campaign"]
+  trial.(f)=row.(f);
+ end
+end
 for f=["condition_id","condition","direction","target_start","target_end","rest_intent","protocol_index","speed","repetition"]
  trial.(f)=row.(f);
 end

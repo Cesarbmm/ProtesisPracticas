@@ -22,6 +22,14 @@ El objetivo es obtener RAW reutilizable para estudiar calibración de usuario y 
 
 Un HOLD incluye preparación a 0%, rampa normal al nivel solicitado y hold. Una rampa parcial incluye preparación a su inicio, rampa al final y hold. El default produce 201 trials contando los descansos, unos 24,8 minutos nominales. No se infiere posición mecánica inicial; la preparación también es una instrucción visual.
 
+### Semántica de `includeRamps=false` (aclaración V1, sin cambiar matemática)
+
+Este flag omite las filas **RAMP adicionales**; no suprime la transición de las filas HOLD. El piloto reducido de una repetición contiene nueve filas: REST, HOLD25, REST, HOLD50, REST, HOLD75, REST, HOLD100, REST. Cada HOLD conserva **PREPARE 2 s + transición 2 s + HOLD 3 s**. Cada REST dura 6 s: 58 s nominales de protocolo, además del precheck.
+
+La GUI V1 muestra `CIERRA LA MANO / Posición inicial 0 %`, después `ABRE PROGRESIVAMENTE HASTA XX %`, y finalmente `MANTÉN XX %` con tiempo restante de esa fase. En cierre, la preparación usa `target_start` y la transición dice `CIERRA PROGRESIVAMENTE HASTA XX %`. No se cambió `myoProtocolTarget` ni la tabla matemática. REST muestra `RELAJA LA MANO / REST no equivale a 0 %`.
+
+Las imágenes de `acquisition/references` son guías orientativas; no son mediciones ni prescriben la postura de REST. La imagen de transición aportada tiene una flecha de apertura: para cierre se usa el fallback textual para evitar una instrucción contradictoria. La práctica usa estas mismas instrucciones sin crear sesión ni archivos.
+
 La tabla incluye `condition_id`, dirección, velocidad, repetición, target inicial/final y duración de cada fase. Se guarda `protocol.csv` al crear la sesión. No se cambia el protocolo después de ver la señal. La duración observada puede exceder ligeramente la nominal por la planificación de callbacks y el guardado; se registra aparte.
 
 ## REST y descansos

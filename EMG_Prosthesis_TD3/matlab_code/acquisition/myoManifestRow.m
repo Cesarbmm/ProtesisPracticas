@@ -5,4 +5,9 @@ row=struct("trial_id",t.trial_id,"protocol_index",t.protocol_index,"participant_
  "direction",string(t.direction),"status",string(t.status),"sample_count",t.sample_count,"duration",t.duration, ...
  "actual_emg_fs",t.actual_emg_fs,"quality_warning_count",t.quality.warning_count, ...
  "file",string(fullfile("trials",string(name)+string(ext))),"sha256",myoFileSHA256(file));
+if string(t.schema_version)=="myo-continuous-v2"
+ for f=["movement_level","block_id","randomized_order","arm_posture_id"]
+  row.(f)=t.(f);
+ end
+end
 end
