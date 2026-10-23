@@ -5,7 +5,7 @@ required=["campaign","block_id","randomized_order","randomization_seed","movemen
  "target_start","target_end","prepare_s","ramp_s","hold_s","duration_s","rest_intent","repetition"];
 assert(istable(p)&&all(ismember(required,string(p.Properties.VariableNames))),'MyoPilot2:Fields','Protocolo incompleto.');
 assert(height(p)==100&&all(p.campaign=="MYO_PILOT2_OPEN_CLOSE"),'MyoPilot2:Count','Se esperan 100 filas de protocolo.');
-assert(numel(unique(p.arm_posture_id))==1&&all(ismember(p.arm_posture_id,["P0_NEUTRAL_90","P0_FORWARD_EXTENDED"]))&&numel(unique(p.randomization_seed))==1,'MyoPilot2:Metadata','Postura/seed no válidas.');
+assert(numel(unique(p.arm_posture_id))==1&&all(ismember(p.arm_posture_id,["P0_NEUTRAL_90","P0_FORWARD_EXTENDED","P0_SEATED_ARMREST"]))&&numel(unique(p.randomization_seed))==1,'MyoPilot2:Metadata','Postura/seed no válidas.');
 a=p.condition=="MOVEMENT";r=p.condition=="REST";b=p.condition=="BLOCK_BREAK";
 assert(sum(a)==48&&sum(r)==49&&sum(b)==3&&all(a|r|b),'MyoPilot2:Count','Se esperan 48 movimientos, 49 REST y 3 descansos.');
 assert(isequal(p.is_scientific_trial,~b)&&isequal(p.block_break,b)&&isequal(p.rest_intent,r),'MyoPilot2:EventType','Tipo de evento inconsistente.');

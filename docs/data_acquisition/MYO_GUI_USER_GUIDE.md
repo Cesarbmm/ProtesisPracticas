@@ -2,7 +2,13 @@
 
 La GUI captura RAW e instrucciones visuales. No controla motores ni ejecuta entrenamiento. Abrirla no conecta el Myo automáticamente.
 
-**Campaña actual multi-participante:** abrir `runMyoMultiParticipantApp()` y seguir [MULTIPARTICIPANT_CAMPAIGN_V2](MULTIPARTICIPANT_CAMPAIGN_V2.md): IDs automáticos, nuevas sesiones, confirmación de identidad/postura P0_FORWARD_EXTENDED y precheck. El [documento de preparación de S04](MYO_PILOT2_OPEN_CLOSE_PROTOCOL.md) y las instrucciones P001/S02 de abajo documentan los flujos anteriores. S01/S02/S03/S04 se conservan; no reutilizar sus IDs para adquirir de nuevo. Visión/cámara y medición de apertura quedan fuera del alcance definitivo de este proyecto.
+**Campaña oficial actual:** abrir `runMyoMultiParticipantApp()` y seguir [OFFICIAL_MYO_ACQUISITION_PROTOCOL](OFFICIAL_MYO_ACQUISITION_PROTOCOL.md): postura P0_SEATED_ARMREST, JPG instalado sin copiar, diez confirmaciones de colocación/identidad/postura, seed estable por sesión y revisión de avisos del precheck. El protocolo OPEN/CLOSE y los cues permanecen intactos. [MULTIPARTICIPANT_CAMPAIGN_V2](MULTIPARTICIPANT_CAMPAIGN_V2.md), el [documento de S04](MYO_PILOT2_OPEN_CLOSE_PROTOCOL.md) y las instrucciones P001/S02 de abajo documentan los flujos anteriores. S01/S02/S03/S04 se conservan; no reutilizar sus IDs. Visión/cámara y medición de apertura quedan fuera del proyecto.
+
+```matlab
+cd('C:\Users\Cesarbmm\ProtesisPracticas_myo_calibration\EMG_Prosthesis_TD3\matlab_code');
+addpath('acquisition');
+app = runMyoMultiParticipantApp();
+```
 
 ## Runtime físico y procedencia V1
 

@@ -89,12 +89,32 @@ classdef MyoParticipantRegistry
     identity=jsondecode(fileread(participantFile));
     assert(string(identity.participant_id)==id,'MyoRegistry:ImmutableID','participant.json no corresponde a su ID canónico.');
    end
-   reservation=struct('participant_id',id,'session_id',sid,'session_uuid',uuid,'campaign_id',campaign,'reserved_utc',time);
+   reservation=struct('participant_id',id,'session_id',sid,'session_uuid',uuid,'campaign_id',campaign,'reserved_utc',time, ...
+    'random_seed',myoSessionSeed(uuid),'seed_derivation',"UUID_FIRST_32_BITS_V1");
+  end
+  function reservation=getReservation(obj,id,sid,campaign)
+   rows=obj.readReservations();idx=find(rows.participant_id==id&rows.session_id==sid&rows.campaign_id==campaign);
+   assert(isscalar(idx),'MyoRegistry:Reservation','Reserva no encontrada o duplicada.');
+   reservation=table2struct(rows(idx,:));reservation.random_seed=myoSessionSeed(reservation.session_uuid);
+   reservation.seed_derivation="UUID_FIRST_32_BITS_V1";
+  end
+  function reservation=pendingSession(obj,id,campaign)
+   % Sólo lectura: recuperar una reserva sin sesión creada, nunca sobrescribir.
+   rows=obj.readReservations();reservation=[];
+   for idx=height(rows):-1:1
+    if rows.participant_id(idx)==id&&rows.campaign_id(idx)==campaign&&~isfolder(fullfile(obj.Root,id,rows.session_id(idx)))
+     reservation=obj.getReservation(id,rows.session_id(idx),campaign);return
+    end
+   end
   end
   function verifyReservation(obj,m)
    rows=obj.readReservations();valid=rows.participant_id==string(m.participant_id)&rows.session_id==string(m.session_id)& ...
     rows.session_uuid==string(m.session_uuid)&rows.campaign_id==string(m.campaign_id);
    assert(nnz(valid)==1,'MyoRegistry:Reservation','Reserva de sesión/UUID no válida.');
+   if isfield(m,'session_seed_source')
+    assert(string(m.session_seed_source)=="UUID_FIRST_32_BITS_V1"&&m.random_seed==myoSessionSeed(m.session_uuid), ...
+     'MyoRegistry:Seed','Seed no corresponde al UUID reservado.');
+   end
   end
  end
  methods (Access=private)

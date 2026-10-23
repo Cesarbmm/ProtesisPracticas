@@ -1,5 +1,7 @@
 # Campaña multi-participante V2 — OPEN/CLOSE instruido
 
+**Documento histórico del piloto.** Para nuevas capturas, `runMyoMultiParticipantApp()` utiliza la [campaña oficial](OFFICIAL_MYO_ACQUISITION_PROTOCOL.md), con P0_SEATED_ARMREST, referencia JPG instalada directamente, checklist ampliado y seed por sesión. Los builders y el descriptor piloto de este documento siguen disponibles para lectura/regresión; no migran metadata antigua.
+
 Esta interfaz prepara la ampliación del piloto a varias personas. OPEN/CLOSE durante MOVE es una señal preliminar prometedora; no se ha demostrado separabilidad robusta de cuatro niveles. No se entrenan modelos, no hay cámara/visión/MediaPipe/pose medida y no se inicia hardware automáticamente. `measured_aperture` sigue vacío y `measured_aperture_available=false`.
 
 ## Protocolo conservado

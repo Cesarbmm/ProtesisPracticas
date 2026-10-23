@@ -1,6 +1,6 @@
 # Esquema `myo-continuous-v1`
 
-La [campaña multi-participante V2](MULTIPARTICIPANT_CAMPAIGN_V2.md) conserva lectura de v1/v2 y añade session_uuid, campaign_id, capture_utc, protocol_version, random_seed y confirmaciones de identidad/postura a nuevas sesiones. Para campaign_id presente el backend exige reserva válida, confirmaciones y hash de la referencia de postura. Los MAT v2 nuevos permiten P0_FORWARD_EXTENDED, siempre igual a la postura de su protocolo; los registros históricos P0_NEUTRAL_90 siguen legibles. Registro de participantes, reservas y anotaciones históricas se guardan fuera de las carpetas de sesión y permanecen ignorados por Git.
+La [campaña oficial](OFFICIAL_MYO_ACQUISITION_PROTOCOL.md) y la [campaña piloto V2](MULTIPARTICIPANT_CAMPAIGN_V2.md) conservan lectura de v1/v2 y añaden session_uuid, campaign_id, capture_utc, protocol_version, random_seed y confirmaciones de identidad/postura. Para campaign_id presente el backend exige reserva válida, confirmaciones y hash de la referencia de postura. Los MAT v2 admiten P0_NEUTRAL_90, P0_FORWARD_EXTENDED y P0_SEATED_ARMREST, siempre igual a su protocolo; no sustituyen metadata histórica. Registro de participantes, reservas y anotaciones se guardan fuera de las carpetas de sesión y permanecen ignorados por Git.
 
 Formato incremental:
 
@@ -73,7 +73,15 @@ El backend conserva además un prefijo activo cada segundo mediante reemplazo de
 
 La recuperación no reanuda una contracción ni concatena sesiones. Para continuar adquisición usar una nueva sesión y conservar la procedencia de los trials parciales.
 
-## Exclusión de medición de apertura y de visión
+## Identidad de campaña oficial (extensión de metadata, sin migración RAW)
+
+Las nuevas sesiones `MYO_OPEN_CLOSE_OFFICIAL_V1` / `OPEN_CLOSE_OFFICIAL_V1` guardan `arm_posture_id=P0_SEATED_ARMREST`, referencia relativa `references/Referencia.jpg`, SHA256 actual y hora de confirmación. Se conservan los flags participant/placement/posture_confirmed y se añaden arm_confirmed, myo_fit_confirmed, myo_orientation_confirmed, stabilization_confirmed; todos son confirmaciones del operador. P1 incluye definición escrita de ubicación distal, orientación exterior, ajuste y contacto, no certificación automática.
+
+`random_seed` y `randomization_seed` corresponden a los primeros 32 bits del UUID persistido en la reserva; `session_seed_source=UUID_FIRST_32_BITS_V1`. El protocolo y orden completo se guardan como antes. `quality_warnings_reviewed` registra la revisión explícita cuando hay avisos significativos del precheck. Los cinco campos del CSV de reservas no cambian; al leerlo se puede volver a derivar la seed sin reescribirlo.
+
+No se cambia el esquema de muestras, fases, target, reloj ni persistencia de trials. Los lectores siguen admitiendo P0_NEUTRAL_90 y P0_FORWARD_EXTENDED; nunca sustituyen postura/hash de archivos antiguos. Véase el [protocolo oficial](OFFICIAL_MYO_ACQUISITION_PROTOCOL.md).
+
+## Exclusión de medición de apertura y de visión (vigente)
 
 Webcam, visión, MediaPipe y hand tracking están definitivamente fuera del alcance de este proyecto. No se implementará measured aperture aquí. `measured_aperture=[]`, `measured_aperture_available=false` y proveedor NONE permanecen por compatibilidad con los archivos existentes. La mano no se mide con el Myo ni con las imágenes de guía; todos los niveles son intención instruida. La IMU se conserva para estabilidad/postura, nunca como label de apertura.
 

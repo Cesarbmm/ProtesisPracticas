@@ -4,6 +4,8 @@ function manifest=prepareMyoCampaignAssets(outputRoot)
 source=string(fullfile(fileparts(mfilename('fullpath')),'references'));
 if nargin<1,outputRoot=fullfile(fileparts(mfilename('fullpath')),'assets');end
 existing=fullfile(outputRoot,'cues_manifest.json');
+canonical=string(fullfile(fileparts(mfilename('fullpath')),'assets'));
+legacyManifest=jsondecode(fileread(fullfile(canonical,'cues_manifest.json')));
 if isfile(existing)
  % Un checkout puede traer el manifest sin los frames derivados ignorados.
  % Sólo regenerar si las fuentes aprobadas siguen siendo exactamente iguales.
@@ -12,14 +14,16 @@ if isfile(existing)
   key=direction+"_100";s=previous.sequences.(key);
   assert(myoFileSHA256(fullfile(source,'Moves',s.source))==string(s.source_sha256),'MyoCues:SourceChanged','Cambió un vídeo aprobado. Revisar antes de regenerar.');
  end
- assert(myoFileSHA256(fullfile(source,'Referencia.jpg'))==string(previous.posture_source_sha256),'MyoCues:SourceChanged','Cambió la referencia aprobada de postura.');
 end
 if ~isfolder(outputRoot),mkdir(outputRoot);end
 if ~isfolder(fullfile(outputRoot,'postures')),mkdir(fullfile(outputRoot,'postures'));end
-posture=fullfile(source,'Referencia.jpg');assert(isfile(posture),'MyoCues:Posture','Falta la referencia aprobada.');
-% PNG añade tIME por defecto. Fijar sólo ese metadato para regeneración byte a byte;
-% la hora real de adquisición vive exclusivamente en metadata de sesión.
-imwrite(imread(posture),fullfile(outputRoot,'postures','P0_FORWARD_EXTENDED.png'),'ImageModTime',datenum(2000,1,1));
+% El PNG piloto archivado sólo pertenece al manifest legacy de cues. No regenerar
+% ni copiar references/Referencia.jpg: ahora es la postura oficial instalada.
+posture=fullfile(canonical,'postures','P0_FORWARD_EXTENDED.png');
+destination=fullfile(outputRoot,'postures','P0_FORWARD_EXTENDED.png');
+if ~strcmpi(char(java.io.File(char(posture)).getCanonicalPath()),char(java.io.File(char(destination)).getCanonicalPath()))
+ copyfile(posture,destination);
+end
 copyfile(fullfile(source,'PosicionInicial_ManoCerrada.png'),fullfile(outputRoot,'prepare_closed.png'));
 copyfile(fullfile(source,'PosicionInicial_ManoAbierta.png'),fullfile(outputRoot,'prepare_open.png'));
 sequences=struct();sources=struct();used=strings(0,1);
@@ -53,7 +57,7 @@ hashes=struct('file',{},'sha256',{});
 for k=1:numel(used)
  hashes(k)=struct('file',used(k),'sha256',myoFileSHA256(fullfile(outputRoot,used(k))));
 end
-manifest=struct('sequences',sequences,'files',hashes,'posture_source_sha256',myoFileSHA256(posture),'sources',sources, ...
+manifest=struct('sequences',sequences,'files',hashes,'posture_source_sha256',legacyManifest.posture_source_sha256,'sources',sources, ...
  'timing','frame = 1 + floor(clip((elapsed-prepare)/move,0,1)*(N-1)); HOLD = N');
 manifest.visual_revision="OPENING25_VISIBLE_ENDPOINT_63";
 myoWriteJSONAtomic(fullfile(outputRoot,'cues_manifest.json'),manifest);

@@ -57,6 +57,10 @@ classdef MyoContinuousAcquisitionApp < handle
   ConfirmPosture
   SetupConfirmation=[]
   CueEngine=[]
+  SetupChecks=struct()
+  QualityAssessment=[]
+  QualityReviewAccepted=false
+  QualityDialog=[]
  end
  methods
   function obj=MyoContinuousAcquisitionApp(o)
@@ -87,20 +91,28 @@ classdef MyoContinuousAcquisitionApp < handle
     obj.Participant.Value=char(o.ParticipantID);obj.SessionID.Value=char(o.SessionID);
    else,obj.refreshParticipants(o.ParticipantID);end
    obj.Placement.Value=char(o.PlacementID);
+   if obj.isOfficial()
+    assert(string(o.PlacementID)=="P1",'MyoGUI:OfficialPlacement','La campaña oficial utiliza P1.');
+    obj.Placement.Editable='off';obj.Placement.Tooltip=obj.Campaign.placement_description;
+    obj.restorePendingSession();
+   end
    if isa(obj.Source,'MockMyoDataSource'),obj.Figure.Name="SIMULACIÓN MYO · NO DATOS CIENTÍFICOS";end
    obj.setState("DESCONECTADO","Conectar Myo o ensayar con Práctica / Demo");
   end
   function connect(obj)
    assert(isempty(obj.Session)&&~obj.PracticeActive,'MyoGUI:SessionExists','Finalizar práctica o usar otra GUI para otra sesión.');
    obj.Source.connect();obj.QualityComplete=false;obj.Testing=false;
+   obj.resetQualityReview();
    obj.setState("CONECTADO","Completar Test signal 30s");obj.showPlacementReminder();obj.ensureTimer();
   end
   function testSignal(obj)
    assert(isempty(obj.Session)&&~obj.PracticeActive,'MyoGUI:SessionExists','No iniciar diagnóstico durante sesión o práctica.');
    if ~isempty(obj.Campaign),obj.requireSetup();end
+   obj.resetQualityReview();
    obj.showPlacementReminder();
    obj.Source.read();obj.TestStart=obj.Source.now();obj.QualityPacket=emptyMyoPacket();obj.QualityComplete=false;obj.Testing=true;
    obj.QualityIdentity=obj.identity();obj.setState("PRECHECK","Diagnóstico de 30 s: relajar y mover suavemente");obj.ensureTimer();
+   if obj.isOfficial(),obj.renderPrecheck(0);end
   end
   function startSession(obj)
    assert(~obj.PracticeActive,'MyoGUI:PracticeActive','Detener práctica antes de adquirir.');
@@ -109,6 +121,8 @@ classdef MyoContinuousAcquisitionApp < handle
     obj.Session.start();obj.setState("CAPTURANDO","Trial reiniciado desde su comienzo");obj.ensureTimer();obj.updateTarget();return
    end
    assert(obj.QualityComplete,'MyoGUI:QualityRequired','Completar Test signal (30 s) antes de iniciar.');
+   assert(~obj.isOfficial()||isempty(obj.QualityAssessment)||~obj.QualityAssessment.requires_review||obj.QualityReviewAccepted, ...
+    'MyoGUI:QualityReviewRequired','Revisar los avisos del precheck antes de iniciar.');
    assert(isequaln(obj.QualityIdentity,obj.identity()),'MyoGUI:QualityContextChanged','Cambió participante/sesión/brazo/colocación/nota: repetir Test signal.');
    protocol=obj.activeProtocol();
    metadata=struct('participant_id',string(obj.Participant.Value),'session_id',string(obj.SessionID.Value), ...
@@ -117,13 +131,21 @@ classdef MyoContinuousAcquisitionApp < handle
    if ~isempty(obj.Campaign)
     obj.requireSetup();
     metadata.session_uuid=obj.Reservation.session_uuid;metadata.campaign_id=obj.Campaign.campaign_id;
-    metadata.protocol_version=obj.Campaign.protocol_version;metadata.random_seed=obj.Campaign.seed;
+    metadata.protocol_version=obj.Campaign.protocol_version;metadata.random_seed=obj.Protocol.randomization_seed(1);
     metadata.arm_posture_id=obj.Campaign.arm_posture_id;metadata.arm_posture_description=obj.Campaign.posture_description;
     metadata.posture_confirmed=true;metadata.participant_confirmed=true;metadata.placement_confirmed=true;
     metadata.posture_reference_asset=obj.Campaign.posture_reference_asset;
     metadata.posture_reference_sha256=obj.SetupConfirmation.posture_reference_sha256;
     metadata.posture_confirmation_utc=obj.SetupConfirmation.confirmed_utc;
     metadata.visual_cues_manifest_sha256=obj.CueEngine.ManifestHash;
+    if obj.isOfficial()
+     metadata.session_seed_source=obj.Reservation.seed_derivation;
+     for field=["arm_confirmed","myo_fit_confirmed","myo_orientation_confirmed","stabilization_confirmed"]
+      metadata.(field)=obj.SetupConfirmation.(field);
+     end
+     metadata.placement_definition=obj.Campaign.placement_description;
+     metadata.quality_warnings_reviewed=obj.QualityReviewAccepted;
+    end
    end
    obj.Session=MyoAcquisitionSession(obj.Source,obj.OutputRoot,metadata,protocol);
    if ~isempty(obj.CueEngine)
@@ -150,7 +172,7 @@ classdef MyoContinuousAcquisitionApp < handle
   function selectParticipant(obj,id)
    obj.requireManagedIdle();
    assert(any(string(obj.Participant.ItemsData)==id),'MyoGUI:Participant','Seleccionar participante registrado.');
-   obj.Participant.Value=char(id);obj.Reservation=[];obj.SessionID.Value='';obj.refreshParticipantSummary();obj.contextChanged();
+   obj.Participant.Value=char(id);obj.Reservation=[];obj.SessionID.Value='';obj.restorePendingSession();obj.refreshParticipantSummary();obj.contextChanged();
   end
   function newSession(obj)
    assert(~isempty(obj.Campaign)&&~obj.PracticeActive&&~obj.Testing,'MyoGUI:ManagedIdle','Detener práctica/precheck antes de reservar.');
@@ -159,12 +181,13 @@ classdef MyoContinuousAcquisitionApp < handle
     obj.Session=[];obj.unlockMetadata();
    end
    id=string(obj.Participant.Value);obj.Reservation=obj.Registry.reserveSession(id,obj.Campaign.campaign_id);
-   obj.SessionID.Value=char(obj.Reservation.session_id);obj.SetupConfirmation=[];obj.QualityComplete=false;
+   obj.adoptReservation();
    obj.refreshParticipantSummary();obj.setState("PREPARAR","Revisar identidad y postura antes del precheck");
   end
   function reviewSetup(obj)
    obj.requireManagedIdle();assert(~isempty(obj.Reservation),'MyoGUI:SessionRequired','Pulsar Nueva sesión primero.');
    if ~isempty(obj.SetupDialog)&&isvalid(obj.SetupDialog),delete(obj.SetupDialog);end
+   if obj.isOfficial(),obj.buildOfficialSetup();return;end
    obj.SetupDialog=uifigure(Name='Confirmar identidad y postura',Position=[200 80 850 780],WindowStyle='modal');
    g=uigridlayout(obj.SetupDialog,[7 1]);g.RowHeight={110,'1x',45,28,28,28,40};
    text=sprintf('POSTURA REQUERIDA · %s\nPARTICIPANTE: %s · SESIÓN: %s\nCAMPAÑA: %s · BRAZO: %s · PLACEMENT: %s', ...
@@ -177,17 +200,25 @@ classdef MyoContinuousAcquisitionApp < handle
    obj.ConfirmParticipant=uicheckbox(g,Text='Participante correcto');
    obj.ConfirmPlacement=uicheckbox(g,Text='Myo colocado según referencia');
    obj.ConfirmPosture=uicheckbox(g,Text='Postura correcta');
+   obj.SetupChecks=struct('participant',obj.ConfirmParticipant,'placement',obj.ConfirmPlacement,'posture',obj.ConfirmPosture);
    uibutton(g,Text='Confirmar preparación',ButtonPushedFcn=@(~,~)obj.guard(@()obj.confirmSetup()));
   end
   function confirmSetup(obj)
    obj.requireManagedIdle();
-   assert(~isempty(obj.SetupDialog)&&isvalid(obj.SetupDialog)&&obj.ConfirmParticipant.Value&&obj.ConfirmPlacement.Value&&obj.ConfirmPosture.Value, ...
-    'MyoGUI:Confirmations','Confirmar participante, colocación y postura.');
+   assert(~isempty(obj.SetupDialog)&&isvalid(obj.SetupDialog),'MyoGUI:Confirmations','Abrir confirmación previa.');
+   for field=string(fieldnames(obj.SetupChecks))'
+    assert(obj.SetupChecks.(field).Value,'MyoGUI:Confirmations','Completar todas las verificaciones de identidad, colocación y postura.');
+   end
    asset=obj.postureAsset();assert(isfile(asset),'MyoGUI:PostureAsset','Falta referencia aprobada de postura.');
    obj.Registry.verifyReservation(obj.Reservation);
    obj.CueEngine.verifyIntegrity();
    obj.SetupConfirmation=struct('identity',obj.identity(),'posture_reference_sha256',myoFileSHA256(asset), ...
     'confirmed_utc',string(datetime('now',TimeZone='UTC',Format="yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")));
+   if obj.isOfficial()
+    assert(string(obj.Placement.Value)=="P1",'MyoGUI:OfficialPlacement','La campaña oficial utiliza P1.');
+    obj.SetupConfirmation.arm_confirmed=true;obj.SetupConfirmation.myo_fit_confirmed=true;
+    obj.SetupConfirmation.myo_orientation_confirmed=true;obj.SetupConfirmation.stabilization_confirmed=true;
+   end
    delete(obj.SetupDialog);obj.SetupDialog=[];obj.setState("PREPARADO","Identidad y postura confirmadas; completar precheck");
   end
   function startPractice(obj)
@@ -270,14 +301,43 @@ classdef MyoContinuousAcquisitionApp < handle
    if obj.Testing
     obj.QualityPacket=appendMyoPacket(obj.QualityPacket,p);elapsed=obj.Source.now()-obj.TestStart;
     obj.setState("PRECHECK",sprintf('Diagnóstico previo: %.1f / 30 s',min(elapsed,30)));
+    if obj.isOfficial(),obj.renderPrecheck(elapsed);end
     if elapsed>=30
      obj.QualityReport=computeMyoQualityMetrics(obj.QualityPacket.time_emg,obj.QualityPacket.emg_raw,elapsed);
      obj.QualityReport.timestamp_provenance=obj.Source.info().timestamp_provenance;
      obj.QualityComplete=true;obj.Testing=false;
      obj.setState("LISTO","Precheck completo · avisos: "+obj.QualityReport.warning_count+" · revisar antes de iniciar");
+     if obj.isOfficial()
+      obj.QualityAssessment=myoPrecheckReview(obj.QualityReport);
+      obj.QualityReviewAccepted=~obj.QualityAssessment.requires_review;
+      if obj.QualityAssessment.has_errors,obj.QualityComplete=false;end
+      if obj.QualityAssessment.requires_review
+       obj.setState("REVISAR_SEÑAL","Avisos significativos: revisar antes de iniciar");
+       obj.QualityLabel.Text="REVISAR SEÑAL · "+join(string(obj.QualityReport.warnings),", ");obj.QualityLabel.FontColor=[.8 .06 .06];
+       obj.reviewQuality();
+      else
+       obj.InstructionLabel.Text="DIAGNÓSTICO COMPLETO";obj.DetailLabel.Text="Señal sin avisos significativos; revisar antes de iniciar";
+      end
+     end
     end
    end
    obj.updateButtons();
+  end
+  function reviewQuality(obj)
+   assert(~isempty(obj.QualityAssessment),'MyoGUI:NoPrecheck','Completar precheck primero.');
+   if ~isempty(obj.QualityDialog)&&isvalid(obj.QualityDialog),delete(obj.QualityDialog);end
+   obj.QualityDialog=uifigure(Name='Revisión del diagnóstico de señal',Position=[200 130 700 450],WindowStyle='modal',Visible=obj.Figure.Visible);
+   g=uigridlayout(obj.QualityDialog,[3 1]);g.RowHeight={40,'1x',40};
+   uilabel(g,Text='AVISOS DEL PRECHECK · REVISAR ANTES DE CAPTURAR',FontWeight='bold',FontColor=[.8 .06 .06]);
+   uitextarea(g,Value=splitlines(obj.QualityAssessment.message),Editable='off');
+   b=uibutton(g,Text='He revisado canales, clipping y estabilidad; continuar',ButtonPushedFcn=@(~,~)obj.guard(@()obj.acceptQualityReview()));
+   if obj.QualityAssessment.has_errors,b.Enable='off';b.Text='Errores de señal: repetir Test signal 30s';end
+  end
+  function acceptQualityReview(obj)
+   assert(~isempty(obj.QualityAssessment)&&~obj.QualityAssessment.has_errors,'MyoGUI:QualityErrors','Corregir errores y repetir el precheck.');
+   obj.QualityReviewAccepted=true;
+   if ~isempty(obj.QualityDialog)&&isvalid(obj.QualityDialog),delete(obj.QualityDialog);end
+   obj.QualityDialog=[];obj.setState("LISTO","Avisos revisados por el operador; puede iniciar o repetir precheck");
   end
   function delete(obj)
    obj.stopTimer();
@@ -287,6 +347,7 @@ classdef MyoContinuousAcquisitionApp < handle
    try,obj.Source.disconnect();catch,end
    if ~isempty(obj.Figure)&&isvalid(obj.Figure),delete(obj.Figure);end
    if ~isempty(obj.SetupDialog)&&isvalid(obj.SetupDialog),delete(obj.SetupDialog);end
+   if ~isempty(obj.QualityDialog)&&isvalid(obj.QualityDialog),delete(obj.QualityDialog);end
   end
  end
  methods (Access=private)
@@ -348,6 +409,10 @@ classdef MyoContinuousAcquisitionApp < handle
    uilabel(settings,Text="Repeticiones");obj.Repetitions=uieditfield(settings,'numeric',Value=5,Limits=[1 20],RoundFractionalValues='on');
    uilabel(settings,Text="Hold [s]");obj.HoldSeconds=uieditfield(settings,'numeric',Value=4,Limits=[3 5]);
    uilabel(settings,Text="REST [s]");obj.RestSeconds=uieditfield(settings,'numeric',Value=6,Limits=[5 10]);
+   if obj.isOfficial()
+    settings.ColumnWidth={100,70,110,70,110,70,'1x'};
+    obj.Buttons.QualityReview=uibutton(settings,Text='Revisar señal',ButtonPushedFcn=@(~,~)obj.guard(@()obj.reviewQuality()));
+   end
    buttons=uigridlayout(g,[1 8]);buttons.Layout.Row=7;buttons.ColumnWidth=repmat({'1x'},1,8);
    if ~isempty(obj.Campaign),buttons.Padding=[0 0 0 0];buttons.ColumnSpacing=6;end
    names=["Conectar Myo","Test signal 30s","Práctica / Demo","Iniciar / Seguir","Pausa","Repetir trial","Abortar seguro","Finalizar"];
@@ -387,6 +452,10 @@ classdef MyoContinuousAcquisitionApp < handle
    free=isempty(obj.Session);connected=obj.Source.Connected;practice=obj.PracticeActive;
    ready=free&&connected&&obj.QualityComplete&&~obj.Testing&&isequaln(obj.QualityIdentity,obj.identity());
    setup=true;if ~isempty(obj.Campaign),setup=obj.setupReady();ready=ready&&setup;end
+   if obj.isOfficial()&&~isempty(obj.QualityAssessment)
+    ready=ready&&~obj.QualityAssessment.has_errors&&(~obj.QualityAssessment.requires_review||obj.QualityReviewAccepted);
+    obj.Buttons.QualityReview.Enable=matlab.lang.OnOffSwitchState(free&&~practice&&~obj.Testing);
+   elseif isfield(obj.Buttons,'QualityReview'),obj.Buttons.QualityReview.Enable='off';end
    paused=~free&&obj.Session.Status=="PAUSED";running=~free&&obj.Session.Status=="RUNNING";
    repeatAllowed=connected&&~free&&ismember(obj.Session.Status,["RUNNING","PAUSED","FINISHED"]);
    if ~free&&obj.isPilot2(),repeatAllowed=repeatAllowed&&obj.Session.preview().phase~="BLOCK_BREAK";end
@@ -408,6 +477,67 @@ classdef MyoContinuousAcquisitionApp < handle
   end
   function yes=isPilot2(obj)
    yes=~isempty(obj.Protocol)&&ismember('campaign',obj.Protocol.Properties.VariableNames)&&all(obj.Protocol.campaign=="MYO_PILOT2_OPEN_CLOSE");
+  end
+  function yes=isOfficial(obj)
+   yes=~isempty(obj.Campaign)&&isfield(obj.Campaign,'official_placement_checklist')&&obj.Campaign.official_placement_checklist;
+  end
+  function adoptReservation(obj)
+   obj.SessionID.Value=char(obj.Reservation.session_id);
+   if isfield(obj.Campaign,'session_randomization')&&obj.Campaign.session_randomization
+    obj.Protocol=obj.Campaign.protocol_builder(obj.Reservation.random_seed);
+   end
+   obj.SetupConfirmation=[];obj.QualityComplete=false;obj.resetQualityReview();
+  end
+  function restorePendingSession(obj)
+   if ~obj.isOfficial()||strlength(string(obj.Participant.Value))==0,return;end
+   pending=obj.Registry.pendingSession(string(obj.Participant.Value),obj.Campaign.campaign_id);
+   if ~isempty(pending),obj.Reservation=pending;obj.adoptReservation();end
+  end
+  function resetQualityReview(obj)
+   obj.QualityAssessment=[];obj.QualityReviewAccepted=false;
+   if ~isempty(obj.QualityDialog)&&isvalid(obj.QualityDialog),delete(obj.QualityDialog);end
+   obj.QualityDialog=[];obj.QualityLabel.FontColor=[.15 .15 .15];
+  end
+  function renderPrecheck(obj,elapsed)
+   obj.InstructionLabel.Text="DIAGNÓSTICO DE SEÑAL";obj.InstructionLabel.FontColor=[.10 .10 .10];
+   obj.DetailLabel.Text=myoPrecheckInstruction(elapsed);obj.TargetLabel.Text="30 s";
+   obj.PhaseLabel.Text=compose('PRECHECK · %.1f s restantes',max(0,30-elapsed));
+   obj.PhaseLabel.FontColor=[.10 .10 .10];obj.TargetPatch.Position=[0 .15 .0001 .7];
+   obj.GuideImage.Visible='off';obj.GuideFallback.Visible='on';obj.GuideFallback.Text="Reposo → apertura cómoda → cierre cómodo → reposo";
+   obj.PracticeBanner.Text="PRECHECK — NO ES UN TRIAL CIENTÍFICO";
+  end
+  function buildOfficialSetup(obj)
+   obj.SetupDialog=uifigure(Name='Identidad / postura oficial y colocación Myo', ...
+    Position=[120 35 1000 700],WindowStyle='modal',Visible=obj.Figure.Visible);
+   g=uigridlayout(obj.SetupDialog,[5 1]);g.RowHeight={82,205,24,'1x',36};g.Padding=[12 10 12 10];g.RowSpacing=6;
+   text=sprintf('POSTURA OFICIAL · %s\nPARTICIPANTE: %s · SESIÓN: %s · BRAZO: %s · PLACEMENT: %s\nCAMPAÑA: %s', ...
+    obj.Campaign.arm_posture_id,obj.Participant.Value,obj.SessionID.Value,obj.Arm.Value,obj.Placement.Value,obj.Campaign.campaign_id);
+   uilabel(g,Text=text,FontSize=17,FontWeight='bold',WordWrap='on');
+   visual=uigridlayout(g,[1 2]);visual.Padding=[0 0 0 0];visual.ColumnWidth={'1x','1.6x'};
+   asset=obj.postureAsset();
+   if isfile(asset),uiimage(visual,ImageSource=asset,ScaleMethod='fit');
+   else,uilabel(visual,Text='FALTA LA REFERENCIA APROBADA. No se puede confirmar postura.',WordWrap='on');end
+   instructions=["COLOCACIÓN DEL MYO", ...
+    "1. Aproximadamente DOS DEDOS por debajo del codo.", ...
+    "2. Directamente sobre la piel limpia y seca.", ...
+    "3. Usar clips/pinzas adecuados al diámetro del antebrazo.", ...
+    "4. Ocho sensores en contacto firme y estable con la piel.", ...
+    "5. Ajustado, sin comprimir excesivamente el brazo.", ...
+    "6. Mantener siempre la misma orientación.", ...
+    "7. Tapa/puerto de carga hacia el EXTERIOR del brazo.", ...
+    "8. NO rotar ni reajustar durante la sesión."];
+   uitextarea(visual,Value=instructions',Editable='off',FontSize=13);
+   uilabel(g,Text='Sentado, espalda apoyada, antebrazo natural; mano libre. Confirmación física del operador.',FontWeight='bold');
+   checks=uigridlayout(g,[10 1]);checks.RowHeight=repmat({22},1,10);checks.RowSpacing=1;checks.Padding=[0 0 0 0];checks.Scrollable='on';
+   keys=["participant","arm","location","orientation","fit","contact","stabilization","elbow","wrist","posture"];
+   labels=["Participante correcto","Brazo correcto","Myo aproximadamente dos dedos debajo del codo", ...
+    "Tapa/puerto de carga orientado hacia el exterior del brazo","Clips de ajuste colocados correctamente", ...
+    "Los 8 sensores mantienen contacto firme con la piel","Myo colocado, ajustado y estabilizado antes del precheck", ...
+    "Codo apoyado en el reposabrazos","Muñeca en posición neutra","Postura coincide con la imagen de referencia"];
+   obj.SetupChecks=struct();
+   for k=1:numel(keys),obj.SetupChecks.(keys(k))=uicheckbox(checks,Text=labels(k));end
+   obj.ConfirmParticipant=obj.SetupChecks.participant;obj.ConfirmPlacement=obj.SetupChecks.location;obj.ConfirmPosture=obj.SetupChecks.posture;
+   uibutton(g,Text='Confirmar identidad, colocación y postura',ButtonPushedFcn=@(~,~)obj.guard(@()obj.confirmSetup()));
   end
   function showPlacementReminder(obj)
    if ~isempty(obj.Campaign)
@@ -469,9 +599,7 @@ classdef MyoContinuousAcquisitionApp < handle
    end
   end
   function asset=postureAsset(obj)
-   % El descriptor guarda ruta relativa a acquisition; los cues viven en assets.
-   relative=erase(string(obj.Campaign.posture_reference_asset),"assets/");
-   asset=fullfile(obj.Campaign.asset_root,relative);
+   asset=myoPostureAssetPath(obj.Campaign.posture_reference_asset,obj.Campaign.asset_root);
   end
   function yes=setupReady(obj)
    yes=~isempty(obj.Reservation)&&~isempty(obj.SetupConfirmation)&&isequaln(obj.SetupConfirmation.identity,obj.identity());
@@ -487,6 +615,7 @@ classdef MyoContinuousAcquisitionApp < handle
    if ~isempty(obj.Campaign)
     m.campaign_id=obj.Campaign.campaign_id;m.arm_posture_id=obj.Campaign.arm_posture_id;m.session_uuid="";
     if ~isempty(obj.Reservation),m.session_uuid=obj.Reservation.session_uuid;end
+    if obj.isOfficial(),m.random_seed=obj.Protocol.randomization_seed(1);end
    end
   end
   function ensureTimer(obj)

@@ -26,7 +26,7 @@ else
 end
 if string(trial.schema_version)=="myo-continuous-v2"
  fields=["movement_level","block_id","randomized_order","randomization_seed","arm_posture_id","campaign","protocol"];
- assert(all(isfield(trial,fields))&&ismember(string(trial.arm_posture_id),["P0_NEUTRAL_90","P0_FORWARD_EXTENDED"]),'MyoTrial:Pilot2Fields','Metadata del piloto 2 incompleta.');
+ assert(all(isfield(trial,fields))&&ismember(string(trial.arm_posture_id),["P0_NEUTRAL_90","P0_FORWARD_EXTENDED","P0_SEATED_ARMREST"]),'MyoTrial:Pilot2Fields','Metadata del piloto 2 incompleta.');
  assert(string(trial.arm_posture_id)==string(trial.protocol.arm_posture_id),'MyoTrial:Posture','Postura inconsistente con protocolo.');
  assert(trial.protocol.is_scientific_trial&&~trial.protocol.block_break,'MyoTrial:BlockBreak','Descanso de bloque no permitido como trial.');
  [target,phase]=myoProtocolTarget(trial.protocol,trial.time_emg);

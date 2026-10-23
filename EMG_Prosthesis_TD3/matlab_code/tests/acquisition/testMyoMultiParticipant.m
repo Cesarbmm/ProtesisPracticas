@@ -7,7 +7,7 @@ old=path;t.addTeardown(@()path(old));addpath(fullfile(t.TestData.root,'acquisiti
 end
 function [a,src,root]=app(t)
 root=string(tempname);src=MockMyoDataSource();
-a=runMyoMultiParticipantApp('Source',src,'OutputRoot',root,'Visible','off','AutoTimer',false);
+a=MyoContinuousAcquisitionApp(Campaign=myoCampaignConfig(),Source=src,OutputRoot=root,Visible='off',AutoTimer=false);
 t.addTeardown(@()delete(a));
 end
 function confirm(a)

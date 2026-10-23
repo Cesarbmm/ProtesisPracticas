@@ -33,9 +33,16 @@ classdef MyoAcquisitionSession < handle
      all(protocol.protocol_version==string(metadata.protocol_version))&&all(protocol.randomization_seed==metadata.random_seed), ...
      'MyoSession:Campaign','Descriptor y protocolo no coinciden.');
     registry=MyoParticipantRegistry(outputRoot);registry.verifyReservation(metadata);
-    asset=fullfile(fileparts(mfilename('fullpath')),string(metadata.posture_reference_asset));
-    assert(startsWith(string(metadata.posture_reference_asset),"assets/")&&isfile(asset)&& ...
+    asset=myoPostureAssetPath(metadata.posture_reference_asset);
+    assert(isfile(asset)&& ...
      myoFileSHA256(asset)==string(metadata.posture_reference_sha256),'MyoSession:PostureAsset','Referencia de postura no verificable.');
+    if string(metadata.arm_posture_id)=="P0_SEATED_ARMREST"
+     extra=["arm_confirmed","myo_fit_confirmed","myo_orientation_confirmed","stabilization_confirmed","session_seed_source"];
+     assert(all(isfield(metadata,extra))&&isequal(metadata.arm_confirmed,true)&&isequal(metadata.myo_fit_confirmed,true)&& ...
+      isequal(metadata.myo_orientation_confirmed,true)&&isequal(metadata.stabilization_confirmed,true)&&string(metadata.placement_id)=="P1", ...
+      'MyoSession:OfficialPlacement','Completar confirmaciones oficiales de brazo, ajuste, orientación y estabilización de P1.');
+     registry.verifyReservation(metadata);
+    end
    end
    if ismember('campaign',protocol.Properties.VariableNames)&&any(protocol.campaign=="MYO_PILOT2_OPEN_CLOSE")
     validateMyoPilot2Protocol(protocol);

@@ -1,0 +1,32 @@
+{
+    "historical_file_count":  503,
+    "historical_files_changed":  0,
+    "historical_files_preserved":  true,
+    "protected_sources":  [
+                              {
+                                  "file":  "EMG_Prosthesis_TD3/matlab_code/acquisition/buildMyoPilot2Protocol.m",
+                                  "sha256":  "d888bccdf5d8e76c5723b52c3b4213bd086b8afcdd4bf55a6c6211bbb402c26b",
+                                  "unchanged":  true
+                              },
+                              {
+                                  "file":  "EMG_Prosthesis_TD3/matlab_code/acquisition/buildMyoCampaignProtocol.m",
+                                  "sha256":  "bc6508777a30b1964e41ce8b3f56b58e4240c4f60905e74863e3fca2af3e3063",
+                                  "unchanged":  true
+                              },
+                              {
+                                  "file":  "EMG_Prosthesis_TD3/matlab_code/acquisition/myoProtocolTarget.m",
+                                  "sha256":  "5304411436593ba3a3af7fb7ddd5c837ab4b2085c06dba13f0aa0ec36a625ca3",
+                                  "unchanged":  true
+                              },
+                              {
+                                  "file":  "EMG_Prosthesis_TD3/matlab_code/acquisition/assets/cues_manifest.json",
+                                  "sha256":  "3ebd7fc46c5d9c3f0244340581ecad9ec4e9b0b1d39bfe6bd2fa44434a0f3502",
+                                  "unchanged":  true
+                              },
+                              {
+                                  "file":  "EMG_Prosthesis_TD3/matlab_code/acquisition/references/Referencia.jpg",
+                                  "sha256":  "8673addf727fdfe1a0f5deba2891f5d00011474f61781b0b640476eaf31a91c4",
+                                  "unchanged":  true
+                              }
+                          ]
+}

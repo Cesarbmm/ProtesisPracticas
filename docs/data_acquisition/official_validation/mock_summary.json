@@ -1,0 +1,20 @@
+{
+  "result": "PASS",
+  "mock_only": true,
+  "simulated_seconds": 833,
+  "movements": 48,
+  "scientific_records": 97,
+  "session_uuid": "dea3be2c-3f4f-4aea-9068-4e3be645618f",
+  "second_session_reserved": "S002",
+  "posture_confirmed": true,
+  "precheck_was_gated": true,
+  "session_seed": 3.735273004E+9,
+  "session_seed_reproducible": true,
+  "arm_posture_id": "P0_SEATED_ARMREST",
+  "practice_wrote_files": false,
+  "human_acquisition_started": false,
+  "training_started": false,
+  "all_tests_passed": true,
+  "test_count": 137,
+  "posture_reference_sha256": "8673addf727fdfe1a0f5deba2891f5d00011474f61781b0b640476eaf31a91c4"
+}
